@@ -1,0 +1,202 @@
+Account ID,Account Name,Producer,Annual Premium,Policies In Force,Loss Ratio (3yr)
+ACT-10000,Sable Storage,S. Okonkwo,9475,4,0.56
+ACT-10001,Cedar Orchards,D. Whitlock,11290,3,0.14
+ACT-10002,Vantage Roofing,D. Whitlock,31873,5,0.62
+ACT-10003,Quarry Transport,D. Whitlock,6233,2,0.19
+ACT-10004,Northgate Manufacturing,T. Bergeron,15423,1,0.14
+ACT-10005,Trellis Staffing,S. Okonkwo,4174,5,0.06
+ACT-10006,Larkspur Staffing,D. Whitlock,12252,4,0.23
+ACT-10007,Verity Staffing,D. Whitlock,6708,6,0.41
+ACT-10008,Cedar Fabrication,T. Bergeron,13114,3,0.19
+ACT-10009,Pinegrove Manufacturing,S. Okonkwo,17774,6,0.29
+ACT-10010,Blue Harbor Orchards,R. Vasquez,12638,2,0.61
+ACT-10011,Basswood Plumbing,S. Okonkwo,35031,2,0.41
+ACT-10012,Ironwood Dental Group,T. Bergeron,24100,1,0.34
+ACT-10013,Foxglove Printing,T. Bergeron,3335,6,0.22
+ACT-10015,Amberline Dental Group,S. Okonkwo,5397,3,0.17
+ACT-10016,Vantage Auto Group,M. Aranda,23138,3,0.0
+ACT-10017,Ironwood Property Mgmt,R. Vasquez,4207,4,0.49
+ACT-10018,Kestrel Orchards,R. Vasquez,41468,4,0.75
+ACT-10019,Halyard Manufacturing,R. Vasquez,57705,1,0.04
+ACT-10020,Larkspur Orchards,T. Bergeron,4871,3,0.24
+ACT-10021,Vantage Orchards,R. Vasquez,7962,4,0.0
+ACT-10022,Thatcher Restaurant Group,M. Aranda,71340,4,0.54
+ACT-10023,Millrace Auto Group,S. Okonkwo,32119,4,0.36
+ACT-10024,Thatcher Fabrication,M. Aranda,8143,5,0.48
+ACT-10026,Foxglove Landscaping,D. Whitlock,64277,4,0.26
+ACT-10027,Larkspur Construction,D. Whitlock,10289,5,0.31
+ACT-10028,Ironwood Auto Group,S. Okonkwo,9502,4,0.71
+ACT-10029,Larkspur Electric,T. Bergeron,17145,5,0.25
+ACT-10030,Basswood Dental Group,M. Aranda,10051,6,0.8
+ACT-10031,Ironwood Bakery,R. Vasquez,5805,5,0.44
+ACT-10032,Windrow Staffing,T. Bergeron,5546,6,0.33
+ACT-10033,Foxglove Electric,D. Whitlock,17605,4,0.67
+ACT-10034,Blue Harbor Construction,S. Okonkwo,45078,5,0.34
+ACT-10035,Trellis Printing,D. Whitlock,12273,2,0.42
+ACT-10036,Basswood Machine Works,M. Aranda,4617,4,0.09
+ACT-10037,Windrow Medical,D. Whitlock,11287,2,0.33
+ACT-10038,Sable Machine Works,D. Whitlock,6713,1,0.72
+ACT-10039,Pinegrove Medical,M. Aranda,11835,5,0.39
+ACT-10040,Cedar Roofing,D. Whitlock,19193,2,0.15
+ACT-10041,Ironwood Fabrication,T. Bergeron,22840,2,0.0
+ACT-10042,Sable Property Mgmt,T. Bergeron,3150,6,0.35
+ACT-10043,Northgate Restaurant Group,S. Okonkwo,95616,2,0.78
+ACT-10044,Windrow Restaurant Group,R. Vasquez,6781,5,0.38
+ACT-10045,Quarry Manufacturing,M. Aranda,3644,3,0.2
+ACT-10046,Blue Harbor Bakery,D. Whitlock,18238,6,0.84
+ACT-10047,Cedar Auto Group,R. Vasquez,3463,2,0.17
+ACT-10048,Halyard Dental Group,D. Whitlock,33301,1,0.17
+ACT-10049,Pinegrove Orchards,M. Aranda,34147,6,0.29
+ACT-10050,Quarry Plumbing,D. Whitlock,16156,2,0.83
+ACT-10051,Northgate Orchards,M. Aranda,14559,3,0.0
+ACT-10052,Amberline Printing,R. Vasquez,13245,2,0.58
+ACT-10053,Kestrel Property Mgmt,R. Vasquez,13125,4,0.49
+ACT-10055,Larkspur Bakery,S. Okonkwo,15409,3,0.67
+ACT-10056,Ironwood Machine Works,R. Vasquez,26534,3,0.86
+ACT-10057,Trellis Storage,S. Okonkwo,14887,4,0.5
+ACT-10058,Basswood Property Mgmt,D. Whitlock,13032,1,0.35
+ACT-10060,Pinegrove Dental Group,M. Aranda,8509,6,0.28
+ACT-10061,Kestrel Medical,T. Bergeron,2683,3,0.46
+ACT-10062,Northgate Medical,M. Aranda,6189,2,0.25
+ACT-10063,Larkspur Logistics,R. Vasquez,2367,4,0.43
+ACT-10064,Amberline Landscaping,S. Okonkwo,22962,2,0.14
+ACT-10065,Sable Landscaping,D. Whitlock,16230,4,0.39
+ACT-10066,Amberline Property Mgmt,S. Okonkwo,80720,3,0.05
+ACT-10067,Ironwood Manufacturing,M. Aranda,11344,5,0.08
+ACT-10068,Trellis Machine Works,T. Bergeron,8650,4,0.21
+ACT-10069,Pinegrove Bakery,M. Aranda,4994,6,0.15
+ACT-10071,Sable Dental Group,S. Okonkwo,4075,2,0.1
+ACT-10072,Windrow Storage,T. Bergeron,7638,1,0.82
+ACT-10073,Thatcher Manufacturing,T. Bergeron,16175,3,0.35
+ACT-10074,Halyard Transport,T. Bergeron,13073,3,0.24
+ACT-10075,Cobblestone Machine Works,D. Whitlock,8700,3,0.47
+ACT-10076,Larkspur Roofing,R. Vasquez,1731,4,0.34
+ACT-10077,Windrow Landscaping,T. Bergeron,13166,4,0.24
+ACT-10078,Cobblestone Dental Group,R. Vasquez,50517,2,0.58
+ACT-10079,Pinegrove Machine Works,T. Bergeron,32235,1,0.13
+ACT-10080,Kestrel Staffing,S. Okonkwo,7311,1,0.3
+ACT-10081,Millrace Staffing,T. Bergeron,23116,6,0.25
+ACT-10082,Millrace Logistics,M. Aranda,21893,4,0.16
+ACT-10083,Quarry Medical,S. Okonkwo,24953,2,0.23
+ACT-10084,Vantage Restaurant Group,T. Bergeron,33600,3,0.67
+ACT-10085,Quarry Dental Group,D. Whitlock,4997,4,0.0
+ACT-10087,Amberline Fabrication,S. Okonkwo,7070,3,0.38
+ACT-10088,Sable Bakery,T. Bergeron,10166,3,0.06
+ACT-10089,Ironwood Roofing,D. Whitlock,8384,3,0.2
+ACT-10090,Foxglove Dental Group,S. Okonkwo,37191,4,0.24
+ACT-10091,Windrow Printing,D. Whitlock,29127,6,0.3
+ACT-10092,Basswood Restaurant Group,R. Vasquez,22679,2,0.45
+ACT-10093,Blue Harbor Property Mgmt,D. Whitlock,20242,1,0.66
+ACT-10094,Blue Harbor Restaurant Group,T. Bergeron,6930,4,0.3
+ACT-10095,Cobblestone Transport,M. Aranda,4843,1,0.54
+ACT-10096,Foxglove Bakery,R. Vasquez,18712,1,0.7
+ACT-10097,Pinegrove Landscaping,S. Okonkwo,7461,6,0.44
+ACT-10098,Pinegrove Staffing,M. Aranda,12422,5,0.59
+ACT-10099,Foxglove Roofing,S. Okonkwo,9488,1,0.8
+ACT-10100,Cedar Restaurant Group,S. Okonkwo,14970,6,0.62
+ACT-10101,Halyard Construction,D. Whitlock,48037,1,0.71
+ACT-10102,Vantage Machine Works,R. Vasquez,16560,3,0.14
+ACT-10103,Vantage Plumbing,M. Aranda,22936,1,0.27
+ACT-10104,Verity Manufacturing,S. Okonkwo,6450,5,0.5
+ACT-10105,Cobblestone Restaurant Group,R. Vasquez,2533,4,0.24
+ACT-10107,Thatcher Bakery,M. Aranda,7865,3,0.49
+ACT-10108,Quarry Printing,D. Whitlock,27134,4,0.18
+ACT-10109,Cedar Staffing,M. Aranda,17244,4,0.07
+ACT-10110,Vantage Bakery,R. Vasquez,41690,4,0.26
+ACT-10111,Halyard Orchards,S. Okonkwo,4365,5,0.56
+ACT-10113,Sable Roofing,S. Okonkwo,7494,4,0.6
+ACT-10114,Vantage Medical,M. Aranda,7488,3,0.53
+ACT-10115,Foxglove Construction,M. Aranda,9732,3,0.49
+ACT-10116,Verity Dental Group,R. Vasquez,26173,3,0.21
+ACT-10118,Blue Harbor Electric,R. Vasquez,20636,1,0.28
+ACT-10120,Pinegrove Logistics,M. Aranda,61183,1,0.98
+ACT-10121,Ironwood Printing,T. Bergeron,15247,4,0.63
+ACT-10122,Verity Landscaping,R. Vasquez,15103,1,0.29
+ACT-10123,Sable Auto Group,D. Whitlock,9380,4,0.19
+ACT-10124,Cedar Logistics,S. Okonkwo,12919,2,0.55
+ACT-10125,Trellis Construction,T. Bergeron,20634,1,0.2
+ACT-10126,Windrow Property Mgmt,M. Aranda,4626,3,0.29
+ACT-10127,Kestrel Logistics,M. Aranda,6374,2,0.08
+ACT-10129,Verity Property Mgmt,S. Okonkwo,28029,5,0.16
+ACT-10130,Halyard Landscaping,S. Okonkwo,18605,4,0.45
+ACT-10131,Thatcher Roofing,D. Whitlock,14628,6,0.54
+ACT-10132,Millrace Medical,T. Bergeron,8787,2,0.17
+ACT-10133,Pinegrove Electric,S. Okonkwo,74899,2,0.49
+ACT-10134,Pinegrove Transport,S. Okonkwo,9062,1,0.69
+ACT-10136,Pinegrove Auto Group,S. Okonkwo,11465,5,0.28
+ACT-10137,Ironwood Staffing,M. Aranda,35766,4,0.57
+ACT-10138,Sable Staffing,S. Okonkwo,14475,1,0.29
+ACT-10139,Halyard Plumbing,R. Vasquez,37060,1,0.53
+ACT-10140,Sable Electric,T. Bergeron,58431,1,0.44
+ACT-10141,Verity Plumbing,S. Okonkwo,6856,3,0.34
+ACT-10142,Halyard Machine Works,M. Aranda,27120,2,0.67
+ACT-10143,Pinegrove Storage,M. Aranda,23231,4,0.16
+ACT-10144,Millrace Construction,R. Vasquez,4136,3,0.54
+ACT-10145,Millrace Bakery,R. Vasquez,15559,2,0.13
+ACT-10146,Northgate Landscaping,D. Whitlock,12745,2,0.28
+ACT-10147,Thatcher Machine Works,R. Vasquez,13854,6,0.36
+ACT-10148,Northgate Transport,M. Aranda,14774,3,0.24
+ACT-10149,Cobblestone Roofing,D. Whitlock,28640,4,0.07
+ACT-10150,Trellis Manufacturing,M. Aranda,36129,5,0.41
+ACT-10151,Pinegrove Roofing,T. Bergeron,12619,4,0.15
+ACT-10152,Cobblestone Medical,R. Vasquez,16756,6,0.42
+ACT-10153,Pinegrove Printing,R. Vasquez,19856,6,0.41
+ACT-10154,Northgate Staffing,D. Whitlock,8787,1,0.58
+ACT-10155,Kestrel Fabrication,T. Bergeron,20964,4,0.39
+ACT-10156,Northgate Dental Group,D. Whitlock,4378,3,0.39
+ACT-10157,Foxglove Logistics,D. Whitlock,9489,2,0.4
+ACT-10158,Ironwood Restaurant Group,M. Aranda,12435,5,0.78
+ACT-10159,Basswood Staffing,D. Whitlock,15178,4,0.06
+ACT-10160,Larkspur Machine Works,D. Whitlock,7812,1,0.67
+ACT-10161,Vantage Property Mgmt,S. Okonkwo,34280,4,0.25
+ACT-10162,Thatcher Dental Group,M. Aranda,49183,1,0.16
+ACT-10163,Cobblestone Landscaping,M. Aranda,9861,1,0.55
+ACT-10164,Foxglove Transport,R. Vasquez,12154,5,0.09
+ACT-10165,Kestrel Storage,M. Aranda,16834,3,0.56
+ACT-10166,Larkspur Medical,D. Whitlock,3447,6,0.47
+ACT-10167,Pinegrove Plumbing,M. Aranda,3837,3,0.19
+ACT-10168,Halyard Fabrication,S. Okonkwo,95903,2,0.21
+ACT-10169,Quarry Bakery,S. Okonkwo,32009,6,0.53
+ACT-10170,Ironwood Transport,M. Aranda,11764,1,0.06
+ACT-10171,Kestrel Plumbing,R. Vasquez,2445,1,0.44
+ACT-10172,Foxglove Medical,T. Bergeron,85237,5,0.68
+ACT-10173,Amberline Restaurant Group,D. Whitlock,29617,3,0.37
+ACT-10174,Foxglove Restaurant Group,T. Bergeron,7888,1,0.45
+ACT-10175,Vantage Dental Group,T. Bergeron,25951,1,0.49
+ACT-10176,Larkspur Transport,T. Bergeron,3862,6,0.1
+ACT-10177,Sable Logistics,S. Okonkwo,6483,1,0.5
+ACT-10178,Quarry Construction,S. Okonkwo,8321,5,0.51
+ACT-10179,Thatcher Property Mgmt,S. Okonkwo,7180,5,0.53
+ACT-10180,Halyard Property Mgmt,S. Okonkwo,1787,4,0.37
+ACT-10181,Cobblestone Bakery,S. Okonkwo,107154,2,0.63
+ACT-10182,Amberline Bakery,D. Whitlock,6552,1,0.0
+ACT-10183,Blue Harbor Auto Group,M. Aranda,8698,3,0.4
+ACT-10184,Basswood Auto Group,M. Aranda,6844,2,0.75
+ACT-10185,Verity Electric,D. Whitlock,11310,5,0.48
+ACT-10186,Basswood Printing,S. Okonkwo,20587,1,0.17
+ACT-10187,Halyard Storage,S. Okonkwo,5735,5,0.25
+ACT-10188,Cobblestone Staffing,R. Vasquez,14731,6,0.15
+ACT-10189,Windrow Dental Group,D. Whitlock,11630,5,0.83
+ACT-10190,Pinegrove Restaurant Group,R. Vasquez,16581,1,0.27
+ACT-10191,Foxglove Storage,D. Whitlock,11458,5,0.37
+ACT-10192,Foxglove Auto Group,M. Aranda,45842,5,0.0
+ACT-10193,Trellis Logistics,D. Whitlock,27170,1,0.25
+ACT-10194,Millrace Manufacturing,R. Vasquez,7576,4,0.13
+ACT-10195,Sable Plumbing,D. Whitlock,17580,5,0.99
+ACT-10196,Basswood Landscaping,D. Whitlock,18475,5,0.66
+ACT-10197,Verity Restaurant Group,T. Bergeron,18581,4,0.19
+ACT-10198,Blue Harbor Manufacturing,T. Bergeron,7506,1,0.19
+ACT-10199,Sable Fabrication,D. Whitlock,10939,5,0.0
+ACT-10200,Halyard Bakery,M. Aranda,9593,4,0.45
+ACT-10201,Windrow Logistics,M. Aranda,20770,4,0.35
+ACT-10202,Quarry Logistics,D. Whitlock,30431,3,0.18
+ACT-10203,Foxglove Plumbing,D. Whitlock,6799,4,0.37
+ACT-10205,Larkspur Dental Group,T. Bergeron,38431,5,0.32
+ACT-10206,Larkspur Property Mgmt,S. Okonkwo,8029,2,0.52
+ACT-10207,Thatcher Orchards,R. Vasquez,4180,1,0.7
+ACT-10208,Kestrel Landscaping,R. Vasquez,19964,1,0.0
+ACT-10209,Windrow Auto Group,S. Okonkwo,26349,4,0.48
+ACT-10210,Northgate Storage,T. Bergeron,4072,1,0.61
+ACT-10211,Northgate Bakery,D. Whitlock,17026,1,0.21
+ACT-10212,Cobblestone Logistics,M. Aranda,18587,4,0.63
+ACT-10213,Blue Harbor Medical,T. Bergeron,16533,5,0.5

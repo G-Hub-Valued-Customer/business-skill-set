@@ -1,0 +1,215 @@
+Account Name,Account ID,Producer,Branch Code,Region Code,Primary Line,Carrier,Annual Premium,Expiration Date,Loss Ratio (3yr),Policies In Force,Client Since,Last Service Touch,Account Status,Open Service Items
+Sable Storage,ACT-10000,S. Okonkwo,BR-022,RGN-NE,Commercial Property,Ravenna Group,9094,2026-09-26,0.47,4,2012,2026-09-24,Active,0
+Cedar Orchards,ACT-10001,D. Whitlock,BR-014,RGN-NE,General Liability,Ashfield Casualty,13440,2027-01-17,0.19,3,2008,2026-05-17,Active,0
+Vantage Roofing,ACT-10002,D. Whitlock,BR-014,RGN-NE,Professional Liability,Meridian Mutual,33650,2027-02-28,0.58,5,2018,2026-05-25,Active,0
+Quarry Transport,ACT-10003,D. Whitlock,BR-014,RGN-NE,Commercial Auto,Ashfield Casualty,7050,2026-09-02,0.3,2,2011,2026-09-13,Active,0
+Northgate Manufacturing,ACT-10004,T. Bergeron,BR-022,RGN-NE,General Liability,Meridian Mutual,16599,2026-09-15,0.29,1,2004,2026-08-21,Active,0
+Trellis Staffing,ACT-10005,S. Okonkwo,BR-022,RGN-NE,Commercial Auto,Harborline,3955,2026-12-05,0.11,6,2018,2026-08-07,Active,0
+Larkspur Staffing,ACT-10006,D. Whitlock,BR-014,RGN-NE,Inland Marine,Statewide Indemnity,12993,2026-09-09,0.3,5,2003,2026-09-03,Active,0
+Verity Staffing,ACT-10007,D. Whitlock,BR-014,RGN-NE,Cyber,Ashfield Casualty,8045,2026-09-06,0.41,6,2020,2026-08-19,Non-Renew Pending,0
+Cedar Fabrication,ACT-10008,T. Bergeron,BR-022,RGN-NE,Workers Comp,Statewide Indemnity,13411,2026-09-03,0.08,3,2000,2026-09-16,Active,1
+Pinegrove Manufacturing,ACT-10009,S. Okonkwo,BR-022,RGN-NE,Cyber,Cordell P&C,19596,2026-10-19,0.18,6,2020,2026-08-15,Active,1
+Blue Harbor Orchards,ACT-10010,R. Vasquez,BR-031,RGN-MW,Cyber,Statewide Indemnity,14241,2026-11-16,0.62,2,2019,2026-08-07,Active,1
+Basswood Plumbing,ACT-10011,S. Okonkwo,BR-022,RGN-NE,Commercial Auto,Cordell P&C,34499,2026-11-07,0.37,2,2016,2026-06-07,Active,0
+Ironwood Dental Group,ACT-10012,T. Bergeron,BR-022,RGN-NE,Inland Marine,Statewide Indemnity,25059,2026-10-07,0.32,1,2024,2026-04-09,Active,0
+Foxglove Printing,ACT-10013,T. Bergeron,BR-022,RGN-NE,Workers Comp,Meridian Mutual,3882,2026-09-05,0.24,6,2001,2026-07-04,Active,0
+Trellis Dental Group,ACT-10014,M. Aranda,BR-014,RGN-NE,Cyber,Ravenna Group,6404,2026-09-01,0.94,6,2014,2026-08-20,Prospect,0
+Amberline Dental Group,ACT-10015,S. Okonkwo,BR-022,RGN-NE,Cyber,Cordell P&C,5499,2026-11-01,0.18,3,2018,2026-05-04,Active,1
+Vantage Auto Group,ACT-10016,M. Aranda,BR-014,RGN-NE,Professional Liability,Statewide Indemnity,27554,2027-01-28,0.13,4,1998,2026-05-26,Active,0
+Ironwood Property Mgmt,ACT-10017,R. Vasquez,BR-031,RGN-MW,General Liability,Harborline,4748,2026-09-05,0.42,4,2014,2026-08-10,Active,0
+Kestrel Orchards,ACT-10018,R. Vasquez,BR-031,RGN-MW,Umbrella,Ravenna Group,46107,2026-09-13,0.66,4,2004,2026-07-18,Active,0
+Halyard Manufacturing,ACT-10019,R. Vasquez,BR-031,RGN-MW,Professional Liability,Statewide Indemnity,60735,2026-10-26,0.06,2,2013,2026-07-05,Active,2
+Larkspur Orchards,ACT-10020,T. Bergeron,BR-022,RGN-NE,Cyber,Ashfield Casualty,5523,2026-09-09,0.23,3,2005,2026-08-16,Active,1
+Vantage Orchards,ACT-10021,R. Vasquez,BR-031,RGN-MW,Commercial Auto,Ashfield Casualty,9382,2026-10-14,0.04,5,2018,2026-05-17,Active,0
+Thatcher Restaurant Group,ACT-10022,M. Aranda,BR-014,RGN-NE,General Liability,Statewide Indemnity,75023,2026-10-06,0.44,4,2001,2026-07-27,Non-Renew Pending,0
+Millrace Auto Group,ACT-10023,S. Okonkwo,BR-022,RGN-NE,Commercial Auto,Meridian Mutual,37342,2026-09-19,0.52,4,2001,2026-04-02,Active,0
+Thatcher Fabrication,ACT-10024,M. Aranda,BR-014,RGN-NE,Professional Liability,Harborline,8853,2026-09-06,0.61,5,2009,2026-04-21,Active,1
+Kestrel Electric,ACT-10025,S. Okonkwo,BR-022,RGN-NE,Professional Liability,Ravenna Group,10666,2027-01-20,0.52,5,2004,2026-08-19,Prospect,1
+Foxglove Landscaping,ACT-10026,D. Whitlock,BR-014,RGN-NE,Professional Liability,Harborline,73531,2026-12-13,0.15,4,2004,2026-09-06,Active,0
+Larkspur Construction,ACT-10027,D. Whitlock,BR-014,RGN-NE,Commercial Property,Meridian Mutual,10156,2026-10-06,0.33,5,2001,2026-09-08,Active,0
+Ironwood Auto Group,ACT-10028,S. Okonkwo,BR-022,RGN-NE,Workers Comp,Cordell P&C,8989,2026-10-14,0.79,4,2003,2026-07-18,Active,0
+Larkspur Electric,ACT-10029,T. Bergeron,BR-022,RGN-NE,Workers Comp,Cordell P&C,16269,2026-10-10,0.28,6,2010,2026-04-11,Active,0
+Basswood Dental Group,ACT-10030,M. Aranda,BR-014,RGN-NE,Commercial Auto,Ravenna Group,12127,2027-02-08,0.84,6,2001,2026-04-20,Active,0
+Ironwood Bakery,ACT-10031,R. Vasquez,BR-031,RGN-MW,Workers Comp,Statewide Indemnity,6695,2026-09-14,0.33,6,2002,2026-05-16,Active,2
+Windrow Staffing,ACT-10032,T. Bergeron,BR-022,RGN-NE,Commercial Auto,Ravenna Group,6362,2026-11-23,0.34,6,2004,2026-09-02,Active,0
+Foxglove Electric,ACT-10033,D. Whitlock,BR-014,RGN-NE,Cyber,Cordell P&C,18041,2026-10-03,0.77,4,2009,2026-05-11,Active,1
+Blue Harbor Construction,ACT-10034,S. Okonkwo,BR-022,RGN-NE,Workers Comp,Ashfield Casualty,48933,2026-12-07,0.39,5,2008,2026-06-18,Active,1
+Trellis Printing,ACT-10035,D. Whitlock,BR-014,RGN-NE,Commercial Property,Meridian Mutual,13603,2026-10-14,0.36,3,2004,2026-09-20,Active,0
+Basswood Machine Works,ACT-10036,M. Aranda,BR-014,RGN-NE,Umbrella,Cordell P&C,4462,2026-09-04,0.25,5,2023,2026-06-15,Active,0
+Windrow Medical,ACT-10037,D. Whitlock,BR-014,RGN-NE,Professional Liability,Ravenna Group,10744,2026-10-13,0.35,2,2024,2026-08-19,Active,0
+Sable Machine Works,ACT-10038,D. Whitlock,BR-014,RGN-NE,General Liability,Statewide Indemnity,7281,2026-09-27,0.67,1,1998,2026-09-21,Active,1
+Pinegrove Medical,ACT-10039,M. Aranda,BR-014,RGN-NE,General Liability,Ashfield Casualty,12410,2026-09-15,0.32,5,1999,2026-07-25,Active,0
+Cedar Roofing,ACT-10040,D. Whitlock,BR-014,RGN-NE,Workers Comp,Statewide Indemnity,22687,2026-11-26,0.23,2,2010,2026-07-17,Active,3
+Ironwood Fabrication,ACT-10041,T. Bergeron,BR-022,RGN-NE,Commercial Auto,Harborline,23936,2026-09-06,0.03,3,2004,2026-08-08,Active,0
+Sable Property Mgmt,ACT-10042,T. Bergeron,BR-022,RGN-NE,Professional Liability,Statewide Indemnity,3005,2027-02-21,0.43,6,2015,2026-04-16,Active,0
+Northgate Restaurant Group,ACT-10043,S. Okonkwo,BR-022,RGN-NE,Workers Comp,Cordell P&C,97048,2026-09-08,0.89,2,2022,2026-06-05,Active,1
+Windrow Restaurant Group,ACT-10044,R. Vasquez,BR-031,RGN-MW,General Liability,Cordell P&C,7104,2026-09-25,0.32,6,2012,2026-04-24,Active,1
+Quarry Manufacturing,ACT-10045,M. Aranda,BR-014,RGN-NE,Umbrella,Statewide Indemnity,3447,2026-09-27,0.38,3,2010,2026-04-18,Active,0
+Blue Harbor Bakery,ACT-10046,D. Whitlock,BR-014,RGN-NE,Professional Liability,Ashfield Casualty,20031,2026-10-15,0.8,6,2013,2026-05-10,Active,0
+Cedar Auto Group,ACT-10047,R. Vasquez,BR-031,RGN-MW,Umbrella,Harborline,3779,2027-02-24,0.3,2,2010,2026-09-04,Active,2
+Halyard Dental Group,ACT-10048,D. Whitlock,BR-014,RGN-NE,Commercial Property,Harborline,35891,2026-09-13,0.06,1,2011,2026-07-25,Active,2
+Pinegrove Orchards,ACT-10049,M. Aranda,BR-014,RGN-NE,Cyber,Harborline,37085,2026-12-13,0.33,6,2017,2026-08-01,Active,0
+Quarry Plumbing,ACT-10050,D. Whitlock,BR-014,RGN-NE,Umbrella,Ravenna Group,16397,2026-09-10,0.85,2,2009,2026-08-17,Active,0
+Northgate Orchards,ACT-10051,M. Aranda,BR-014,RGN-NE,Cyber,Meridian Mutual,16332,2026-11-25,0.11,3,2006,2026-07-04,Active,1
+Amberline Printing,ACT-10052,R. Vasquez,BR-031,RGN-MW,General Liability,Meridian Mutual,15864,2027-01-06,0.65,3,2019,2026-06-08,Active,0
+Kestrel Property Mgmt,ACT-10053,R. Vasquez,BR-031,RGN-MW,Professional Liability,Ravenna Group,15923,2026-09-06,0.49,5,2018,2026-04-06,Active,0
+Millrace Orchards,ACT-10054,S. Okonkwo,BR-022,RGN-NE,Commercial Property,Ashfield Casualty,5786,2026-09-05,0.29,6,2023,2026-05-13,Prospect,0
+Larkspur Bakery,ACT-10055,S. Okonkwo,BR-022,RGN-NE,General Liability,Ravenna Group,17314,2026-09-15,0.73,3,2014,2026-08-14,Active,0
+Ironwood Machine Works,ACT-10056,R. Vasquez,BR-031,RGN-MW,Commercial Auto,Ravenna Group,26190,2026-09-19,0.75,3,2019,2026-07-08,Active,3
+Trellis Storage,ACT-10057,S. Okonkwo,BR-022,RGN-NE,General Liability,Ravenna Group,16507,2026-11-14,0.67,5,2012,2026-04-10,Active,0
+Basswood Property Mgmt,ACT-10058,D. Whitlock,BR-014,RGN-NE,Inland Marine,Harborline,12618,2026-10-05,0.3,2,2007,2026-09-02,Active,1
+Trellis Fabrication,ACT-10059,D. Whitlock,BR-014,RGN-NE,Umbrella,Cordell P&C,18746,2027-01-02,0.35,6,2002,2026-06-23,Prospect,1
+Pinegrove Dental Group,ACT-10060,M. Aranda,BR-014,RGN-NE,Umbrella,Statewide Indemnity,8246,2026-11-07,0.25,6,2014,2026-04-19,Active,3
+Kestrel Medical,ACT-10061,T. Bergeron,BR-022,RGN-NE,Umbrella,Ravenna Group,2942,2026-10-03,0.34,3,2011,2026-08-03,Active,3
+Northgate Medical,ACT-10062,M. Aranda,BR-014,RGN-NE,Inland Marine,Meridian Mutual,7238,2026-09-05,0.4,2,2000,2026-08-25,Active,0
+Larkspur Logistics,ACT-10063,R. Vasquez,BR-031,RGN-MW,General Liability,Ravenna Group,2543,2026-11-17,0.53,4,2005,2026-09-15,Active,0
+Amberline Landscaping,ACT-10064,S. Okonkwo,BR-022,RGN-NE,Workers Comp,Statewide Indemnity,22855,2026-11-09,0.06,2,2017,2026-04-20,Active,0
+Sable Landscaping,ACT-10065,D. Whitlock,BR-014,RGN-NE,Umbrella,Ravenna Group,18397,2026-12-08,0.5,4,2000,2026-09-27,Active,0
+Amberline Property Mgmt,ACT-10066,S. Okonkwo,BR-022,RGN-NE,Commercial Property,Harborline,76452,2026-12-02,0.22,4,2022,2026-08-05,Active,0
+Ironwood Manufacturing,ACT-10067,M. Aranda,BR-014,RGN-NE,Umbrella,Meridian Mutual,11191,2026-09-18,0.2,5,2025,2026-05-14,Active,2
+Trellis Machine Works,ACT-10068,T. Bergeron,BR-022,RGN-NE,Workers Comp,Cordell P&C,9052,2026-10-02,0.34,4,2024,2026-05-13,Active,0
+Pinegrove Bakery,ACT-10069,M. Aranda,BR-014,RGN-NE,Inland Marine,Ashfield Casualty,5301,2026-09-07,0.24,6,2003,2026-07-07,Active,0
+Ironwood Landscaping,ACT-10070,T. Bergeron,BR-022,RGN-NE,Cyber,Harborline,16426,2026-10-19,0.38,2,2021,2026-04-01,Prospect,1
+Sable Dental Group,ACT-10071,S. Okonkwo,BR-022,RGN-NE,Workers Comp,Meridian Mutual,4859,2026-10-02,0.27,2,2007,2026-07-14,Active,0
+Windrow Storage,ACT-10072,T. Bergeron,BR-022,RGN-NE,Cyber,Harborline,8999,2026-10-07,0.7,1,2007,2026-06-12,Active,0
+Thatcher Manufacturing,ACT-10073,T. Bergeron,BR-022,RGN-NE,Commercial Auto,Ashfield Casualty,18971,2027-01-18,0.25,3,2000,2026-07-04,Active,0
+Halyard Transport,ACT-10074,T. Bergeron,BR-022,RGN-NE,General Liability,Ashfield Casualty,14678,2026-09-13,0.25,3,2011,2026-05-16,Active,1
+Cobblestone Machine Works,ACT-10075,D. Whitlock,BR-014,RGN-NE,Cyber,Statewide Indemnity,8657,2027-01-10,0.47,3,2016,2026-06-09,Active,2
+Larkspur Roofing,ACT-10076,R. Vasquez,BR-031,RGN-MW,Umbrella,Meridian Mutual,1800,2026-09-23,0.51,4,2012,2026-07-13,Active,0
+Windrow Landscaping,ACT-10077,T. Bergeron,BR-022,RGN-NE,Commercial Property,Ravenna Group,14563,2026-09-20,0.16,4,1998,2026-05-18,Active,0
+Cobblestone Dental Group,ACT-10078,R. Vasquez,BR-031,RGN-MW,Workers Comp,Harborline,58102,2026-09-04,0.46,3,2017,2026-09-16,Active,0
+Pinegrove Machine Works,ACT-10079,T. Bergeron,BR-022,RGN-NE,General Liability,Meridian Mutual,32177,2026-09-08,0.15,1,2020,2026-06-04,Active,0
+Kestrel Staffing,ACT-10080,S. Okonkwo,BR-022,RGN-NE,Workers Comp,Statewide Indemnity,7125,2026-12-13,0.28,2,2024,2026-08-27,Active,3
+Millrace Staffing,ACT-10081,T. Bergeron,BR-022,RGN-NE,Workers Comp,Statewide Indemnity,24395,2026-10-22,0.21,6,2006,2026-07-09,Active,0
+Millrace Logistics,ACT-10082,M. Aranda,BR-014,RGN-NE,Commercial Property,Ravenna Group,21009,2026-09-10,0.2,4,2003,2026-06-03,Active,1
+Quarry Medical,ACT-10083,S. Okonkwo,BR-022,RGN-NE,Workers Comp,Cordell P&C,25506,2026-09-19,0.3,2,2024,2026-04-18,Non-Renew Pending,0
+Vantage Restaurant Group,ACT-10084,T. Bergeron,BR-022,RGN-NE,Cyber,Ravenna Group,31828,2026-10-09,0.6,3,2015,2026-04-05,Active,2
+Quarry Dental Group,ACT-10085,D. Whitlock,BR-014,RGN-NE,Commercial Auto,Ravenna Group,6025,2027-02-07,0.07,5,2019,2026-08-09,Active,2
+Amberline Plumbing,ACT-10086,R. Vasquez,BR-031,RGN-MW,General Liability,Ravenna Group,86624,2026-09-01,0.91,4,1998,2026-05-03,Prospect,0
+Amberline Fabrication,ACT-10087,S. Okonkwo,BR-022,RGN-NE,Professional Liability,Ashfield Casualty,8122,2026-11-26,0.5,3,2014,2026-09-09,Active,0
+Sable Bakery,ACT-10088,T. Bergeron,BR-022,RGN-NE,Workers Comp,Harborline,11079,2026-09-24,0.23,3,2009,2026-05-14,Active,0
+Ironwood Roofing,ACT-10089,D. Whitlock,BR-014,RGN-NE,Cyber,Cordell P&C,8413,2027-02-07,0.13,4,2005,2026-07-14,Active,2
+Foxglove Dental Group,ACT-10090,S. Okonkwo,BR-022,RGN-NE,Commercial Property,Harborline,38683,2026-09-12,0.31,5,2017,2026-06-15,Active,0
+Windrow Printing,ACT-10091,D. Whitlock,BR-014,RGN-NE,Commercial Property,Ravenna Group,27761,2026-10-27,0.28,6,2012,2026-07-10,Active,0
+Basswood Restaurant Group,ACT-10092,R. Vasquez,BR-031,RGN-MW,Inland Marine,Meridian Mutual,24468,2026-11-18,0.51,2,2003,2026-09-26,Non-Renew Pending,1
+Blue Harbor Property Mgmt,ACT-10093,D. Whitlock,BR-014,RGN-NE,Inland Marine,Harborline,22289,2026-12-15,0.55,1,2023,2026-07-28,Active,1
+Blue Harbor Restaurant Group,ACT-10094,T. Bergeron,BR-022,RGN-NE,Commercial Property,Ashfield Casualty,7305,2027-01-28,0.24,5,2012,2026-07-03,Active,0
+Cobblestone Transport,ACT-10095,M. Aranda,BR-014,RGN-NE,Workers Comp,Harborline,5608,2026-11-28,0.43,2,2020,2026-08-15,Active,0
+Foxglove Bakery,ACT-10096,R. Vasquez,BR-031,RGN-MW,Professional Liability,Harborline,19121,2026-09-03,0.59,2,2000,2026-09-09,Active,1
+Pinegrove Landscaping,ACT-10097,S. Okonkwo,BR-022,RGN-NE,Umbrella,Meridian Mutual,8027,2026-09-17,0.5,6,2018,2026-07-08,Non-Renew Pending,0
+Pinegrove Staffing,ACT-10098,M. Aranda,BR-014,RGN-NE,Commercial Property,Ashfield Casualty,13624,2026-10-10,0.55,5,2005,2026-04-14,Active,0
+Foxglove Roofing,ACT-10099,S. Okonkwo,BR-022,RGN-NE,General Liability,Statewide Indemnity,10301,2027-01-25,0.69,1,2009,2026-04-24,Active,0
+Cedar Restaurant Group,ACT-10100,S. Okonkwo,BR-022,RGN-NE,General Liability,Cordell P&C,15004,2026-11-02,0.58,6,2010,2026-09-07,Active,0
+Halyard Construction,ACT-10101,D. Whitlock,BR-014,RGN-NE,Cyber,Meridian Mutual,56219,2027-01-22,0.66,1,2009,2026-07-18,Active,3
+Vantage Machine Works,ACT-10102,R. Vasquez,BR-031,RGN-MW,Commercial Auto,Ravenna Group,16319,2026-09-22,0.16,4,2012,2026-04-07,Active,0
+Vantage Plumbing,ACT-10103,M. Aranda,BR-014,RGN-NE,Commercial Auto,Harborline,27012,2027-02-17,0.32,1,2021,2026-09-23,Active,0
+Verity Manufacturing,ACT-10104,S. Okonkwo,BR-022,RGN-NE,Commercial Auto,Statewide Indemnity,6550,2027-02-21,0.64,5,2001,2026-09-14,Active,0
+Cobblestone Restaurant Group,ACT-10105,R. Vasquez,BR-031,RGN-MW,Cyber,Ashfield Casualty,3074,2026-09-20,0.26,4,2008,2026-07-04,Active,1
+Windrow Roofing,ACT-10106,R. Vasquez,BR-031,RGN-MW,Inland Marine,Ashfield Casualty,3548,2026-11-23,0.31,1,2009,2026-07-19,Prospect,0
+Thatcher Bakery,ACT-10107,M. Aranda,BR-014,RGN-NE,General Liability,Ravenna Group,9068,2026-10-10,0.44,3,1999,2026-04-07,Active,0
+Quarry Printing,ACT-10108,D. Whitlock,BR-014,RGN-NE,Inland Marine,Meridian Mutual,30321,2026-09-27,0.23,4,2017,2026-04-18,Active,0
+Cedar Staffing,ACT-10109,M. Aranda,BR-014,RGN-NE,Workers Comp,Meridian Mutual,16598,2026-11-14,0.15,4,2019,2026-05-13,Active,0
+Vantage Bakery,ACT-10110,R. Vasquez,BR-031,RGN-MW,Commercial Property,Cordell P&C,41801,2026-10-23,0.2,4,2004,2026-09-23,Non-Renew Pending,0
+Halyard Orchards,ACT-10111,S. Okonkwo,BR-022,RGN-NE,Professional Liability,Cordell P&C,4563,2026-09-12,0.72,5,2016,2026-07-12,Active,0
+Blue Harbor Fabrication,ACT-10112,M. Aranda,BR-014,RGN-NE,Commercial Auto,Cordell P&C,19878,2026-10-02,0.15,5,2000,2026-08-06,Prospect,2
+Sable Roofing,ACT-10113,S. Okonkwo,BR-022,RGN-NE,Workers Comp,Ravenna Group,7440,2026-11-22,0.58,4,2008,2026-07-05,Active,3
+Vantage Medical,ACT-10114,M. Aranda,BR-014,RGN-NE,Cyber,Ashfield Casualty,8842,2026-10-20,0.42,3,2009,2026-04-26,Active,0
+Foxglove Construction,ACT-10115,M. Aranda,BR-014,RGN-NE,Umbrella,Meridian Mutual,11496,2027-01-22,0.42,3,2023,2026-06-17,Active,0
+Verity Dental Group,ACT-10116,R. Vasquez,BR-031,RGN-MW,Inland Marine,Ashfield Casualty,24906,2026-12-23,0.17,3,2009,2026-09-07,Non-Renew Pending,0
+Cobblestone Construction,ACT-10117,R. Vasquez,BR-031,RGN-MW,General Liability,Harborline,3883,2026-09-12,0.52,1,2011,2026-08-05,Prospect,0
+Blue Harbor Electric,ACT-10118,R. Vasquez,BR-031,RGN-MW,Inland Marine,Harborline,19659,2026-11-20,0.31,1,2020,2026-07-01,Active,3
+Millrace Machine Works,ACT-10119,T. Bergeron,BR-022,RGN-NE,Cyber,Harborline,6604,2027-02-18,1.09,1,2022,2026-08-06,Prospect,0
+Pinegrove Logistics,ACT-10120,M. Aranda,BR-014,RGN-NE,Commercial Auto,Cordell P&C,69111,2026-10-19,0.86,2,2011,2026-06-11,Active,0
+Ironwood Printing,ACT-10121,T. Bergeron,BR-022,RGN-NE,Commercial Auto,Statewide Indemnity,15635,2026-11-15,0.53,4,2013,2026-05-26,Active,0
+Verity Landscaping,ACT-10122,R. Vasquez,BR-031,RGN-MW,Commercial Auto,Ashfield Casualty,15437,2027-01-06,0.27,1,2023,2026-05-18,Active,0
+Sable Auto Group,ACT-10123,D. Whitlock,BR-014,RGN-NE,Cyber,Harborline,11015,2027-01-27,0.22,4,2007,2026-08-19,Non-Renew Pending,0
+Cedar Logistics,ACT-10124,S. Okonkwo,BR-022,RGN-NE,Commercial Auto,Harborline,12962,2026-09-06,0.65,2,2020,2026-09-08,Active,1
+Trellis Construction,ACT-10125,T. Bergeron,BR-022,RGN-NE,Umbrella,Meridian Mutual,19796,2026-09-19,0.15,1,2018,2026-05-01,Active,0
+Windrow Property Mgmt,ACT-10126,M. Aranda,BR-014,RGN-NE,Commercial Auto,Harborline,4836,2027-01-20,0.23,4,2019,2026-04-15,Active,0
+Kestrel Logistics,ACT-10127,M. Aranda,BR-014,RGN-NE,Inland Marine,Meridian Mutual,6553,2027-02-01,0.22,2,2008,2026-04-06,Active,0
+Foxglove Staffing,ACT-10128,R. Vasquez,BR-031,RGN-MW,Professional Liability,Ravenna Group,10286,2026-11-11,0.17,5,2012,2026-06-11,Prospect,0
+Verity Property Mgmt,ACT-10129,S. Okonkwo,BR-022,RGN-NE,General Liability,Ashfield Casualty,34043,2026-09-06,0.34,6,1998,2026-06-16,Active,0
+Halyard Landscaping,ACT-10130,S. Okonkwo,BR-022,RGN-NE,Commercial Property,Statewide Indemnity,19810,2026-10-03,0.53,5,2012,2026-04-03,Active,0
+Thatcher Roofing,ACT-10131,D. Whitlock,BR-014,RGN-NE,Cyber,Harborline,14913,2026-10-03,0.47,6,2004,2026-09-27,Active,0
+Millrace Medical,ACT-10132,T. Bergeron,BR-022,RGN-NE,General Liability,Ashfield Casualty,10102,2027-01-01,0.31,2,2001,2026-06-10,Active,0
+Pinegrove Electric,ACT-10133,S. Okonkwo,BR-022,RGN-NE,Inland Marine,Harborline,87750,2026-11-16,0.49,2,2018,2026-08-25,Active,0
+Pinegrove Transport,ACT-10134,S. Okonkwo,BR-022,RGN-NE,Umbrella,Cordell P&C,9822,2026-11-22,0.63,1,2008,2026-04-09,Active,3
+Blue Harbor Logistics,ACT-10135,D. Whitlock,BR-014,RGN-NE,Cyber,Meridian Mutual,46070,2026-10-24,0.43,3,2007,2026-08-28,Prospect,0
+Pinegrove Auto Group,ACT-10136,S. Okonkwo,BR-022,RGN-NE,Umbrella,Ravenna Group,12128,2026-10-21,0.21,5,2011,2026-04-17,Active,0
+Ironwood Staffing,ACT-10137,M. Aranda,BR-014,RGN-NE,Professional Liability,Meridian Mutual,40465,2027-02-09,0.5,4,2004,2026-06-02,Active,0
+Sable Staffing,ACT-10138,S. Okonkwo,BR-022,RGN-NE,Workers Comp,Harborline,14587,2026-09-27,0.44,1,2016,2026-07-13,Active,0
+Halyard Plumbing,ACT-10139,R. Vasquez,BR-031,RGN-MW,Commercial Auto,Statewide Indemnity,40141,2026-10-11,0.65,1,2023,2026-04-23,Active,0
+Sable Electric,ACT-10140,T. Bergeron,BR-022,RGN-NE,Professional Liability,Ashfield Casualty,62149,2026-09-24,0.39,1,2021,2026-05-10,Active,0
+Verity Plumbing,ACT-10141,S. Okonkwo,BR-022,RGN-NE,Commercial Property,Cordell P&C,8126,2026-11-03,0.48,3,2022,2026-07-09,Active,0
+Halyard Machine Works,ACT-10142,M. Aranda,BR-014,RGN-NE,Cyber,Ashfield Casualty,27918,2026-10-02,0.71,3,2016,2026-07-09,Active,0
+Pinegrove Storage,ACT-10143,M. Aranda,BR-014,RGN-NE,Workers Comp,Ashfield Casualty,27067,2026-11-01,0.24,4,2019,2026-07-10,Active,3
+Millrace Construction,ACT-10144,R. Vasquez,BR-031,RGN-MW,General Liability,Meridian Mutual,4330,2026-10-15,0.49,3,2015,2026-09-06,Active,1
+Millrace Bakery,ACT-10145,R. Vasquez,BR-031,RGN-MW,Commercial Auto,Harborline,15611,2026-10-22,0.29,2,1998,2026-04-03,Active,0
+Northgate Landscaping,ACT-10146,D. Whitlock,BR-014,RGN-NE,Cyber,Statewide Indemnity,14014,2026-09-27,0.23,2,2025,2026-07-23,Active,0
+Thatcher Machine Works,ACT-10147,R. Vasquez,BR-031,RGN-MW,Workers Comp,Ravenna Group,14942,2026-10-20,0.49,6,2022,2026-05-16,Active,1
+Northgate Transport,ACT-10148,M. Aranda,BR-014,RGN-NE,Commercial Property,Meridian Mutual,14294,2026-10-22,0.2,3,1999,2026-08-12,Active,0
+Cobblestone Roofing,ACT-10149,D. Whitlock,BR-014,RGN-NE,Cyber,Meridian Mutual,30750,2027-01-20,0.16,4,2022,2026-06-08,Active,0
+Trellis Manufacturing,ACT-10150,M. Aranda,BR-014,RGN-NE,General Liability,Cordell P&C,35686,2026-09-12,0.35,6,2014,2026-05-10,Active,2
+Pinegrove Roofing,ACT-10151,T. Bergeron,BR-022,RGN-NE,Inland Marine,Statewide Indemnity,14933,2026-10-18,0.22,5,2004,2026-06-28,Non-Renew Pending,0
+Cobblestone Medical,ACT-10152,R. Vasquez,BR-031,RGN-MW,Professional Liability,Ashfield Casualty,16827,2026-09-28,0.43,6,2022,2026-04-15,Active,2
+Pinegrove Printing,ACT-10153,R. Vasquez,BR-031,RGN-MW,Cyber,Ravenna Group,20350,2026-09-15,0.58,6,2017,2026-04-01,Active,0
+Northgate Staffing,ACT-10154,D. Whitlock,BR-014,RGN-NE,Commercial Auto,Harborline,8565,2026-09-18,0.55,1,2009,2026-04-24,Active,0
+Kestrel Fabrication,ACT-10155,T. Bergeron,BR-022,RGN-NE,Workers Comp,Cordell P&C,24798,2026-09-01,0.29,4,2018,2026-04-08,Active,0
+Northgate Dental Group,ACT-10156,D. Whitlock,BR-014,RGN-NE,Professional Liability,Ashfield Casualty,4504,2026-10-28,0.45,3,2013,2026-04-02,Active,0
+Foxglove Logistics,ACT-10157,D. Whitlock,BR-014,RGN-NE,Commercial Auto,Cordell P&C,11156,2026-09-19,0.42,2,2013,2026-09-02,Active,1
+Ironwood Restaurant Group,ACT-10158,M. Aranda,BR-014,RGN-NE,Commercial Property,Harborline,11858,2026-10-13,0.76,6,2010,2026-05-03,Active,0
+Basswood Staffing,ACT-10159,D. Whitlock,BR-014,RGN-NE,Workers Comp,Ravenna Group,17594,2026-09-15,0.12,4,2011,2026-05-13,Active,0
+Larkspur Machine Works,ACT-10160,D. Whitlock,BR-014,RGN-NE,Cyber,Ashfield Casualty,8667,2027-01-10,0.61,1,2018,2026-04-09,Active,0
+Vantage Property Mgmt,ACT-10161,S. Okonkwo,BR-022,RGN-NE,Umbrella,Harborline,33153,2026-09-18,0.27,4,2018,2026-06-19,Active,0
+Thatcher Dental Group,ACT-10162,M. Aranda,BR-014,RGN-NE,Inland Marine,Ashfield Casualty,47702,2026-10-19,0.23,1,2006,2026-05-12,Active,0
+Cobblestone Landscaping,ACT-10163,M. Aranda,BR-014,RGN-NE,Commercial Auto,Cordell P&C,9462,2026-11-04,0.53,2,2021,2026-07-28,Active,0
+Foxglove Transport,ACT-10164,R. Vasquez,BR-031,RGN-MW,Commercial Auto,Harborline,11878,2026-12-15,0.22,5,2017,2026-05-22,Active,0
+Kestrel Storage,ACT-10165,M. Aranda,BR-014,RGN-NE,Umbrella,Ashfield Casualty,20416,2027-02-02,0.47,3,2015,2026-07-28,Active,2
+Larkspur Medical,ACT-10166,D. Whitlock,BR-014,RGN-NE,Professional Liability,Ravenna Group,3798,2026-09-20,0.47,6,2016,2026-05-28,Active,0
+Pinegrove Plumbing,ACT-10167,M. Aranda,BR-014,RGN-NE,General Liability,Ashfield Casualty,3779,2026-09-20,0.29,3,2000,2026-07-20,Active,1
+Halyard Fabrication,ACT-10168,S. Okonkwo,BR-022,RGN-NE,Workers Comp,Cordell P&C,92000,2026-09-04,0.18,2,2016,2026-07-04,Active,1
+Quarry Bakery,ACT-10169,S. Okonkwo,BR-022,RGN-NE,General Liability,Ravenna Group,30326,2026-09-06,0.56,6,2002,2026-05-11,Active,0
+Ironwood Transport,ACT-10170,M. Aranda,BR-014,RGN-NE,Commercial Property,Ravenna Group,13113,2026-10-21,0.14,2,2013,2026-07-10,Active,0
+Kestrel Plumbing,ACT-10171,R. Vasquez,BR-031,RGN-MW,Umbrella,Harborline,2573,2027-02-27,0.37,2,2015,2026-08-11,Active,0
+Foxglove Medical,ACT-10172,T. Bergeron,BR-022,RGN-NE,Professional Liability,Cordell P&C,102406,2027-02-08,0.59,6,2013,2026-06-07,Active,0
+Amberline Restaurant Group,ACT-10173,D. Whitlock,BR-014,RGN-NE,Commercial Auto,Ashfield Casualty,30791,2026-11-25,0.53,3,2011,2026-06-04,Active,0
+Foxglove Restaurant Group,ACT-10174,T. Bergeron,BR-022,RGN-NE,Professional Liability,Ashfield Casualty,9274,2026-09-11,0.6,1,2020,2026-05-21,Active,0
+Vantage Dental Group,ACT-10175,T. Bergeron,BR-022,RGN-NE,General Liability,Cordell P&C,28072,2026-10-07,0.56,1,2000,2026-09-20,Active,0
+Larkspur Transport,ACT-10176,T. Bergeron,BR-022,RGN-NE,Workers Comp,Statewide Indemnity,4575,2026-10-05,0.18,6,2000,2026-05-18,Active,0
+Sable Logistics,ACT-10177,S. Okonkwo,BR-022,RGN-NE,Inland Marine,Meridian Mutual,6774,2026-09-17,0.4,2,2021,2026-04-28,Active,2
+Quarry Construction,ACT-10178,S. Okonkwo,BR-022,RGN-NE,Commercial Property,Cordell P&C,7852,2026-10-21,0.43,5,2010,2026-04-07,Active,0
+Thatcher Property Mgmt,ACT-10179,S. Okonkwo,BR-022,RGN-NE,Commercial Auto,Ravenna Group,7159,2026-10-02,0.41,5,2015,2026-08-16,Active,3
+Halyard Property Mgmt,ACT-10180,S. Okonkwo,BR-022,RGN-NE,General Liability,Meridian Mutual,2156,2026-12-19,0.33,4,2024,2026-05-12,Active,0
+Cobblestone Bakery,ACT-10181,S. Okonkwo,BR-022,RGN-NE,Professional Liability,Ravenna Group,104813,2026-10-23,0.65,3,1999,2026-08-03,Active,0
+Amberline Bakery,ACT-10182,D. Whitlock,BR-014,RGN-NE,Workers Comp,Harborline,6729,2026-09-26,0.1,1,2008,2026-04-15,Active,0
+Blue Harbor Auto Group,ACT-10183,M. Aranda,BR-014,RGN-NE,Umbrella,Meridian Mutual,10566,2026-09-27,0.31,3,2017,2026-06-17,Non-Renew Pending,0
+Basswood Auto Group,ACT-10184,M. Aranda,BR-014,RGN-NE,Commercial Property,Meridian Mutual,6687,2026-10-27,0.7,3,2007,2026-06-26,Active,2
+Verity Electric,ACT-10185,D. Whitlock,BR-014,RGN-NE,Umbrella,Cordell P&C,11901,2026-10-15,0.46,5,2015,2026-06-12,Active,0
+Basswood Printing,ACT-10186,S. Okonkwo,BR-022,RGN-NE,Commercial Property,Statewide Indemnity,23774,2026-11-01,0.27,1,2012,2026-08-17,Active,0
+Halyard Storage,ACT-10187,S. Okonkwo,BR-022,RGN-NE,Umbrella,Cordell P&C,5669,2026-09-13,0.4,5,2016,2026-08-17,Active,1
+Cobblestone Staffing,ACT-10188,R. Vasquez,BR-031,RGN-MW,Cyber,Harborline,13929,2027-02-06,0.09,6,2010,2026-09-25,Active,3
+Windrow Dental Group,ACT-10189,D. Whitlock,BR-014,RGN-NE,Umbrella,Ravenna Group,13195,2026-09-19,0.96,6,2014,2026-04-06,Active,0
+Pinegrove Restaurant Group,ACT-10190,R. Vasquez,BR-031,RGN-MW,Commercial Property,Harborline,17148,2026-09-21,0.32,1,2004,2026-09-27,Non-Renew Pending,0
+Foxglove Storage,ACT-10191,D. Whitlock,BR-014,RGN-NE,Umbrella,Ravenna Group,13198,2027-01-19,0.27,5,2019,2026-09-11,Active,0
+Foxglove Auto Group,ACT-10192,M. Aranda,BR-014,RGN-NE,Commercial Property,Ravenna Group,43507,2026-09-24,0.1,6,2012,2026-09-07,Active,0
+Trellis Logistics,ACT-10193,D. Whitlock,BR-014,RGN-NE,General Liability,Harborline,27261,2026-11-13,0.38,1,2010,2026-05-27,Active,0
+Millrace Manufacturing,ACT-10194,R. Vasquez,BR-031,RGN-MW,Commercial Property,Ashfield Casualty,7431,2026-09-03,0.24,4,2017,2026-07-26,Active,2
+Sable Plumbing,ACT-10195,D. Whitlock,BR-014,RGN-NE,Inland Marine,Cordell P&C,21395,2026-09-27,1.02,5,2004,2026-04-25,Active,0
+Basswood Landscaping,ACT-10196,D. Whitlock,BR-014,RGN-NE,Commercial Auto,Ravenna Group,20092,2026-09-13,0.72,5,2007,2026-05-11,Active,0
+Verity Restaurant Group,ACT-10197,T. Bergeron,BR-022,RGN-NE,General Liability,Ravenna Group,21419,2026-09-24,0.13,4,2017,2026-07-05,Active,0
+Blue Harbor Manufacturing,ACT-10198,T. Bergeron,BR-022,RGN-NE,Umbrella,Statewide Indemnity,7246,2026-10-14,0.15,1,2017,2026-08-26,Active,0
+Sable Fabrication,ACT-10199,D. Whitlock,BR-014,RGN-NE,Workers Comp,Cordell P&C,13329,2026-11-01,0.12,5,2014,2026-06-28,Active,2
+Halyard Bakery,ACT-10200,M. Aranda,BR-014,RGN-NE,Umbrella,Harborline,10017,2026-09-05,0.42,5,2011,2026-04-15,Active,0
+Windrow Logistics,ACT-10201,M. Aranda,BR-014,RGN-NE,Commercial Auto,Ravenna Group,21674,2026-11-27,0.26,4,1999,2026-06-28,Active,0
+Quarry Logistics,ACT-10202,D. Whitlock,BR-014,RGN-NE,Commercial Auto,Meridian Mutual,34827,2026-09-12,0.13,3,2015,2026-06-02,Active,0
+Foxglove Plumbing,ACT-10203,D. Whitlock,BR-014,RGN-NE,Workers Comp,Ashfield Casualty,7981,2026-12-01,0.53,4,2005,2026-05-04,Active,0
+Windrow Bakery,ACT-10204,S. Okonkwo,BR-022,RGN-NE,Workers Comp,Meridian Mutual,45058,2026-09-21,0.75,6,2012,2026-08-07,Prospect,0
+Larkspur Dental Group,ACT-10205,T. Bergeron,BR-022,RGN-NE,Professional Liability,Cordell P&C,45426,2026-10-04,0.22,5,1998,2026-09-28,Active,2
+Larkspur Property Mgmt,ACT-10206,S. Okonkwo,BR-022,RGN-NE,Umbrella,Harborline,7842,2026-09-25,0.54,3,2007,2026-08-18,Active,0
+Thatcher Orchards,ACT-10207,R. Vasquez,BR-031,RGN-MW,Inland Marine,Meridian Mutual,4451,2026-09-15,0.62,1,2016,2026-08-14,Active,0
+Kestrel Landscaping,ACT-10208,R. Vasquez,BR-031,RGN-MW,Workers Comp,Ravenna Group,20951,2026-11-02,0.12,1,2006,2026-05-02,Active,0
+Windrow Auto Group,ACT-10209,S. Okonkwo,BR-022,RGN-NE,Umbrella,Ashfield Casualty,27991,2026-09-19,0.41,5,2015,2026-06-09,Active,0
+Northgate Storage,ACT-10210,T. Bergeron,BR-022,RGN-NE,Commercial Auto,Harborline,4966,2026-09-26,0.72,1,2001,2026-05-25,Active,2
+Northgate Bakery,ACT-10211,D. Whitlock,BR-014,RGN-NE,Commercial Auto,Ashfield Casualty,17626,2026-10-19,0.29,1,2005,2026-06-04,Active,1
+Cobblestone Logistics,ACT-10212,M. Aranda,BR-014,RGN-NE,Commercial Property,Ravenna Group,17819,2026-09-04,0.66,4,2014,2026-07-16,Active,1
+Blue Harbor Medical,ACT-10213,T. Bergeron,BR-022,RGN-NE,Workers Comp,Statewide Indemnity,19659,2026-11-19,0.43,5,2012,2026-08-23,Active,0

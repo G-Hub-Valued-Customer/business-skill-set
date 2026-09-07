@@ -1,0 +1,191 @@
+Account ID,Account Name,Producer,Branch Code,Carrier,Primary Line,Expiration Date,Renewal meeting 60d,Loss runs ordered,Coverage checklist,Certificate backlog clear,Exposure re-verified,Written proposal,Flood determination,Carrier appetite confirmed
+ACT-10000,Sable Storage,S. Okonkwo,BR-022,Ravenna Group,Commercial Property,2026-09-26,Yes,Yes,Yes,Yes,Yes,,Yes,No
+ACT-10001,Cedar Orchards,D. Whitlock,BR-014,Ashfield Casualty,General Liability,2027-01-17,,Yes,No,Yes,Yes,No,Yes,Yes
+ACT-10002,Vantage Roofing,D. Whitlock,BR-014,Meridian Mutual,Professional Liability,2027-02-28,Yes,,Yes,Yes,No,Yes,Yes,No
+ACT-10003,Quarry Transport,D. Whitlock,BR-014,Ashfield Casualty,Commercial Auto,2026-09-02,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+ACT-10004,Northgate Manufacturing,T. Bergeron,BR-022,Meridian Mutual,General Liability,2026-09-15,No,Yes,Yes,Yes,Yes,Yes,,No
+ACT-10005,Trellis Staffing,S. Okonkwo,BR-022,Harborline,Commercial Auto,2026-12-05,Yes,Yes,Yes,Yes,Yes,Yes,,Yes
+ACT-10006,Larkspur Staffing,D. Whitlock,BR-014,Statewide Indemnity,Inland Marine,2026-09-09,Yes,Yes,Yes,Yes,Yes,Yes,Yes,
+ACT-10008,Cedar Fabrication,T. Bergeron,BR-022,Statewide Indemnity,Workers Comp,2026-09-03,Yes,Yes,Yes,No,Yes,Yes,Yes,Yes
+ACT-10009,Pinegrove Manufacturing,S. Okonkwo,BR-022,Cordell P&C,Cyber,2026-10-19,Yes,Yes,Yes,No,Yes,Yes,Yes,No
+ACT-10010,Blue Harbor Orchards,R. Vasquez,BR-031,Statewide Indemnity,Cyber,2026-11-16,Yes,No,,No,Yes,Yes,No,No
+ACT-10011,Basswood Plumbing,S. Okonkwo,BR-022,Cordell P&C,Commercial Auto,2026-11-07,Yes,No,Yes,Yes,Yes,Yes,Yes,No
+ACT-10012,Ironwood Dental Group,T. Bergeron,BR-022,Statewide Indemnity,Inland Marine,2026-10-07,No,Yes,No,Yes,,Yes,Yes,Yes
+ACT-10013,Foxglove Printing,T. Bergeron,BR-022,Meridian Mutual,Workers Comp,2026-09-05,Yes,Yes,No,Yes,Yes,No,Yes,Yes
+ACT-10015,Amberline Dental Group,S. Okonkwo,BR-022,Cordell P&C,Cyber,2026-11-01,,Yes,Yes,No,No,No,,No
+ACT-10016,Vantage Auto Group,M. Aranda,BR-014,Statewide Indemnity,Professional Liability,2027-01-28,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+ACT-10017,Ironwood Property Mgmt,R. Vasquez,BR-031,Harborline,General Liability,2026-09-05,Yes,Yes,Yes,Yes,Yes,No,Yes,Yes
+ACT-10018,Kestrel Orchards,R. Vasquez,BR-031,Ravenna Group,Umbrella,2026-09-13,Yes,Yes,,Yes,No,Yes,Yes,No
+ACT-10019,Halyard Manufacturing,R. Vasquez,BR-031,Statewide Indemnity,Professional Liability,2026-10-26,Yes,No,Yes,No,Yes,Yes,Yes,Yes
+ACT-10020,Larkspur Orchards,T. Bergeron,BR-022,Ashfield Casualty,Cyber,2026-09-09,No,Yes,No,No,No,Yes,Yes,Yes
+ACT-10021,Vantage Orchards,R. Vasquez,BR-031,Ashfield Casualty,Commercial Auto,2026-10-14,No,No,No,Yes,No,Yes,Yes,Yes
+ACT-10023,Millrace Auto Group,S. Okonkwo,BR-022,Meridian Mutual,Commercial Auto,2026-09-19,Yes,Yes,Yes,Yes,Yes,No,,Yes
+ACT-10024,Thatcher Fabrication,M. Aranda,BR-014,Harborline,Professional Liability,2026-09-06,Yes,Yes,Yes,No,Yes,,Yes,No
+ACT-10026,Foxglove Landscaping,D. Whitlock,BR-014,Harborline,Professional Liability,2026-12-13,Yes,Yes,Yes,Yes,No,Yes,,No
+ACT-10027,Larkspur Construction,D. Whitlock,BR-014,Meridian Mutual,Commercial Property,2026-10-06,Yes,Yes,Yes,Yes,Yes,Yes,,Yes
+ACT-10028,Ironwood Auto Group,S. Okonkwo,BR-022,Cordell P&C,Workers Comp,2026-10-14,Yes,Yes,Yes,Yes,Yes,Yes,,No
+ACT-10029,Larkspur Electric,T. Bergeron,BR-022,Cordell P&C,Workers Comp,2026-10-10,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No
+ACT-10030,Basswood Dental Group,M. Aranda,BR-014,Ravenna Group,Commercial Auto,2027-02-08,Yes,No,Yes,Yes,Yes,No,No,No
+ACT-10031,Ironwood Bakery,R. Vasquez,BR-031,Statewide Indemnity,Workers Comp,2026-09-14,Yes,Yes,Yes,No,Yes,Yes,Yes,Yes
+ACT-10032,Windrow Staffing,T. Bergeron,BR-022,Ravenna Group,Commercial Auto,2026-11-23,Yes,Yes,No,Yes,Yes,,Yes,No
+ACT-10033,Foxglove Electric,D. Whitlock,BR-014,Cordell P&C,Cyber,2026-10-03,Yes,Yes,Yes,No,Yes,Yes,Yes,No
+ACT-10034,Blue Harbor Construction,S. Okonkwo,BR-022,Ashfield Casualty,Workers Comp,2026-12-07,Yes,No,,No,Yes,Yes,Yes,No
+ACT-10035,Trellis Printing,D. Whitlock,BR-014,Meridian Mutual,Commercial Property,2026-10-14,Yes,No,Yes,Yes,Yes,Yes,Yes,Yes
+ACT-10036,Basswood Machine Works,M. Aranda,BR-014,Cordell P&C,Umbrella,2026-09-04,Yes,No,Yes,Yes,Yes,No,,No
+ACT-10037,Windrow Medical,D. Whitlock,BR-014,Ravenna Group,Professional Liability,2026-10-13,Yes,Yes,No,Yes,,Yes,Yes,No
+ACT-10038,Sable Machine Works,D. Whitlock,BR-014,Statewide Indemnity,General Liability,2026-09-27,Yes,No,No,No,Yes,No,Yes,
+ACT-10039,Pinegrove Medical,M. Aranda,BR-014,Ashfield Casualty,General Liability,2026-09-15,Yes,Yes,Yes,Yes,Yes,No,Yes,Yes
+ACT-10040,Cedar Roofing,D. Whitlock,BR-014,Statewide Indemnity,Workers Comp,2026-11-26,Yes,,Yes,No,No,No,No,Yes
+ACT-10041,Ironwood Fabrication,T. Bergeron,BR-022,Harborline,Commercial Auto,2026-09-06,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
+ACT-10042,Sable Property Mgmt,T. Bergeron,BR-022,Statewide Indemnity,Professional Liability,2027-02-21,Yes,Yes,,Yes,No,Yes,,Yes
+ACT-10043,Northgate Restaurant Group,S. Okonkwo,BR-022,Cordell P&C,Workers Comp,2026-09-08,No,Yes,No,No,,Yes,Yes,No
+ACT-10044,Windrow Restaurant Group,R. Vasquez,BR-031,Cordell P&C,General Liability,2026-09-25,Yes,No,Yes,No,Yes,Yes,Yes,No
+ACT-10045,Quarry Manufacturing,M. Aranda,BR-014,Statewide Indemnity,Umbrella,2026-09-27,Yes,Yes,Yes,Yes,Yes,No,Yes,Yes
+ACT-10046,Blue Harbor Bakery,D. Whitlock,BR-014,Ashfield Casualty,Professional Liability,2026-10-15,Yes,Yes,Yes,Yes,No,Yes,,No
+ACT-10047,Cedar Auto Group,R. Vasquez,BR-031,Harborline,Umbrella,2027-02-24,No,No,Yes,No,Yes,No,,Yes
+ACT-10048,Halyard Dental Group,D. Whitlock,BR-014,Harborline,Commercial Property,2026-09-13,Yes,Yes,No,No,Yes,No,Yes,
+ACT-10049,Pinegrove Orchards,M. Aranda,BR-014,Harborline,Cyber,2026-12-13,Yes,Yes,No,Yes,Yes,Yes,,Yes
+ACT-10050,Quarry Plumbing,D. Whitlock,BR-014,Ravenna Group,Umbrella,2026-09-10,,Yes,Yes,Yes,Yes,,Yes,No
+ACT-10051,Northgate Orchards,M. Aranda,BR-014,Meridian Mutual,Cyber,2026-11-25,Yes,Yes,Yes,No,Yes,No,Yes,Yes
+ACT-10052,Amberline Printing,R. Vasquez,BR-031,Meridian Mutual,General Liability,2027-01-06,Yes,Yes,Yes,Yes,Yes,No,Yes,Yes
+ACT-10053,Kestrel Property Mgmt,R. Vasquez,BR-031,Ravenna Group,Professional Liability,2026-09-06,Yes,Yes,,Yes,,,Yes,No
+ACT-10055,Larkspur Bakery,S. Okonkwo,BR-022,Ravenna Group,General Liability,2026-09-15,No,,No,Yes,,Yes,No,No
+ACT-10056,Ironwood Machine Works,R. Vasquez,BR-031,Ravenna Group,Commercial Auto,2026-09-19,No,Yes,Yes,No,Yes,Yes,Yes,No
+ACT-10057,Trellis Storage,S. Okonkwo,BR-022,Ravenna Group,General Liability,2026-11-14,Yes,Yes,No,Yes,Yes,Yes,No,No
+ACT-10058,Basswood Property Mgmt,D. Whitlock,BR-014,Harborline,Inland Marine,2026-10-05,,Yes,No,No,Yes,No,Yes,No
+ACT-10060,Pinegrove Dental Group,M. Aranda,BR-014,Statewide Indemnity,Umbrella,2026-11-07,Yes,Yes,Yes,No,No,Yes,No,Yes
+ACT-10061,Kestrel Medical,T. Bergeron,BR-022,Ravenna Group,Umbrella,2026-10-03,Yes,Yes,Yes,No,Yes,Yes,Yes,No
+ACT-10062,Northgate Medical,M. Aranda,BR-014,Meridian Mutual,Inland Marine,2026-09-05,Yes,Yes,,Yes,No,No,Yes,Yes
+ACT-10063,Larkspur Logistics,R. Vasquez,BR-031,Ravenna Group,General Liability,2026-11-17,Yes,Yes,Yes,Yes,No,No,Yes,No
+ACT-10064,Amberline Landscaping,S. Okonkwo,BR-022,Statewide Indemnity,Workers Comp,2026-11-09,Yes,Yes,Yes,Yes,No,Yes,Yes,Yes
+ACT-10065,Sable Landscaping,D. Whitlock,BR-014,Ravenna Group,Umbrella,2026-12-08,No,No,Yes,Yes,No,Yes,,No
+ACT-10066,Amberline Property Mgmt,S. Okonkwo,BR-022,Harborline,Commercial Property,2026-12-02,No,,Yes,Yes,Yes,Yes,Yes,Yes
+ACT-10067,Ironwood Manufacturing,M. Aranda,BR-014,Meridian Mutual,Umbrella,2026-09-18,Yes,No,Yes,No,Yes,Yes,,Yes
+ACT-10068,Trellis Machine Works,T. Bergeron,BR-022,Cordell P&C,Workers Comp,2026-10-02,,Yes,Yes,Yes,Yes,,,No
+ACT-10069,Pinegrove Bakery,M. Aranda,BR-014,Ashfield Casualty,Inland Marine,2026-09-07,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+ACT-10071,Sable Dental Group,S. Okonkwo,BR-022,Meridian Mutual,Workers Comp,2026-10-02,Yes,Yes,Yes,Yes,Yes,No,Yes,No
+ACT-10072,Windrow Storage,T. Bergeron,BR-022,Harborline,Cyber,2026-10-07,Yes,Yes,Yes,Yes,No,Yes,No,Yes
+ACT-10073,Thatcher Manufacturing,T. Bergeron,BR-022,Ashfield Casualty,Commercial Auto,2027-01-18,Yes,Yes,Yes,Yes,,No,Yes,Yes
+ACT-10074,Halyard Transport,T. Bergeron,BR-022,Ashfield Casualty,General Liability,2026-09-13,No,No,Yes,No,Yes,No,Yes,
+ACT-10075,Cobblestone Machine Works,D. Whitlock,BR-014,Statewide Indemnity,Cyber,2027-01-10,No,Yes,Yes,No,Yes,Yes,No,Yes
+ACT-10076,Larkspur Roofing,R. Vasquez,BR-031,Meridian Mutual,Umbrella,2026-09-23,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No
+ACT-10077,Windrow Landscaping,T. Bergeron,BR-022,Ravenna Group,Commercial Property,2026-09-20,Yes,Yes,No,Yes,Yes,Yes,,No
+ACT-10078,Cobblestone Dental Group,R. Vasquez,BR-031,Harborline,Workers Comp,2026-09-04,Yes,Yes,No,Yes,No,Yes,Yes,Yes
+ACT-10079,Pinegrove Machine Works,T. Bergeron,BR-022,Meridian Mutual,General Liability,2026-09-08,,Yes,No,Yes,No,No,Yes,
+ACT-10080,Kestrel Staffing,S. Okonkwo,BR-022,Statewide Indemnity,Workers Comp,2026-12-13,Yes,No,No,No,,Yes,Yes,Yes
+ACT-10081,Millrace Staffing,T. Bergeron,BR-022,Statewide Indemnity,Workers Comp,2026-10-22,Yes,Yes,Yes,Yes,Yes,No,Yes,
+ACT-10082,Millrace Logistics,M. Aranda,BR-014,Ravenna Group,Commercial Property,2026-09-10,Yes,Yes,Yes,No,Yes,No,,No
+ACT-10084,Vantage Restaurant Group,T. Bergeron,BR-022,Ravenna Group,Cyber,2026-10-09,Yes,No,Yes,No,Yes,No,,No
+ACT-10085,Quarry Dental Group,D. Whitlock,BR-014,Ravenna Group,Commercial Auto,2027-02-07,Yes,No,No,No,Yes,,Yes,No
+ACT-10087,Amberline Fabrication,S. Okonkwo,BR-022,Ashfield Casualty,Professional Liability,2026-11-26,Yes,No,Yes,Yes,No,Yes,Yes,Yes
+ACT-10088,Sable Bakery,T. Bergeron,BR-022,Harborline,Workers Comp,2026-09-24,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+ACT-10089,Ironwood Roofing,D. Whitlock,BR-014,Cordell P&C,Cyber,2027-02-07,Yes,Yes,Yes,No,Yes,Yes,Yes,No
+ACT-10090,Foxglove Dental Group,S. Okonkwo,BR-022,Harborline,Commercial Property,2026-09-12,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
+ACT-10091,Windrow Printing,D. Whitlock,BR-014,Ravenna Group,Commercial Property,2026-10-27,Yes,Yes,Yes,Yes,,Yes,Yes,No
+ACT-10093,Blue Harbor Property Mgmt,D. Whitlock,BR-014,Harborline,Inland Marine,2026-12-15,Yes,Yes,Yes,No,No,Yes,Yes,Yes
+ACT-10094,Blue Harbor Restaurant Group,T. Bergeron,BR-022,Ashfield Casualty,Commercial Property,2027-01-28,No,Yes,Yes,Yes,Yes,,Yes,Yes
+ACT-10095,Cobblestone Transport,M. Aranda,BR-014,Harborline,Workers Comp,2026-11-28,Yes,Yes,Yes,Yes,No,Yes,Yes,Yes
+ACT-10096,Foxglove Bakery,R. Vasquez,BR-031,Harborline,Professional Liability,2026-09-03,Yes,Yes,Yes,No,Yes,Yes,Yes,Yes
+ACT-10098,Pinegrove Staffing,M. Aranda,BR-014,Ashfield Casualty,Commercial Property,2026-10-10,Yes,,Yes,Yes,Yes,No,Yes,No
+ACT-10099,Foxglove Roofing,S. Okonkwo,BR-022,Statewide Indemnity,General Liability,2027-01-25,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
+ACT-10100,Cedar Restaurant Group,S. Okonkwo,BR-022,Cordell P&C,General Liability,2026-11-02,Yes,No,Yes,Yes,No,Yes,,No
+ACT-10101,Halyard Construction,D. Whitlock,BR-014,Meridian Mutual,Cyber,2027-01-22,Yes,No,Yes,No,Yes,No,,No
+ACT-10102,Vantage Machine Works,R. Vasquez,BR-031,Ravenna Group,Commercial Auto,2026-09-22,Yes,Yes,No,Yes,,Yes,Yes,No
+ACT-10103,Vantage Plumbing,M. Aranda,BR-014,Harborline,Commercial Auto,2027-02-17,Yes,Yes,Yes,Yes,Yes,No,Yes,Yes
+ACT-10104,Verity Manufacturing,S. Okonkwo,BR-022,Statewide Indemnity,Commercial Auto,2027-02-21,Yes,Yes,Yes,Yes,No,Yes,No,Yes
+ACT-10105,Cobblestone Restaurant Group,R. Vasquez,BR-031,Ashfield Casualty,Cyber,2026-09-20,No,Yes,No,No,Yes,,Yes,Yes
+ACT-10107,Thatcher Bakery,M. Aranda,BR-014,Ravenna Group,General Liability,2026-10-10,No,No,Yes,Yes,Yes,No,,No
+ACT-10108,Quarry Printing,D. Whitlock,BR-014,Meridian Mutual,Inland Marine,2026-09-27,No,Yes,Yes,Yes,No,Yes,,Yes
+ACT-10109,Cedar Staffing,M. Aranda,BR-014,Meridian Mutual,Workers Comp,2026-11-14,No,No,Yes,Yes,Yes,Yes,Yes,Yes
+ACT-10111,Halyard Orchards,S. Okonkwo,BR-022,Cordell P&C,Professional Liability,2026-09-12,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No
+ACT-10113,Sable Roofing,S. Okonkwo,BR-022,Ravenna Group,Workers Comp,2026-11-22,Yes,Yes,Yes,No,Yes,No,Yes,No
+ACT-10114,Vantage Medical,M. Aranda,BR-014,Ashfield Casualty,Cyber,2026-10-20,No,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+ACT-10115,Foxglove Construction,M. Aranda,BR-014,Meridian Mutual,Umbrella,2027-01-22,Yes,No,No,Yes,No,Yes,,Yes
+ACT-10118,Blue Harbor Electric,R. Vasquez,BR-031,Harborline,Inland Marine,2026-11-20,Yes,Yes,No,No,No,Yes,Yes,Yes
+ACT-10120,Pinegrove Logistics,M. Aranda,BR-014,Cordell P&C,Commercial Auto,2026-10-19,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No
+ACT-10121,Ironwood Printing,T. Bergeron,BR-022,Statewide Indemnity,Commercial Auto,2026-11-15,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No
+ACT-10122,Verity Landscaping,R. Vasquez,BR-031,Ashfield Casualty,Commercial Auto,2027-01-06,Yes,Yes,Yes,Yes,No,Yes,Yes,Yes
+ACT-10124,Cedar Logistics,S. Okonkwo,BR-022,Harborline,Commercial Auto,2026-09-06,No,Yes,,No,No,No,,No
+ACT-10125,Trellis Construction,T. Bergeron,BR-022,Meridian Mutual,Umbrella,2026-09-19,Yes,No,No,Yes,Yes,Yes,Yes,Yes
+ACT-10126,Windrow Property Mgmt,M. Aranda,BR-014,Harborline,Commercial Auto,2027-01-20,Yes,No,No,Yes,No,Yes,Yes,
+ACT-10127,Kestrel Logistics,M. Aranda,BR-014,Meridian Mutual,Inland Marine,2027-02-01,Yes,No,Yes,Yes,Yes,Yes,,No
+ACT-10129,Verity Property Mgmt,S. Okonkwo,BR-022,Ashfield Casualty,General Liability,2026-09-06,Yes,Yes,Yes,Yes,No,,Yes,Yes
+ACT-10130,Halyard Landscaping,S. Okonkwo,BR-022,Statewide Indemnity,Commercial Property,2026-10-03,No,Yes,Yes,Yes,Yes,Yes,Yes,
+ACT-10131,Thatcher Roofing,D. Whitlock,BR-014,Harborline,Cyber,2026-10-03,No,Yes,Yes,Yes,Yes,Yes,,Yes
+ACT-10132,Millrace Medical,T. Bergeron,BR-022,Ashfield Casualty,General Liability,2027-01-01,Yes,Yes,No,Yes,Yes,Yes,Yes,Yes
+ACT-10133,Pinegrove Electric,S. Okonkwo,BR-022,Harborline,Inland Marine,2026-11-16,No,No,Yes,Yes,,,No,Yes
+ACT-10134,Pinegrove Transport,S. Okonkwo,BR-022,Cordell P&C,Umbrella,2026-11-22,Yes,No,Yes,No,Yes,Yes,,No
+ACT-10136,Pinegrove Auto Group,S. Okonkwo,BR-022,Ravenna Group,Umbrella,2026-10-21,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No
+ACT-10137,Ironwood Staffing,M. Aranda,BR-014,Meridian Mutual,Professional Liability,2027-02-09,Yes,Yes,Yes,Yes,,No,Yes,Yes
+ACT-10138,Sable Staffing,S. Okonkwo,BR-022,Harborline,Workers Comp,2026-09-27,Yes,No,Yes,Yes,Yes,Yes,No,Yes
+ACT-10139,Halyard Plumbing,R. Vasquez,BR-031,Statewide Indemnity,Commercial Auto,2026-10-11,Yes,Yes,Yes,Yes,,Yes,Yes,Yes
+ACT-10140,Sable Electric,T. Bergeron,BR-022,Ashfield Casualty,Professional Liability,2026-09-24,,Yes,Yes,Yes,Yes,Yes,Yes,Yes
+ACT-10141,Verity Plumbing,S. Okonkwo,BR-022,Cordell P&C,Commercial Property,2026-11-03,Yes,Yes,Yes,Yes,Yes,No,Yes,No
+ACT-10142,Halyard Machine Works,M. Aranda,BR-014,Ashfield Casualty,Cyber,2026-10-02,No,Yes,Yes,Yes,Yes,No,,Yes
+ACT-10143,Pinegrove Storage,M. Aranda,BR-014,Ashfield Casualty,Workers Comp,2026-11-01,Yes,Yes,Yes,No,Yes,Yes,No,Yes
+ACT-10144,Millrace Construction,R. Vasquez,BR-031,Meridian Mutual,General Liability,2026-10-15,,Yes,Yes,No,Yes,Yes,Yes,Yes
+ACT-10145,Millrace Bakery,R. Vasquez,BR-031,Harborline,Commercial Auto,2026-10-22,Yes,,Yes,Yes,Yes,No,Yes,Yes
+ACT-10146,Northgate Landscaping,D. Whitlock,BR-014,Statewide Indemnity,Cyber,2026-09-27,No,,No,Yes,Yes,No,,Yes
+ACT-10147,Thatcher Machine Works,R. Vasquez,BR-031,Ravenna Group,Workers Comp,2026-10-20,Yes,No,Yes,No,Yes,Yes,,No
+ACT-10148,Northgate Transport,M. Aranda,BR-014,Meridian Mutual,Commercial Property,2026-10-22,No,No,No,Yes,,Yes,Yes,Yes
+ACT-10149,Cobblestone Roofing,D. Whitlock,BR-014,Meridian Mutual,Cyber,2027-01-20,,No,Yes,Yes,Yes,Yes,Yes,Yes
+ACT-10150,Trellis Manufacturing,M. Aranda,BR-014,Cordell P&C,General Liability,2026-09-12,,,Yes,No,No,Yes,,No
+ACT-10152,Cobblestone Medical,R. Vasquez,BR-031,Ashfield Casualty,Professional Liability,2026-09-28,Yes,,Yes,No,Yes,Yes,Yes,
+ACT-10153,Pinegrove Printing,R. Vasquez,BR-031,Ravenna Group,Cyber,2026-09-15,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No
+ACT-10154,Northgate Staffing,D. Whitlock,BR-014,Harborline,Commercial Auto,2026-09-18,,No,Yes,Yes,Yes,Yes,Yes,Yes
+ACT-10155,Kestrel Fabrication,T. Bergeron,BR-022,Cordell P&C,Workers Comp,2026-09-01,Yes,,Yes,Yes,Yes,Yes,,No
+ACT-10156,Northgate Dental Group,D. Whitlock,BR-014,Ashfield Casualty,Professional Liability,2026-10-28,Yes,No,No,Yes,Yes,No,Yes,
+ACT-10157,Foxglove Logistics,D. Whitlock,BR-014,Cordell P&C,Commercial Auto,2026-09-19,Yes,Yes,Yes,No,Yes,Yes,Yes,No
+ACT-10158,Ironwood Restaurant Group,M. Aranda,BR-014,Harborline,Commercial Property,2026-10-13,Yes,Yes,Yes,Yes,Yes,Yes,No,Yes
+ACT-10159,Basswood Staffing,D. Whitlock,BR-014,Ravenna Group,Workers Comp,2026-09-15,No,Yes,,Yes,Yes,Yes,No,No
+ACT-10160,Larkspur Machine Works,D. Whitlock,BR-014,Ashfield Casualty,Cyber,2027-01-10,Yes,Yes,No,Yes,Yes,No,Yes,No
+ACT-10161,Vantage Property Mgmt,S. Okonkwo,BR-022,Harborline,Umbrella,2026-09-18,Yes,Yes,Yes,Yes,,No,Yes,Yes
+ACT-10162,Thatcher Dental Group,M. Aranda,BR-014,Ashfield Casualty,Inland Marine,2026-10-19,Yes,Yes,Yes,Yes,Yes,Yes,,Yes
+ACT-10163,Cobblestone Landscaping,M. Aranda,BR-014,Cordell P&C,Commercial Auto,2026-11-04,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No
+ACT-10164,Foxglove Transport,R. Vasquez,BR-031,Harborline,Commercial Auto,2026-12-15,Yes,Yes,Yes,Yes,,Yes,Yes,No
+ACT-10165,Kestrel Storage,M. Aranda,BR-014,Ashfield Casualty,Umbrella,2027-02-02,Yes,,Yes,No,Yes,,Yes,Yes
+ACT-10166,Larkspur Medical,D. Whitlock,BR-014,Ravenna Group,Professional Liability,2026-09-20,Yes,Yes,No,Yes,Yes,Yes,,No
+ACT-10167,Pinegrove Plumbing,M. Aranda,BR-014,Ashfield Casualty,General Liability,2026-09-20,Yes,Yes,No,No,No,No,Yes,
+ACT-10168,Halyard Fabrication,S. Okonkwo,BR-022,Cordell P&C,Workers Comp,2026-09-04,Yes,No,No,No,,Yes,Yes,No
+ACT-10169,Quarry Bakery,S. Okonkwo,BR-022,Ravenna Group,General Liability,2026-09-06,No,No,Yes,Yes,Yes,,No,No
+ACT-10170,Ironwood Transport,M. Aranda,BR-014,Ravenna Group,Commercial Property,2026-10-21,Yes,No,Yes,Yes,Yes,Yes,Yes,No
+ACT-10171,Kestrel Plumbing,R. Vasquez,BR-031,Harborline,Umbrella,2027-02-27,No,No,Yes,Yes,Yes,Yes,,Yes
+ACT-10172,Foxglove Medical,T. Bergeron,BR-022,Cordell P&C,Professional Liability,2027-02-08,No,No,Yes,Yes,Yes,Yes,No,No
+ACT-10173,Amberline Restaurant Group,D. Whitlock,BR-014,Ashfield Casualty,Commercial Auto,2026-11-25,Yes,Yes,No,Yes,No,Yes,,Yes
+ACT-10174,Foxglove Restaurant Group,T. Bergeron,BR-022,Ashfield Casualty,Professional Liability,2026-09-11,Yes,Yes,Yes,Yes,,Yes,Yes,Yes
+ACT-10175,Vantage Dental Group,T. Bergeron,BR-022,Cordell P&C,General Liability,2026-10-07,Yes,,Yes,Yes,Yes,Yes,,No
+ACT-10176,Larkspur Transport,T. Bergeron,BR-022,Statewide Indemnity,Workers Comp,2026-10-05,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No
+ACT-10177,Sable Logistics,S. Okonkwo,BR-022,Meridian Mutual,Inland Marine,2026-09-17,Yes,Yes,,No,Yes,Yes,Yes,Yes
+ACT-10178,Quarry Construction,S. Okonkwo,BR-022,Cordell P&C,Commercial Property,2026-10-21,Yes,Yes,No,Yes,,Yes,Yes,No
+ACT-10179,Thatcher Property Mgmt,S. Okonkwo,BR-022,Ravenna Group,Commercial Auto,2026-10-02,No,Yes,Yes,No,Yes,Yes,No,No
+ACT-10180,Halyard Property Mgmt,S. Okonkwo,BR-022,Meridian Mutual,General Liability,2026-12-19,Yes,Yes,Yes,Yes,,,,
+ACT-10181,Cobblestone Bakery,S. Okonkwo,BR-022,Ravenna Group,Professional Liability,2026-10-23,Yes,Yes,Yes,Yes,No,Yes,Yes,No
+ACT-10182,Amberline Bakery,D. Whitlock,BR-014,Harborline,Workers Comp,2026-09-26,Yes,No,Yes,Yes,Yes,Yes,Yes,No
+ACT-10184,Basswood Auto Group,M. Aranda,BR-014,Meridian Mutual,Commercial Property,2026-10-27,Yes,Yes,Yes,No,Yes,,No,No
+ACT-10185,Verity Electric,D. Whitlock,BR-014,Cordell P&C,Umbrella,2026-10-15,Yes,Yes,Yes,Yes,Yes,No,No,No
+ACT-10186,Basswood Printing,S. Okonkwo,BR-022,Statewide Indemnity,Commercial Property,2026-11-01,Yes,No,No,Yes,Yes,Yes,,Yes
+ACT-10187,Halyard Storage,S. Okonkwo,BR-022,Cordell P&C,Umbrella,2026-09-13,Yes,No,No,No,Yes,Yes,Yes,No
+ACT-10188,Cobblestone Staffing,R. Vasquez,BR-031,Harborline,Cyber,2027-02-06,Yes,Yes,Yes,No,Yes,No,Yes,Yes
+ACT-10189,Windrow Dental Group,D. Whitlock,BR-014,Ravenna Group,Umbrella,2026-09-19,,Yes,Yes,Yes,Yes,No,,No
+ACT-10191,Foxglove Storage,D. Whitlock,BR-014,Ravenna Group,Umbrella,2027-01-19,Yes,Yes,Yes,Yes,Yes,Yes,No,No
+ACT-10192,Foxglove Auto Group,M. Aranda,BR-014,Ravenna Group,Commercial Property,2026-09-24,Yes,No,No,Yes,Yes,No,,No
+ACT-10193,Trellis Logistics,D. Whitlock,BR-014,Harborline,General Liability,2026-11-13,Yes,,Yes,Yes,,Yes,Yes,No
+ACT-10194,Millrace Manufacturing,R. Vasquez,BR-031,Ashfield Casualty,Commercial Property,2026-09-03,No,No,No,No,Yes,Yes,Yes,Yes
+ACT-10195,Sable Plumbing,D. Whitlock,BR-014,Cordell P&C,Inland Marine,2026-09-27,Yes,Yes,No,Yes,Yes,Yes,Yes,No
+ACT-10196,Basswood Landscaping,D. Whitlock,BR-014,Ravenna Group,Commercial Auto,2026-09-13,Yes,Yes,Yes,Yes,Yes,No,Yes,No
+ACT-10197,Verity Restaurant Group,T. Bergeron,BR-022,Ravenna Group,General Liability,2026-09-24,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No
+ACT-10198,Blue Harbor Manufacturing,T. Bergeron,BR-022,Statewide Indemnity,Umbrella,2026-10-14,Yes,Yes,Yes,Yes,No,Yes,,Yes
+ACT-10199,Sable Fabrication,D. Whitlock,BR-014,Cordell P&C,Workers Comp,2026-11-01,,Yes,Yes,No,Yes,Yes,Yes,No
+ACT-10200,Halyard Bakery,M. Aranda,BR-014,Harborline,Umbrella,2026-09-05,No,Yes,Yes,Yes,No,Yes,,Yes
+ACT-10201,Windrow Logistics,M. Aranda,BR-014,Ravenna Group,Commercial Auto,2026-11-27,Yes,No,Yes,Yes,Yes,Yes,Yes,No
+ACT-10202,Quarry Logistics,D. Whitlock,BR-014,Meridian Mutual,Commercial Auto,2026-09-12,Yes,Yes,No,Yes,Yes,Yes,No,Yes
+ACT-10203,Foxglove Plumbing,D. Whitlock,BR-014,Ashfield Casualty,Workers Comp,2026-12-01,,Yes,No,Yes,,Yes,Yes,No
+ACT-10205,Larkspur Dental Group,T. Bergeron,BR-022,Cordell P&C,Professional Liability,2026-10-04,Yes,Yes,,No,Yes,No,Yes,No
+ACT-10206,Larkspur Property Mgmt,S. Okonkwo,BR-022,Harborline,Umbrella,2026-09-25,Yes,No,No,Yes,No,Yes,Yes,Yes
+ACT-10207,Thatcher Orchards,R. Vasquez,BR-031,Meridian Mutual,Inland Marine,2026-09-15,No,No,Yes,Yes,No,Yes,,
+ACT-10208,Kestrel Landscaping,R. Vasquez,BR-031,Ravenna Group,Workers Comp,2026-11-02,Yes,No,Yes,Yes,No,Yes,No,No
+ACT-10209,Windrow Auto Group,S. Okonkwo,BR-022,Ashfield Casualty,Umbrella,2026-09-19,No,No,Yes,Yes,Yes,,,No
+ACT-10210,Northgate Storage,T. Bergeron,BR-022,Harborline,Commercial Auto,2026-09-26,No,Yes,Yes,No,Yes,Yes,,No
+ACT-10211,Northgate Bakery,D. Whitlock,BR-014,Ashfield Casualty,Commercial Auto,2026-10-19,No,Yes,Yes,No,Yes,Yes,Yes,Yes
+ACT-10212,Cobblestone Logistics,M. Aranda,BR-014,Ravenna Group,Commercial Property,2026-09-04,Yes,,Yes,No,Yes,Yes,Yes,No
+ACT-10213,Blue Harbor Medical,T. Bergeron,BR-022,Statewide Indemnity,Workers Comp,2026-11-19,Yes,,Yes,Yes,Yes,No,,Yes
