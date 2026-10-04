@@ -1,18 +1,56 @@
 # Business Skill Set
 
-One skill, three workflows, for running a business operating rhythm and producing the
-real deliverable at the end of it.
+Three workflows that run a business operating rhythm end to end and produce the real
+deliverable: the prioritized work plan for the coming period, the completed performance
+review, and a conformance scorecard against any published standard.
+
+Plain text. No install, no dependency, no vendor. Any agent that can read files, run code
+and write a spreadsheet or a document can run it. Binds to a new organization in about ten
+minutes and serves every level from a frontline employee to a chief executive.
+
+Author: Daniel J. Coon. MIT licensed.
+
+---
+
+## Judge it in thirty seconds, without running anything
+
+Open `sample-output/`. Those four files were produced by these workflows against the data
+in `sample-data/`, unedited. Two of them are the same workflow run at two altitudes from
+the same files: once as the Principal who owns the whole agency, once as a producer who
+owns one book of 48 accounts. Structurally different, both correct, nothing configured
+between the runs.
+
+## It was tested until it stopped failing
+
+Seventeen adversarial rounds. The last four drove all three workflows end to end against
+real files, by agents that had never seen them, that were told to be hostile, and that
+were required to verify by reading the BUILT artifact back through the engine rather than
+trusting their own build code.
+
+| Round | Defects found | Prior defects fixed, judged by execution |
+|---|---|---|
+| Fourteen | 53 | first end-to-end round |
+| Fifteen | 39 | 45 of 53 |
+| Sixteen | 34 | 85 of 92 |
+| Seventeen | none new | all 34 |
+
+Traps were planted in the test data so the claim is checkable rather than assertable. They
+are documented in `sample-data/insurance-agency/DATASET.md` and all were caught. The
+sharpest: a producer whose headline premium growth read +2.72 percent, in a year when
+carrier rate filings lifted premium about 7 percent for everyone with no producer action.
+Graded a MISS against the counterfactual, and led with rather than buried.
+
+One trap was not planted and caught itself. An objective written in lines of business, run
+against a data column holding a policy count. A three-policy account can be one line. The
+run refused to grade the objective rather than report a false number.
+
+## The three workflows
 
 | Workflow | What it does | What it produces |
 |---|---|---|
 | **Period planning** | Builds the prioritized work list for the coming period. Reads every direction published by headquarters and by the supervisor chain, scores the whole population, and returns a ranked plan with a plain-language reason on every row. | Spreadsheet |
 | **Objectives and review** | Sets objectives at period start, tracks mid-period, and writes the completed performance review. Wraps the character-limited fields of a submission form so each is separately copyable, with its limit and its live character count. | Document |
 | **Standard gap scorecard** | Scores any population against any published standard, with a reason code on every miss and a rate that separates what a person can fix from what they cannot. | Spreadsheet |
-
-Plain text. No install, no dependency, no vendor. Any agent that can read files, run code
-and write a spreadsheet or a document can run it.
-
-Author: Daniel J. Coon.
 
 ---
 
@@ -207,15 +245,9 @@ real files by agents that had never seen them, that were told to be hostile, and
 required to verify by reading the built artifact back through the engine rather than
 trusting their own build code.
 
-| Round | Defects found | Verdict on every prior defect, judged by execution |
-|---|---|---|
-| Fourteen | 53 | first end to end round |
-| Fifteen | 39 | 45 of 53 fixed, 6 partial, 2 still present |
-| Sixteen | 34 | 85 of 92 fixed, 6 partial, 1 still present |
-| Seventeen | remediation and one production run | all 34 fixed |
-
-Deliberate traps were planted in the test data. All were caught. They are documented in
-`sample-data/insurance-agency/DATASET.md`, so anyone can check the claim by running it.
+The round-by-round defect burn-down is at the top of this file. Deliberate traps were
+planted in the test data; all were caught, and they are documented in
+`sample-data/insurance-agency/DATASET.md` so anyone can check the claim by running it.
 
 - A producer whose headline premium growth read +2.72 percent, in a year when carrier rate
   filings lifted premium about 7 percent for everyone with no producer action. Graded a
