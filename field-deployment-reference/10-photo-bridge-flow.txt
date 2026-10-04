@@ -1,0 +1,218 @@
+----------------------------------------------------------------------------------------------------
+Part 10 of 11: Photo Bridge Flow (One-Time Setup)
+----------------------------------------------------------------------------------------------------
+
+Photo Bridge Flow (One-Time Setup)
+==================================
+
+Purpose: The photo bridge flow is a Power Automate flow, built once by its owner, that copies store
+photos from the <photo platform> into a shared OneDrive folder where the Contract Compliance Audit
+can read them. After the one-time build it runs by itself for every <sales org> user; nobody is
+granted anything.
+
+Triggers: The flow must be rebuilt because it was lost or its owner changed; the owner says "walk
+me through building this flow one screen at a time"; or the contract audit reports that the bridge
+is not running and the owner needs to check or restart it. It is not a skill and is never run for
+a routine request.
+
+Inputs:
+- A request file in JSON, named after the run id, that the contract audit writes into the shared
+  Requests folder; it lists the photos to fetch and where each one goes.
+- The owner's OneDrive account, which holds the two shared folders and owns the flow's connection.
+- Signed photo URLs on the <photo platform> API endpoint, one per listed photo.
+
+Outputs:
+- Every listed photo copied into the run's subfolder under the shared Photos folder.
+- A done-marker file in that subfolder, written when the copying has finished; the contract audit
+  polls for it.
+
+Parameters to Fill In:
+- <photo platform> - the store photo service whose signed photo URLs the flow fetches.
+- <author> - the owner whose OneDrive holds the folders and whose account owns the flow.
+- <sales org>, <company> - the organization the flow serves and the tenant the folders are shared
+  with.
+- <shared folder link> - the two shared links (Requests and Photos) the contract audit uses.
+- <photo root folder> - the owner's OneDrive folder holding the requests and photos subfolders.
+- <done-marker file name> - the fixed JSON file name the flow writes when finished, with no leading
+  underscore; the contract audit polls for the same name.
+- <date> - when the flow went live and when the folders were shared.
+
+Setup Instructions
+------------------
+
+Status: built and running since <date> (first live run: a three-photo request, every step green).
+The guide is kept so the flow can be rebuilt if it is ever lost or its owner changes; it records
+the build that actually worked, including the one fix the plain recipe needed (the Compose step in
+Screen 3).
+
+What This Is, in Plain Words:
+
+The contract audit reads store photos that sit on the <photo platform>'s website. Copilot cannot
+open outside websites, so something has to copy each photo into OneDrive, where Copilot can read
+it: the bridge. The first bridge was an app, but the app platform's pay-as-you-go billing is
+switched off for <company>, so it could not run for anyone, and even when it ran each person had
+to be granted access one at a time.
+
+The replacement is a Power Automate flow (Power Automate comes with Microsoft 365, which <company>
+already has, reached from the maker portal or the Office app menu). A flow is one rule, "when this
+happens, do that"; this one is: when a request file appears in the shared Requests folder, copy
+every photo it lists into the shared Photos folder, then write a small done-marker file. Copilot
+writes the request file and waits for the marker; the flow copies, on Microsoft's servers, under
+the owner's account. Copilot has no Power Automate tools, so the owner clicks the flow together
+once (about 15 minutes); after that it runs by itself for any <sales org> user and nobody touches
+it again.
+
+How It Works After Setup:
+
+1. A user asks Copilot for a contract audit. Copilot writes the run's request file (JSON, named
+  after the run id) into the shared Requests folder and creates the run's subfolder under Photos.
+2. The flow wakes on the new file (within about five minutes), reads it, and for each photo tells
+  OneDrive to fetch the <photo platform> image straight into the run's subfolder. Nothing goes
+  through anyone's browser or through Copilot.
+3. When finished, the flow writes the done-marker file into the run's subfolder; that is Copilot's
+  signal to download the photos and start scoring.
+
+The two shared folders, created in the owner's OneDrive and shared with everyone at <company> on
+<date>: Requests (anyone at <company> can add files), <shared folder link>, path
+<photo root folder>/requests; and Photos (anyone at <company> can read), <shared folder link>, path
+<photo root folder>/photos.
+
+Before You Start:
+
+- The owner signs in to the Power Automate maker portal with the <company> account that owns the
+  OneDrive above; if asked to pick an environment, the default one is kept.
+- This guide stays open; the sample request and, optionally, the schema are pasted from it.
+- Shortcut: open Copilot Cowork next to Power Automate, paste this guide in, and say "walk me
+  through building this flow one screen at a time"; Copilot says what to click and type, one step
+  at a time, and the owner reports what they see.
+- A long red banner about a mismatched module definition, or a freeze when the expression editor
+  opens, is the website's scripts, not the flow: continue in a private browsing window. The
+  Compose step in Screen 3 also avoids the expression editor entirely.
+- Every Save resets the trigger's starting point: files already in the folder are ignored, so a
+  test uses a file added after the last Save.
+
+Build It - Five Screens:
+
+Five screens in order: create the flow, point the trigger at the folder, read the request file,
+copy the photos, write the done-marker.
+
+Build It - Screen 1, Create the Flow:
+
+1. Left menu: Create. Pick "Automated cloud flow".
+2. Flow name: the owner's choice; the bundle calls it the photo bridge flow.
+3. In "Choose your flow's trigger", search "when a file is created" and pick the OneDrive for
+  Business trigger (not SharePoint, and not the "properties only" variant).
+4. Create. If asked to sign in to OneDrive for Business, the owner signs in with the same account.
+  The connection is stored with the flow; no credential is typed into any step.
+
+Build It - Screen 2, Tell the Trigger Which Folder to Watch:
+
+1. Click the trigger card "When a file is created". The bottom of its panel must show the owner's
+  account, not "Not connected"; otherwise Change connection > Add new and sign in with the
+  <company> account that owns the OneDrive. The folder picker stays empty until the connection
+  exists.
+2. Folder: the folder icon at the right of the box, browse to <photo root folder> > requests; the
+  box reads <photo root folder>/requests with no slash at the end.
+3. Under "Advanced parameters" (or "Show advanced options"): Include subfolders No, Infer content
+  type Yes.
+
+Build It - Screen 3, Read the Request File (Compose, then Parse JSON):
+
+OneDrive hands the request file over as raw bytes, and Parse JSON refuses raw bytes (its error says
+the content must be JSON but arrived as a binary stream); a Compose step in between converts it.
+
+1. The plus sign under the trigger adds an action: "Compose" (Data Operation). Its Inputs box
+  takes, typed as plain text (no lightning bolt, no fx button), one expression that reads the
+  trigger's file content, decodes it from base64 to text and parses the text as JSON; clicking
+  outside the box turns it into one purple token.
+2. Next action under Compose: "Parse JSON" (Data Operation).
+3. Content: the lightning-bolt (dynamic content) icon, then "Outputs" under Compose (NOT "File
+  content" from the trigger).
+4. Schema: "Use sample payload to generate schema", paste the sample request from the end of this
+  guide, Done. If that link is missing, paste the schema from the end of this guide instead.
+5. Back on the trigger card, set Infer content type to No (Screen 2 step 3), so the file always
+  arrives the same way.
+
+Build It - Screen 4, Copy the Photos (a Loop with One Action Inside):
+
+1. Add "Apply to each" (Control); the new designer may label it "For each".
+2. "Select an output from previous steps": the photos array from Parse JSON.
+3. Inside the loop, add "Upload file from URL" (OneDrive for Business), filled from Parse JSON's
+  dynamic content: Source URL = the photo's source URL field; Destination file path = the photo's
+  destination path field; Overwrite = Yes.
+4. Optional but worth it: the loop's title > Settings > Concurrency control On, Degree of
+  parallelism 6; a territory's photos then land in a minute or two instead of ten.
+
+Build It - Screen 5, Write the Done-Marker:
+
+1. Below the loop (outside it), add "Create file" (OneDrive for Business).
+2. Folder path: the request's destination folder field (dynamic content from Parse JSON).
+3. File name: <done-marker file name>, with no leading underscore (OneDrive's Create file rejects
+  such names as "Invalid file name").
+4. File content: a one-line JSON object with two fields, the run id (the dynamic content run id
+  token from Parse JSON, shown between the quotes) and a fixed source value of "flow".
+5. Save (top right). The flow is now on.
+
+Test It (Five Minutes):
+
+1. Ask Copilot in a Cowork session to "run the contract audit on these <store ids>:
+  <two or three store numbers you know>", or to "drop a three-photo test request in the bridge Requests folder".
+  A file copied by hand inside OneDrive also works if it lands after the last Save.
+2. Within about five minutes the flow runs; in Power Automate the run shows under "28-day run
+  history" with a green check when done.
+3. <photo root folder> > photos > the run's folder holds the photos and the done-marker file.
+
+If Something Fails:
+
+Open the failed run in the history and click the red step; the message says what went wrong. Usual
+causes:
+
+- Parse JSON failed: the sample or schema was pasted into the wrong box, or the Content box does
+  not hold the Compose output (or, in the plain recipe, the trigger's file content).
+- Create file or Upload failed with "not found": the folder path ends in a slash, or the run's
+  subfolder under Photos does not exist (Copilot creates it before uploading a request; a hand test
+  uses a copy of an existing request so its folder already exists).
+- One photo failed: its <photo platform> link was dead; the other photos still land. Copilot waits
+  for the marker, and if it never comes it takes what landed once the folder stops growing for five
+  minutes and asks the flow for the rest with a follow-up request named after the run id with a
+  "-missing" suffix. The hardening below makes this cleaner.
+
+Optional Hardening (After It Works):
+
+- On "Upload file from URL": Settings > Retry policy > Fixed interval, 3 retries, 20-second
+  interval.
+- Inside the loop, after the upload, a "Compose" action whose input is the photo's file name, with
+  "Configure run after" ticked for "has failed" and "has timed out"; one dead link then never stops
+  the loop or the done-marker.
+- For a marker carrying a finish time and a count, replace its File content with one expression
+  (fx button, not plain text) that builds the JSON object from the parsed run id, the current UTC
+  time, the number of entries in the photos array and the fixed source value "flow".
+
+Notes:
+
+- Licensing: the OneDrive for Business connector and the built-in actions are standard with
+  Microsoft 365; no premium license, no pay-as-you-go.
+- Volume: a territory is about 100 photos, a market a few hundred; at about 1 MB each, a year of
+  <sales org> use is a few tens of GB inside a 1 TB OneDrive.
+- Ownership: the flow and folders live with one person. For durability, IT can rebuild the same
+  flow on a SharePoint site owned by <sales org>'s sales tools team (same actions, with SharePoint
+  "Create file" fed by OneDrive "Get file content" after the upload); Copilot's side changes only
+  in the two links.
+- What Copilot does differently: nothing visible to the user. It uploads the request to the shared
+  Requests link instead of the user's own OneDrive, polls the shared Photos link, and never sends
+  anyone to an app. If neither the marker nor any photo appears within 15 minutes, it says the
+  bridge is not running and names the owner.
+
+Sample Request (for Generating the Schema from a Sample Payload):
+
+A JSON object with four top-level fields: the run id, the creation timestamp in UTC, the
+destination folder path for the run under <photo root folder>/photos, and a photos array whose
+entries each carry the store id, store name, city, scene name, photo date, cycle, the signed source
+URL on the <photo platform> API endpoint, the target file name (built from store id, scene and
+photo date) and the full destination path under the run's folder. The sample's values are
+placeholders, not real stores or links.
+
+Schema (Only If the Sample Link Is Not Offered):
+
+An object whose properties are the four fields above (three strings and the photos array); the
+array's items are objects whose nine properties, listed above, are all strings.

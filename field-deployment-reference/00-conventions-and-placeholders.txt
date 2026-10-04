@@ -1,0 +1,170 @@
+Generic Workflow Scaffold - Field Sales Copilot Skills
+======================================================
+
+Prepared October 3, 2026. Company-neutral rewrite of a bundle of eight Copilot Cowork skills, their routing
+hub, a one-time photo bridge flow and a test plan. Every step, decision rule, input, output,
+tie-breaker, failure path and verification step of the original has been kept in its original
+order. Every company-specific detail has been replaced by a placeholder in angle brackets so the
+same workflows can be rebuilt for another company, another product set and another data estate.
+
+What This File Is
+-----------------
+
+- One plain-text document, ASCII only, with a page break before each part. Eleven parts: the hub,
+  the eight skills in the order the original bundle listed them, the photo bridge flow, and the
+  test plan.
+- A specification, not a skill. It explains what the assistant does at each step and why, in the
+  third person. Turning a part back into a working skill means writing its steps in the imperative
+  for the assistant, supplying the parameters listed in that part's header block, and testing it
+  against the test plan in the last part.
+- Nothing in this file names the original company, its business units, brands, competitors,
+  internal systems, data model tables, people, geographies, identifiers, links or commercial
+  terms. Microsoft platform names (Copilot, Cowork, OneDrive, SharePoint, Outlook, Teams, Excel,
+  Word, Power BI, Power Automate, Power Apps, Dataverse) are kept because the workflows run on
+  that platform. Generic retail and merchandising words (facings, linear feet, shelf, header,
+  backbar, planogram, paddle, POS, UPC, carton, roll, 5-pack, out-of-stock, distribution,
+  assortment, margin, wholesale cost, allowance, buy-down, parity price) are kept because any
+  consumer-goods sales organization uses them.
+
+How to Read It
+--------------
+
+Headings. A title with a line of "=" under it starts a part. A title with a line of "-" under it
+is a major section of that part. A title ending with a colon is a sub-section and mirrors a
+heading of the original skill, in the original order. Where the original nested deeper, the
+sub-section name carries its parent's name joined by " - ".
+
+Header block. Every part opens with five lines: Purpose, Triggers (what the user says), Inputs
+(what the skill reads and where it lives), Outputs (what the user gets) and Parameters to Fill In
+(every placeholder a new company must supply for that part). The header block is the only
+glossary inside a part; the body relies on the placeholder's name and the sentence around it.
+
+Scripts. Code has been removed. Each helper script of the original appears as a block of Purpose,
+Inputs, Outputs, Logic (plain numbered steps) and Checks and failure handling. Embedded test
+fixtures are described as sample rows and never reproduced.
+
+Numbers. Numbers that describe the method stay as written: list shapes such as Top 10 plus Next
+25 and Top 20 plus Next 50, the 13-week business window, the Saturday refresh, the 5:15 AM send,
+1.7 minutes per store for photo scoring, 1 x 2 inch labels, time caps, retry counts and page
+sizes. Numbers that describe the business are placeholders: contract tier thresholds, required
+facing counts, allowance amounts, price points, store counts for a named geography, dates that
+are facts about the original company's history.
+
+Placeholder Conventions
+-----------------------
+
+Placeholders are lowercase descriptive words inside angle brackets. Plurals and possessives attach
+outside the brackets: <business units>, <company>'s. Lettered placeholders distinguish members of
+a set: <our brand 2A> is the first of our brands in product category 2; <competitor brand 2A> is
+the first competitor brand in that category. Letters for example chains, wholesalers, price
+families, sign types beyond the first three, and headquarters objectives are local to the part in
+which they appear.
+
+Glossary of Placeholders
+------------------------
+
+Company and organization:
+- <company> - the manufacturer or parent company whose field sales organization runs these workflows
+- <company domain> - the company's email and login domain
+- <sales org> - the company's sales and distribution organization, the audience for every skill
+- <business unit 1> through <business unit 5> - the company's operating units, one per product
+  category; <business unit N> sells <category N>
+- <business unit>, <business units> - any or all of the operating units
+- <business unit 6>, <our brand 6A> - a sixth, lowest-weighted operating unit or partner product
+  line that some skills carry in their weighting tables, if the company has one
+
+Products:
+- <category 1> through <category 5> - the five product categories the sales organization sells
+- <category group A>, <category group B> - the two broad groups the categories divide into
+- <industry> - the industry the company operates in; "<industry> products" is the whole range
+- <adult consumer> - the legal-age consumer of the company's products
+- <our brand NX> - one of the company's brands in category N; X is a letter within the category
+- <competitor brand NX> - a competitor's brand in category N
+- <unauthorized competitor product> - competitor products sold without regulatory authorization
+- <price family A>, <price family B> - price tiers or families within a brand; letters local to the part
+- <variant>, <flavor>, <strength>, <pack style>, <price tier> - product variant descriptors
+
+Programs and trade terms:
+- <loyalty program> - the retailer loyalty program whose store targets feed the daily brief
+- <consumer rewards program> - a consumer points program
+- <promotional price program> - a multi-unit or promotional price program whose pass-through is checked
+- <monthly POS kit> - the monthly POS kit communication from headquarters
+- <trade announcement> - the periodic trade program announcement carrying allowances and UPCs
+- <digital trade program> - the digital trade contract program, with its tier and allowance
+- <price support program> - the retail price support program a store elects into
+- <election option A> through <election option F> - the price support program's election choices
+- <price ceiling> - the pass price a supported item must not exceed
+- <allowance type A>, <allowance type B>, <allowance type C> - the per-unit allowance types paid
+  under the trade programs
+- <allowance amount>, <price point> - a dollar amount from the current trade announcement or shelf
+- <tier 1>, <tier 2>, <tier code> - contract levels and the codes the data carries for them
+- <tier N threshold>, <required facings> - the space or facing count a contract level requires
+- <sign type 1> through <sign type N> - the POS sign programs the scorecard checks
+- <volume index> - the store volume measure and its decile
+- <HQ objective A>, <HQ objective B>, <HQ metric target> - headquarters objectives and targets
+- <sales incentive plan>, <incentive metric>, <incentive metric A> through <incentive metric J>,
+  <weight> - the field sales incentive compensation program, its metric names and payout weights
+- <behaviors framework>, <behavior 1> through <behavior 5> - the company's named set of rated
+  behaviors on the performance review form
+- <HR system> - the HR performance management system that holds objectives and the review form
+
+Systems and data:
+- <CRM> - the field CRM where planned visits live, with its analytics dashboard and visit report widget
+- <photo platform> - the store photo capture platform; "the photo bridge flow" moves its photos into OneDrive
+- <shelf recognition model> - the Power BI model built from recognized shelf photos: contract levels,
+  POS presence, store attributes and the sales hierarchy
+- <data warehouse> - the enterprise data warehouse that holds 13-week business data
+- <sales data model> - the sales semantic model that holds shelf prices
+- <planning workbook> - the cycle's store-level planning workbook from the user's manager
+- <market cycle workbook> - the market-level cycle workbook the daily brief's discovery stages
+  alongside the monthly planner
+- <SKU volume report> - the exportable SKU volume ranking report
+- <distribution gap export> - the export listing items a store should carry but does not
+- <loyalty program target list> - the store target list for the loyalty program
+- <report id>, <dataset id>, <workspace id> - Power BI identifiers
+- <shared folder link> - the link to the shared skills folder
+- <label stock code> - the off-the-shelf die-cut label stock product code
+- descriptive table and column placeholders such as <store profile table>, <store id column> -
+  objects in the company's data models, named by what they hold
+
+People and roles:
+- <user> - the person running the skill; <user's manager> - that person's manager
+- <author>, <author email>, <author alias> - the skills' author and maintainer
+- <territory role> - the field role that owns one territory
+- <market role> - the role that manages a market of territories
+- <market support role> - the merchandising support role attached to a market
+- <section role> - the role that directs a section of markets
+- <region role> - the role that leads a region of sections
+- <account role> - the roles that manage retail chains rather than geography
+- <HQ role> - home-office roles with no sales geography
+- <support role> - support and administrative roles attached to a geography
+- <colleague> - any other named person
+
+Geography and identifiers:
+- <market>, <market id>, <territory id>, <section id>, <region id> - geography levels and identifiers
+- <store id> - the retail account identifier every data source keys on
+- <jurisdiction> - a state or jurisdiction with a legal restriction on promotions
+- <chain A>, <chain B>, <wholesaler A>, <wholesaler B> - example chains and wholesalers; letters
+  local to the part
+- <city>, <zip> - example locations
+- <n>, <date>, <version> - a count, a date or a version that was a fact about the original
+
+Run-time tokens (not company parameters):
+- <scope>, <state>, <month>, <year>, <m>, <reason>, <yyyy-mm-dd>, <run id> - slots inside a file
+  name pattern, a report line or a quoted message that the running skill fills at run time; a
+  state here is a plain geography field, not a legal jurisdiction
+
+Contents
+--------
+
+Part 1 - Hub: Bundle Overview, Router and Scope Resolution
+Part 2 - Contract Compliance Audit (<business unit 4> and <business unit 3>)
+Part 3 - Top Opportunity Stores
+Part 4 - POS Gap Scorecard
+Part 5 - Performance Write-Up Concierge
+Part 6 - Business Unit Label Sheets
+Part 7 - Pricing Audit
+Part 8 - Pricing Opportunity Agent (Builder)
+Part 9 - Daily Store Brief and Cycle Autopilot
+Part 10 - Photo Bridge Flow (One-Time Setup)
+Part 11 - Test Plan

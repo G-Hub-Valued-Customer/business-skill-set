@@ -1,0 +1,538 @@
+----------------------------------------------------------------------------------------------------
+Part 4 of 11: POS Gap Scorecard
+----------------------------------------------------------------------------------------------------
+
+POS Gap Scorecard
+=================
+
+Purpose: Builds a POS presence scorecard from <company>'s <shelf recognition model> without opening
+a single store photo, and delivers a color-coded Excel workbook: green check where POS is present,
+red X for a real actionable gap, yellow where the store could not be assessed, with failure codes
+in the row margin explaining every miss.
+
+Triggers: "what POS is missing in my market"; "where do I stand in territory <territory id> with
+<business unit 4> POS"; "POS gap report"; "which stores are missing <business unit 3> signage";
+"who is missing <sign type 2> signage"; or the user names a <business unit> or a sign type.
+
+Inputs:
+- The <shelf recognition model> in Power BI: per-store, per-cycle recognized POS flags, photo scene
+  quality flags and pre-built visibility measures.
+- The <sign type 1> state guides (one PDF per state plus a national companion set) in the live
+  space folder of the <sales org> planning site on <company>'s SharePoint.
+- The current half's <incentive program> details document, found through enterprise search.
+- The current <monthly POS kit> folder on the same planning site.
+- <field initiative guides>, <trade announcements> and memos on the <sales org> communications
+  site.
+- The signed-in user's profile and the model's user and hierarchy tables (role resolution).
+
+Outputs:
+- One Excel workbook "POS Gap Scorecard - <scope> - <cycle>.xlsx" with Scorecard, Summary and
+  Legend sheets, saved to the session's output folder.
+- A five-line chat report that states completeness explicitly.
+
+Parameters to Fill In:
+- <company> - the company whose SharePoint sites and Power BI workspace hold every source.
+- <sales org> - the field sales organization whose planning and communications sites hold the
+  guides, kits and announcements.
+- <business unit 1> to <business unit 5> - the operating units whose POS and inventory measures
+  are scored (<category 1>, <category 2>, <category 3>, <category 4> and <category 5> in turn).
+- <business unit> - the generic word for one operating unit.
+- <our brand 1A> - the flagship <category 1> brand whose header and loyalty flip sign are scored.
+- <price family A> - the <our brand 1A> family whose flip sign is the state-value measure and
+  whose store type drives flip-sign scoping.
+- <price family B> - the <our brand 1A> line launched in state waves whose flip sign has no
+  recognition column.
+- <our brand 2A> - the leading <category 2> brand named in a paused recognition measure.
+- <our brand 2C>, <our brand 2D> - the two <category 2> brands a <territory role> elects between
+  for targeted signage.
+- <our brand 3A> - the <business unit 3> <category 3> brand whose POS is scored.
+- <our brand 4A> - the <business unit 4> <category 4> brand, with a standard line and a premium
+  line.
+- <variant> - a product variant named in a per-measure reason string.
+- <loyalty program> - the <business unit 2> loyalty program whose on-shelf availability is
+  measured.
+- <promotional price program> - the promotional price program on the <business unit 3> priority
+  page.
+- <shelf recognition model> - the Power BI model of photo recognition results; <report id> is its
+  report GUID.
+- <photo platform> - the vendor platform that captures and recognizes store photos; its image
+  URLs are unreachable from Cowork.
+- <CRM> - the field CRM where store type and fixture facts are verified.
+- <fixture data source> - the system that records fixture width.
+- <planning workbook> - the cycle planner workbook whose image links must not be followed.
+- <sign type 1> - the in-store connection guide program; its per-state PDF is the "<sign type 1>
+  state guide" and its SharePoint folders are the live space and prep space.
+- <sign type 2> - the age-restricted card-check signage program.
+- <sign type 3> - the age-restricted scan-check signage program.
+- <sign type 4> - a further signage program with its own national companion guide.
+- <sign type 5> - the retired POS measure for the <our brand 4A> premium line.
+- <monthly POS kit> - the monthly kit folder that outranks every other source.
+- <incentive program> - the sales incentive program whose details document defines metrics,
+  weights, exclusions and start dates.
+- <field initiative guide> - a dated, doc-numbered initiative guide from the field sales force.
+- <trade announcement> - a retail trade announcement filed with the initiative guides.
+- <minimum fixture width>, <minimum shelf count> - the <business unit 1> fixture exclusion
+  thresholds from the <incentive program> deck.
+- <required sign count> - the number of <business unit 4> signs required (lower in the top
+  contract tier).
+- <required SKU count> - the number of <our brand 2D> SKUs the on-shelf availability measure
+  expects.
+- <territory role>, <market role>, <market support role>, <section role>, <region role>,
+  <account role>, <HQ role> - the role titles resolved per the Hub section.
+- <territory id>, <market>, <section id>, <region id> - example scope names in requests.
+- <jurisdiction> - a state whose law excludes a measure (for example no loyalty programs).
+- <state> - the state named inside a grey reason string.
+- <store id> - the retail account number label used in the workbook's left block.
+- <recognized POS fact table>, <photo scene fact table>, <POS visibility measure table> - the
+  model's core tables.
+- <territory column>, <market column>, <section column>, <region column>, <store id column>,
+  <store name column>, <store address column>, <store city column>, <store state column>,
+  <chain store flag>, <chain name column>, <latest visit date column>, <cycle column>,
+  <visit count column> - the fact table's scope columns.
+- <scene image link column>, <image link column>, <merchandising space image column> - the image
+  link columns that are never fetched.
+- <scope>, <cycle> - the run's scope label and sales cycle, used in the filename.
+- <shared folder link> - the link to the shared skills folder.
+- <author>, <author email> - the skill's maintainer and contact address.
+
+What the User Says and Gets
+---------------------------
+
+The user opens a new Cowork session, pastes the <shared folder link> and asks in plain words: the
+link on one line, "what POS is missing in my territory" on the next. Copilot reads the folder's
+top-level START HERE, picks this skill and runs it. If it describes the folder instead or asks
+which skill, the explicit form is "Follow the START HERE file in the POS Gap Scorecard folder of
+this folder <shared folder link> and what POS is missing in my territory."
+
+Other ways to ask: "where do I stand with <business unit 4> POS", "which stores are missing
+<business unit 3> signage", "who is missing <sign type 2> signage", and similar phrasings.
+
+What comes back: the skill reads <photo platform> recognition results from the
+<shelf recognition model> and the live <sign type 1> state guide for the user's state, then delivers a color-coded
+Excel scorecard (green check present, red X real gap, yellow could not be assessed) with a failure
+code explaining every miss. No photos are needed. A <territory role> defaults to their territory;
+a <market role> or <market support role> gets the whole market. Time: a few minutes.
+
+Permanent install: the user copies the skill folder into the OneDrive folder
+Documents/Cowork/skills/ (the shared folder also holds a zip of it) and then just says "what POS is
+missing in my territory".
+
+For Copilot arriving from the folder: if it came from the top-level START HERE it has already
+routed and proceeds to stage and run; if the folder arrived as an attached zip, the unzipped files
+are local and are copied from there instead of downloaded.
+
+1. Stage the skill: open the skill's subfolder (the folder link resolves to a drive item), download
+   SKILL.md plus anything under references/ and scripts/, and copy them in the same layout into
+   the session's working skills folder with SKILL.md at the top. Skip the zip and the START HERE
+   file. Downloads land in one shared folder under identical names, so each file is copied and
+   verified right after it is downloaded.
+2. Read the staged SKILL.md completely and follow it from its first step; where it says to copy
+   from an installed skill folder, that copy is skipped.
+3. The user's request is their own words: whatever followed the link, or followed "and" in the
+   explicit form. With no scope given, the skill's default for their role applies; if nothing
+   resolves, the assistant asks once.
+4. Deliver exactly what the skill's Output section describes.
+
+Maintained by <author> (<sales org>, <market>), <author email>. Anyone at <company> may use it.
+
+Skill Instructions
+------------------
+
+The skill turns <photo platform> image-recognition results into a rep-usable Excel scorecard that
+shows exactly which POS is missing, where, and why, without ever opening a photo.
+
+When Not to Use:
+
+- Editing, reformatting or charting an existing workbook: the xlsx skill.
+- Ranking or prioritizing stores to visit: Top Opportunity Stores.
+- Contract level, merchandising footage or funding math: out of scope. This skill scores POS
+  signage presence only, not contract compliance.
+- Reading or interpreting store photos directly: Contract Compliance Audit (<business unit 4> and
+  <business unit 3>), which fetches the <photo platform> photos through the photo bridge flow.
+  This skill reads recognition results instead.
+
+Critical Context:
+
+The assistant never attempts to fetch a <photo platform> photo from this skill. The image links in
+the <planning workbook> and in the model (<scene image link column>, <image link column>,
+<merchandising space image column>) point at the <photo platform> API endpoint, which Cowork's file
+tools cannot reach. The recognition results are available without the images and are the faster
+source for a presence check. If the user wants the photos themselves read (contract footage,
+facings, header position), that is the contract audit skill, which brings the photos into OneDrive
+through the photo bridge flow; the assistant says so and still delivers the scorecard.
+
+Workflow:
+
+Step 1 - Resolve Scope:
+
+1. The assistant reads the signed-in user's home state and login from the profile, then resolves
+   role and span from the <shelf recognition model>'s user table, never from the directory title
+   alone. The full "who is asking and what they own" procedure (alias from the login, lookup in
+   the model's user table with the sales-geography fallback, the class table, the hierarchy table
+   as store list, explicit scope override, row-level security and run sizing) is the Hub
+   section's. Differences for this skill: the home state is read with the login because Step 2
+   needs it to pick the state guide; above one market the assistant states the store count,
+   proposes to run market by market, and runs the whole span only when the user says so.
+2. Default scope by role: a <territory role> gets their territory; a <market support role> gets
+   their whole market, the same report a <market role> gets (they work across the market and need
+   to see what leadership sees before being told where to go, so they are never scoped down to
+   one territory by default); a <market role> gets their market; a <section role> their section
+   as one workbook per market or one tab per market; a <region role> their region the same way;
+   <account role>s their chains; an <HQ role> names the scope. The assistant says which scope was
+   used. An explicit scope in the request always wins ("territory <territory id>", "<market>",
+   "<section id>", a chain).
+3. The measure set follows the phrasing: a broad ask ("what POS is missing") takes every measure
+   the <incentive program> documents score; a narrow ask ("where do I stand with
+   <business unit 4> POS") takes that unit's columns only, plus trend.
+
+Row-level security is built into the model, so results are already limited to the user's stores;
+the assistant adds no person filter.
+
+Step 2 - Read What Is Actually Being Scored (Mandatory - Never Skip):
+
+The scorecard is never run off a hardcoded measure list. Scored POS changes every cycle and by
+state; a stale list reports a retired measure as a territory-wide failure and misses a live one.
+The sources below are read first, every run.
+
+Step 2 - The <sign type 1> Live Space - the Authoritative Per-State Source:
+
+This is the only correct <sign type 1> location; no other copy is ever read. It is the folder
+"<sign type 1> live space - <monthly POS kit> planning" in the shared documents library of the
+<sales org> planning site on <company>'s SharePoint. Each state guide is read by its file URL: one
+PDF per state (all 50 plus the capital district), named by the two-letter state code, refreshed
+every cycle. A numbered national companion set sits beside them: the national <sign type 1>
+guide; the <sales org> POS guide every state guide cites for the complete POS listing; the
+flavor-ban guide (geography variance that changes <business unit 4> and <business unit 2> SKU
+minimums); the <sign type 4> signage guide; the <business unit 5> execution guide (merchandising
+by contract level); the <business unit 1> resource guide; the <business unit 1> header
+configuration guide (by store type); the <business unit 4> interim execution guide; and the
+<business unit 2> look book (store-type signage).
+
+A sibling prep space folder stages the next cycle and is unreleased; it is never read for a live
+run. Stale mirrors exist (a months-old copy of one state's guide sits in a miscellaneous folder of
+the <sales org> communications site); any <sign type 1> guide surfaced outside the live space is
+discarded.
+
+The assistant parses the scored-focus block on the state guide's cover page. The guide separates
+what the rep is scored on (the scored-focus block) from what the rep is executing (the
+current-initiative block); the measure set is built from the scored-focus block, per state, per
+cycle. Scoring is never inferred from the initiative block: in one <jurisdiction> cycle the scored
+focus was "<sign type 2> or <sign type 3> POS" while the initiative was narrower (<sign type 3> in
+stores with age-verification scanning, <sign type 2> elsewhere); scoring the narrower rule would
+create false misses.
+
+Also read from the state guide: the <business unit 1> store type categorization (which flip signs
+apply, and the "<price family A> with <price family B>" versus "without <price family B>" split),
+the <business unit 1> current initiatives, the <business unit 2> store type and cluster page, and
+the <business unit 3> prioritization page (a ranked list of that unit's programs for the cycle,
+from a contracted-stores-only initiative down to the <promotional price program>).
+
+Cover date: each guide's cover carries a month and a dated confidentiality line. The assistant
+confirms it matches the cycle being scored and otherwise warns on the Summary sheet rather than
+trusting the guide silently.
+
+Multi-state scopes: a market can span several states. The assistant resolves the distinct
+<store state column> values in scope, reads every state guide present and scores each store against its
+own state's rules. One state's measure set is never applied to another's stores.
+
+PDF parsing: the guides are linearized PDF 1.7 and the pdfplumber library fails on them with a
+missing-root-object error; the pypdf library reads them, with pdfplumber kept as a fallback for
+other documents.
+
+Step 2 - The Other Three Sources:
+
+2. The <incentive program> details document for the current half, found through enterprise search
+   by title. Authoritative on metric definitions, weights, measurement level and exclusions,
+   including the <business unit 1> rule that stores with a fixture narrower than
+   <minimum fixture width> (per the <fixture data source>) and fewer than <minimum shelf count> shelves (per the
+   <photo platform> photo) are excluded from scoring.
+3. The current <monthly POS kit>, in a dated folder of the planning site. The most recent source;
+   it outranks the others on anything it addresses, including mid-cycle pauses (for example a
+   top-independent <our brand 2A> recognition measure paused for a cycle).
+4. <field initiative guides>, <trade announcements> and memos, filed by year and <business unit>
+   on the <sales org> communications site. Dated and doc-numbered; authoritative on per-state
+   waves, launches and postponements (for example a <price family B> launch in a first wave of
+   states including <jurisdiction>, with a second wave postponed elsewhere and the first wave
+   unaffected).
+
+Precedence when sources disagree: <monthly POS kit>, then the state <sign type 1> guide, then the
+<field initiative guides>, then the <incentive program> details. Most recent and most specific
+wins.
+
+From these the assistant builds the run's measure list and states it to the user before querying:
+which measures are in scope this cycle for this state, and which model column backs each one.
+
+Retire what the guides no longer score: any measure absent from the current <sign type 1> guide
+and <incentive program> deck is dropped, not shown as failing. A model column with no counterpart
+in the current guides is labeled RETIRED and excluded, never reported as a gap. Known example: the
+<sign type 5> column is retired; the <our brand 4A> premium line is now scored on dual-offer
+signage (single-can and roll pricing POS). A run that reports <sign type 5> as missing has read a
+stale list and skipped this step.
+
+If a state guide cannot be found in the live space, the assistant says so plainly, names the
+measure list it fell back to, and flags the whole run "measure set unconfirmed". It never silently
+proceeds on assumption.
+
+Step 3 - Query the <shelf recognition model>:
+
+The assistant invokes the Power BI skill, then finds the artifact. The artifact discovery tool does
+not index this model, so the assistant uses enterprise search restricted to Power BI sources with
+the model's name. The result is a workspace-app URL that the report-id resolver rejects as not
+found; the assistant passes the <report id> taken from that URL straight to the report metadata,
+schema and query tools, which works.
+
+Core tables: <recognized POS fact table> (per-store, per-cycle POS flags plus store attributes,
+about 150 columns); <photo scene fact table> (per-visit photo scenes plus image-quality flags);
+<POS visibility measure table> (several hundred pre-built measures, including eligibility and
+"missing" counts).
+
+Column map for the current half's scored measures (legend: measure: backing column; eligibility):
+
+- <business unit 1> state-value flip sign: the <price family A> flip sign flag; the
+  <price family A> target store flag equals 1.
+- <business unit 1> <our brand 1A> header: the <our brand 1A> header flag; fixture stores, with the
+  <business unit 1> any-header flag as fallback.
+- <business unit 1> <price family B> flip sign: no recognition column exists because the
+  <photo platform> cannot see it, so the cell is grey "N/S - not recognizable by <photo platform>; verify
+  in <CRM> or the <fixture data source>"; store type "<price family A> with <price family B>",
+  live in first-wave states including <jurisdiction>.
+- <business unit 1> loyalty flip sign: the loyalty flip sign flag; the <business unit 1> loyalty
+  election flag; grey state-wide where loyalty programs are unlawful.
+- <business unit 2> POS by store type: the <business unit 2> any-sign flag and flip sign brand POS
+  flag; store type from <CRM>.
+- <business unit 3> any current <our brand 3A> POS: the <business unit 3> any-POS flag; the
+  <business unit 3> eligible-stores measure.
+- <business unit 4> <our brand 4A> standard and premium lines: the <business unit 4> any-POS flag;
+  all stores; <required sign count> signs, with a lower count in the top <business unit 4>
+  contract tier.
+- Age-restricted access prevention, <sign type 2> or <sign type 3>: the combined "<sign type 3> or
+  <sign type 2> signage" flag; all stores; one combined measure, never two.
+
+The assistant never invents a column mapping. A scored measure with no confirmed recognition
+column is grey "N/S - no recognition column mapped", the report says so, and the user is asked. A
+mismapped column silently scores the wrong sign.
+
+Scope columns: <territory column>, <market column>, <section column>, <region column>,
+<store id column>, <store name column>, <store address column>, <store city column>, <store state column>,
+<chain store flag>, <chain name column>, <latest visit date column>, <cycle column>,
+<visit count column>. The model carries two territory columns whose row counts differ slightly; the assistant
+filters on <territory column>, never the alternate. It pulls the latest cycle by default (the
+model's latest-cycle measures) and captures the model's last refresh timestamp for the workbook
+footer.
+
+Step 3b - Completeness Architecture (Identical for <territory role> and <market role>):
+
+A <market role> must be able to start this, walk away and come back to a report that is 100%
+complete. It need not be fast; it must be perfect. A <territory role> runs one territory (a
+hundred-plus stores); a <market role> or <market support role> runs a whole market (around a dozen
+territories, well over a thousand stores). Same steps, same checks, same report, just longer. The
+market-scope path is never shortened, sampled or simplified, and a <market support role> never
+gets a reduced version of it.
+
+1. Build the territory worklist first. The assistant queries the distinct count of stores per
+   territory across the scope and persists it as a manifest (territory to expected store count)
+   in the session's working scorecard folder. Every later check reconciles against it; a run that
+   cannot state its expected total up front cannot verify itself.
+2. One territory is one unit of work. A market is never queried in one shot: the Power BI query
+   tool caps at 1,000 rows and truncates silently, dropping whole territories without error. For
+   a market run the assistant dispatches territories to parallel background subagents, at most 3
+   to 4 in flight. Each subagent is stateless and receives the territory id, the Step 2 measure
+   list, the model id, the cycle and its own output path; each writes one JSON file per territory
+   to the working scorecard folder and returns a row count.
+3. The empty-result rule: wait before reacting. An empty or short result is far more often a cold
+   model, a throttle or a slow render than a true zero. On any empty or below-expected result the
+   assistant waits 30 seconds and re-runs the identical query; if the second attempt matches the
+   first, it waits 30 seconds and tries once more (three attempts total) before concluding the
+   result is genuinely empty. Only after three consistent attempts may a territory be recorded as
+   verified empty, a label it carries into the final report. A first empty response is never
+   treated as fact, and a query that has not been retried is never "fixed": rewriting DAX against
+   a throttle produces a wrong query that returns wrong data confidently.
+4. Per-territory acceptance gate. A territory is complete only when its returned store count
+   equals its manifest count. On a shortfall: retry it under the 30-second rule, then split it
+   into two halves by store number and retry each. Each territory is recorded as complete,
+   partial (n of m) or verified empty, never an unqualified success.
+5. Checkpoint after every territory. Results land on disk as each territory finishes; an
+   interrupted run resumes by reading the working scorecard folder and skipping territories
+   already complete. A market's results are never held only in context.
+6. Reconciliation gate, the hard stop before the workbook. The Excel file is not built until every
+   territory in the manifest has a terminal status, the sum of retrieved stores equals the
+   manifest total, and every measure column has at least one non-null value across the scope (an
+   all-null column means a broken mapping, not a territory-wide failure: stop and re-map rather
+   than ship a wall of grey). If any check still fails after retries, the workbook is produced
+   anyway but stamped INCOMPLETE on the Summary sheet with the exact territories and counts
+   missing. A silently short report is the one failure mode this skill must never have.
+7. Post-build verification. After saving, the assistant reopens the workbook, confirms the data
+   row count equals the manifest total and the sheet has the expected column count, reports both
+   numbers to the user, and only then calls the run finished.
+
+Timeouts: slow is acceptable, incomplete is not. A territory is never abandoned for taking time;
+it is retried under the 30-second rule. The store set is never reduced, measures never dropped and
+cycle depth never lowered to finish faster.
+
+Step 4 - Classify Every Cell:
+
+A blank check mark is not one thing. Exactly one code is assigned per store and measure (legend:
+code: cell appearance; meaning; basis):
+
+- PASS: green check mark; POS recognized present; flag = 1.
+- MISS: red X; eligible, photo usable, POS absent, the work list; flag = 0, eligible, no quality
+  issue.
+- IQI: yellow exclamation mark; photo unusable, a retake rather than a merchandising gap; any
+  image-quality flag on the scene (bad angle, reflection, obstacle, too far, blurry, limited
+  resolution, low accuracy, suspected fake, nothing to tag).
+- NOPH: yellow exclamation mark; no photo captured this cycle; no scene row for the cycle.
+- STALE: yellow exclamation mark; last photo predates the current cycle;
+  <latest visit date column> before cycle start.
+- N/S: grey dash; not scored (targeting, no election or program, legally unavailable in the
+  state, fixture too small, paused, or not recognizable by the <photo platform>); eligibility
+  measure = 0, <sign type 1> store-type scoping, state law, the <business unit 1> fixture
+  exclusion, a <monthly POS kit> pause, or no recognition column.
+- RETIRED: no cell; no longer scored this cycle, so the column is dropped entirely; absent from
+  the <sign type 1> guide and <incentive program> deck.
+
+Grey and yellow are different answers and never share a color. Grey means not scored: nothing was
+expected of the store and nothing counts against it (targeted measures, missing elections and
+state-law exclusions all land here). Yellow means the store should have been scored but could not
+be assessed: a photo problem, someone needs to re-shoot. Collapsing the two makes a rep chase
+stores that were never on the hook.
+
+State law can make a measure permanently N/S. Loyalty programs are not lawful in every state; in a
+<jurisdiction> with no loyalty, the <our brand 1A> loyalty flip sign and every loyalty-dependent
+measure is grey for the entire state, not a gap and not a data problem. The <sign type 1> guide's
+state pages supply these exclusions, applied before scoring. A legally unavailable measure is
+never reported as a miss.
+
+The specific grey reason is always written into the cell's reason string, because the reasons
+carry different (or no) actions:
+
+| Reason | Meaning |
+|---|---|
+| N/S - not targeted | Measure applies to assigned stores only |
+| N/S - no program/election on file | Store not contracted or not elected in |
+| N/S - not lawful in <state> | State law; permanent |
+| N/S - fixture below minimums | <business unit 1> exclusion per the <incentive program> deck |
+| N/S - paused this cycle | The <monthly POS kit> paused it mid-cycle |
+| N/S - not recognizable by <photo platform> | Scored but no recognition column; verify in <CRM> |
+| N/S - begins <cycle> | Measurement has not started yet |
+
+A bare "N/S" tells a rep nothing; the reason is the deliverable.
+
+Every cell carries its reason code as visible text next to the symbol (check mark PASS, X MISS,
+exclamation mark IQI, dash N/E), so a rep reading a printed or filtered sheet sees why without
+decoding a fill color or scrolling to the margin; the "Why" margin column then expands each code
+into a sentence. A cell showing only a symbol is incomplete. (The grey code is written N/S in
+general and N/E where eligibility is the cause; both are the same grey class.)
+
+Targeted measures are the norm, not the exception. Many POS measures are scored only in a small
+set of assigned stores: <our brand 2D> signage, for example, typically applies to fewer than 20
+stores per rep and is a <territory role> election between <our brand 2D> and <our brand 2C> in the
+discount-focus store types. Targeting is resolved from the <sign type 1> store-type pages and the
+model's eligibility measures. When a measure's pass count is a small fraction of the scope, that
+is targeting, not a territory-wide failure: the non-targeted stores are marked N/E, never MISS,
+and the report says how many stores the measure actually applied to.
+
+Red means "go fix this", yellow means "cannot be assessed", green means "passed". An IQI, NOPH,
+N/E or STALE cell is never colored red; a rep who drives to a store because of a bad camera angle
+stops trusting the report. Every cell carries both a symbol and a color, never color alone, so the
+sheet stays readable for a colorblind rep.
+
+Suggested fills: green C6EFCE with font 006100; red FFC7CE with font 9C0006; yellow FFEB9C with
+font 9C6500; grey D9D9D9 with font 808080. Every status cell is centered.
+
+Step 4b - Score Inventory / On-Shelf Availability Too:
+
+POS visibility is only half of what the rep is scored on; the <incentive program> also carries
+inventory metrics, and omitting them under-reports the rep's exposure. They form their own clearly
+labeled section, reported as in stock / out of stock:
+
+- <business unit 2> on-shelf availability: the model's measure for the percentage of
+  <business unit 2> SKUs visible in the latest cycle; in the current half it covers <our brand 2D> (any
+  <required SKU count> SKUs) and the <loyalty program>.
+- <business unit 4> on-shelf availability: the equivalent <business unit 4> measure, covering the
+  <our brand 4A> standard line and targeted <our brand 4A> premium line SKU sets.
+
+These are percentages, not binary flags. The value is shown in the cell and shaded, but no
+store-level pass or fail is asserted unless the <incentive program> deck states a store-level
+threshold: payout for on-shelf availability is measured at market level, so a store percentage is
+a prioritization signal, not a verdict, and the Legend says so. The cell is grey N/S where the
+store has no SKU photo in the cycle.
+
+The <incentive program> deck is also checked for measures that have not started yet; they are
+marked "N/S - begins <cycle>" rather than scored. In the current half, <loyalty program> on-shelf
+availability measurement begins with a later cycle; reporting it as failing before then is wrong.
+
+Step 5 - Build the Workbook:
+
+Built with the openpyxl library; three sheets.
+
+Sheet 1, Scorecard, one row per store:
+- Left block (freeze panes here): <store id>, store name, city, chain or independent, last visit
+  date.
+- One column per currently scored POS measure, each cell carrying symbol and reason code (check
+  mark PASS, X MISS, exclamation mark IQI, NOPH or STALE, dash N/E).
+- Right margin columns: Fails (count of MISS); Why, a readable per-measure reason string such as
+  "<business unit 4> POS: MISS; <our brand 3A> <variant>: IQI (reflection); <sign type 2>: NOPH";
+  and Photo Quality.
+- An auto-filter across the header row so a rep can isolate MISS in one click.
+- Sorted by MISS count descending, worst stores at the top.
+
+Sheet 2, Summary: pass rate per POS measure across the scope, MISS counts, average on-shelf
+availability for <business unit 2> and <business unit 4>, and the same rollup per territory for a
+market run. This is the "where do I stand" answer.
+
+Sheet 3, Legend: every code in plain English with the action it implies; the sales cycle used; the
+model's last refresh timestamp; every source document the measure list came from, by exact name
+and cover date (the state <sign type 1> guide or guides from the live space, the
+<incentive program> details, the <monthly POS kit>, any <field initiative guide> relied on); any measure
+retired or paused this cycle and why; and the indicator caveat from the Guardrails. A rep must be
+able to see which guide drove the scoring without asking; for a multi-state scope every state
+guide read is named.
+
+Filename: "POS Gap Scorecard - <scope> - <cycle>.xlsx", delivered to the session's output folder.
+
+Step 6 - Report:
+
+Five lines in chat: scope and store count, overall pass rate, the two or three measures with the
+most misses, how many stores could not be assessed and why, and the filename.
+
+Completeness is always stated explicitly, in the form "<n> of <n> stores retrieved across 1
+territory" or "<n> of <m> across 11 territories; territory <territory id> partial (<n> of <m>)".
+A <market role> who walked away needs one line saying whether the report is whole. Completeness
+not verified in Step 3b is never implied.
+
+Guardrails:
+
+- Never fetch or claim to have viewed a store photo; the images are unreachable. Every finding
+  traces to a Power BI recognition result.
+- Never score a measure the current guides do not score. The <sign type 1> guide and
+  <incentive program> deck from Step 2 are the authority on what counts this cycle; the model's column list
+  is not. A column that has outlived its initiative is a trap, not a measure.
+- Never turn a targeted measure into a wall of red. Stores outside a measure's assigned set are
+  grey N/S, and the applicable store count is stated.
+- Never drop a scored category because it is not POS. Inventory / on-shelf availability is part of
+  the same <incentive program>; it is reported, labeled as inventory, not folded into POS counts.
+- Never score a measure that has not started, or one the state does not permit. Both are grey.
+- Never read a <sign type 1> guide from outside the live space, and never from the prep space.
+  Stale mirrors elsewhere in SharePoint silently score the wrong cycle.
+- Never apply one state's measure set to another state's stores; multi-state scopes read every
+  state guide in scope.
+- Never accept a first empty result: three attempts, 30 seconds apart, before calling anything
+  empty, and never rewrite a query that has not been retried.
+- Never ship a short report silently. If the reconciliation gate fails, the workbook goes out
+  stamped INCOMPLETE with the exact missing territories and counts named.
+- Never shorten the <market role> or <market support role> path: same steps, checks and measures
+  as a <territory role>, only longer. Slow is fine; incomplete is not.
+- Never report a yellow condition as a merchandising failure, in the workbook or in chat. MISS
+  counts and "could not assess" counts are separate numbers.
+- Never report a scope that was not fully retrieved; if territory batching came up short of the
+  control count, the gap is stated.
+- State the cycle and the model refresh date on the Summary and Legend sheets and in chat. An
+  undated scorecard gets argued about in a market meeting.
+- Print the source caveat on the Summary sheet: the <shelf recognition model> dashboard is an
+  indicator and will not match <incentive program> results exactly; use it for themes, trends and
+  prioritization, never to dispute an <incentive program> score.
+- Never fabricate a store, a flag or a pass rate. If a query returns nothing, say so.
+- Do not evaluate or rank employees. The skill scores store conditions, never the rep who called
+  on the store, even though the model carries a user name and a title column. Results are never
+  grouped by person; the assistant declines if asked to.
+- Do not email or share the workbook unless explicitly asked.

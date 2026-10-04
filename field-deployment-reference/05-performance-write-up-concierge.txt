@@ -1,0 +1,1759 @@
+----------------------------------------------------------------------------------------------------
+Part 5 of 11: Performance Write-Up Concierge
+----------------------------------------------------------------------------------------------------
+
+Performance Write-Up Concierge
+==============================
+
+Purpose: A concierge for <company>'s OKR and performance review process. It sets objectives at
+period start against headquarters and supervisor priorities, tracks progress mid-period, and
+writes completed mid-year and year-end sections from the user's own evidence, computing
+<business unit> performance against category, ranking the user anonymously against peers, and
+inferring the actions behind each result, without ever claiming what cannot be evidenced.
+
+Triggers: "help me write my mid-year"; "build my year end review"; "set my OKRs" or "update my
+OKR progress"; "what were my wins this year" with business reports attached; "do my
+<review process name>" or "1H/2H write-up"; the user uploads business reports and asks what they can
+claim; and similar phrasings.
+
+Inputs:
+- Store performance workbooks (xlsx or csv) the user attaches or that arrive as email
+  attachments: store identifiers, brand and category volume metrics, execution flags, and a
+  prior-period and period-end view.
+- <user's manager>'s and upline direction in Outlook mail and Teams, including every attachment
+  (decks, workbooks, PDFs) on those messages.
+- The user's own year: sent and received mail, Teams posts, calendar events led, and files
+  authored in OneDrive and SharePoint.
+- The headquarters reference appendix embedded in the skill file (enterprise initiatives,
+  enterprise goals, sales incentive compensation metrics, form structure, rating criteria, OKR
+  methodology) and, when expired, its SharePoint sources on <company>'s strategy framework site,
+  <sales org>'s communications site and <company>'s talent development site.
+- The current <monthly POS kit> from <sales org>'s planning site on SharePoint.
+- The signed-in user's profile, manager and upline chain from the people directory.
+- The run's own checkpoint file in the session's working folder, when resuming.
+
+Outputs:
+- Cycle-appropriate objective blocks (title, description and key results as one field) sized to
+  the HR form's character limits and emitted with character counts, each with a lineage line
+  reported alongside as commentary.
+- Mid-year and year-end sections in the headquarters form's shape: status, dated comments,
+  completion percentages, self-assessment answers and learnings, every claim carrying its unit,
+  its proof and an anonymous peer position with tie count.
+- A ranked candidate win list presented for the user to add to, modify or drop before drafting,
+  and a full-draft preview before the final emit.
+- An OKR grade per key result with proposed rewrites and one-line reasons.
+- An ITEMS TO VERIFY list naming every figure, inference, stale reference and reconstruction the
+  user must confirm; when inputs are missing, a partial draft bannered INCOMPLETE - DO NOT SUBMIT.
+- A checkpoint file of ledgers only, appended after every stage and deleted when the final
+  write-up is emitted.
+
+Parameters to Fill In:
+- <company> - the company whose employees use the skill.
+- <sales org> - the field sales organization whose roles, scopes and IC metrics the skill uses.
+- <business unit>, <business units> - the operating units whose brand performance is claimable.
+- <business unit 1> through <business unit 5> - each operating unit by its product category;
+  <business unit 6> - a unit identified in source data by an internal code, carrying
+  non-<industry> products with no category denominator.
+- <our brand 1A>, <our brand 1C>, <our brand 2A>, <our brand 2B>, <our brand 2D>, <our brand 3A>,
+  <our brand 4A>, <our brand 5A>, <our brand 6A>, <our brand 6B>, <our brand 6C> - the company's
+  brands as they appear in source data, with their short forms, initials and product lines.
+- <price family A>, <price family B>, <price family C> - sub-brands or price families of
+  <our brand 1A> that inherit <business unit 1> and <category 1>.
+- <price family D> - the standard line of <our brand 4A>.
+- <loyalty program> - the <business unit 2> loyalty line that inherits <business unit 2>.
+- <promotional price program> - the retail promotional pricing program whose signage and
+  pass-through appear as execution flags.
+- <allowance type A> - the brand equity allowance whose validation appears as an execution flag.
+- <category 1> through <category 5> - the product categories that serve as denominators for
+  business units 1 through 5.
+- <category group B> - the category group named in the enterprise volume goal.
+- <industry> - the industry the company sells into; "non-<industry>" marks business unit 6.
+- <competitor brand 4A>, <competitor brand 4B>, <competitor brand 4C>, <competitor brand 5B> -
+  competitor brands whose columns are never claimable.
+- <HQ objective A>, <HQ objective B> - named enterprise initiatives cited in lineage lines.
+- <goal horizon year> - the end year of the company's long-range enterprise goals.
+- <incentive metric>, <weight> - a sales incentive compensation metric and its payout weight.
+- <behaviors framework> - the behavioral values framework rated on the review form.
+- <HR system> - the HR system of record that holds the review form and truncates its fields.
+- <engagement survey> - the employee engagement survey whose scores baseline the people-leader
+  OKR.
+- <monthly POS kit> - the monthly cycle initiative kit.
+- <trade announcement> - the trade announcement series whose folder holds the IC program details.
+- <top chain tier> - the label for the largest tier of chain accounts.
+- <territory role>, <market role>, <market support role>, <section role>, <account role> - the
+  role titles that set span of control and peer sets.
+- <user's manager> - the user's direct supervisor.
+- <market> - the user's market; <store id> - the store identifier label.
+- <chain A>, <chain B> - example chains used in sample claims.
+- <review process name> - the company's name for its performance review process.
+- <shared folder link> - the link to the shared skills folder; <author>, <author email> - the
+  maintainer and contact.
+- Angle-bracketed <n>, <N>, <M>, <K>, <from> and <to> inside quoted sample language are the
+  skill's own output template variables, not company parameters.
+- <behavior 1> through <behavior 5> - the names of those behaviors, read from the live form
+- <leadership rating section> - the review form's leadership or inclusion rating section
+- <leadership rating descriptor> - the label of that section's Yes or No field
+- <self-assessment question 1> - the form's first self-assessment question, verbatim
+- <self-assessment question 2> - the form's second self-assessment question, verbatim
+- <sales incentive plan> - the field sales incentive compensation program whose weights rank wins
+- <incentive metric A> through <incentive metric J> - the program's metric names, spelled exactly
+- <upper photo threshold> - visit photo-consistency share above which payout is unadjusted
+- <lower photo threshold> - visit photo-consistency share below which payout is cut furthest
+- <HQ accelerator goal> - the enterprise goal that accelerates payout on the transaction-count
+  metric
+- <HQ incentive purpose statement> - the incentive program's quoted purpose and first principle
+- <target year> - the horizon year of the enterprise goals
+- <HQ initiative pillar 1> through <HQ initiative pillar 4> - the enterprise initiative pillars
+- <HQ initiative 1A>, <HQ initiative 1B> and so on - the initiatives under each pillar
+- <HQ field sales initiative> - the initiative on field sales capability most field objectives cite
+- <HQ volume and share target> - the initiative item committing to the year's volume and share
+  targets
+- <HQ talent and capability initiative> - the talent and skills initiative development objectives
+  cite
+- <HQ goal group A> - the corporate financial and market-position goal group
+- <HQ goal group B> - the <category group B> product volume and revenue goal group
+- <HQ goal group C> - the long-term growth goal group
+- <HQ metric target> - each enterprise goal's target value and base year
+- <HQ purpose statement> - the company's purpose sentence
+- <HQ vision statement> - the company's vision sentence
+- <HQ measures of success> - what the company names as its measures of success
+- <HQ strategic framework> - the corporate strategy framework OKRs align to
+- <HQ OKR framing statement> - the OKR job aid's quoted framing paragraph
+- <rating distribution targets> - the target share of the organization at each rating level
+- <self-assessment month> - the month the self-assessment window opens
+- <form cutoff time> - the time of day forms auto-advance on their due date
+- <date> - valid-through, fetched and deadline dates in the reference blocks and examples
+- Template slots, not company parameters: <n>, <m>, <k>, <m minus n>, <N>, <Metric>, <win>,
+  <inferred action>, <name>, <PERIOD>, <NEXT PERIOD> (placeholders inside quoted question wording
+  and the emission shape)
+
+What the User Says and Gets
+---------------------------
+
+The user opens a new Cowork session, pastes the <shared folder link> to the skills folder, and asks
+in plain words on the next line, for example "help me write my mid-year". Copilot reads the folder's
+top-level START HERE, picks this skill and runs it. If Copilot describes the folder instead of
+starting, or asks which skill, the user uses the explicit form: "Follow the START HERE file in the
+performance write-up subfolder of this folder <shared folder link> and help me write my mid-year."
+
+Other ways to ask: "set my OKRs", "update my OKR progress", "build my year end review", "what were
+my wins this year" (with business reports attached), and similar phrasings.
+
+What comes back: the skill walks the user from objective setting through the mid-year and year-end
+write-ups. It reads any business report the user attaches, verifies that it covers the write-up
+period, computes the user's <business unit> performance against its category, ranks the user
+anonymously against peers, works out the actions behind each result, and writes the sections.
+Nothing is claimed without evidence and peers are never named. Because the output becomes an HR
+record, the skill leaves a claim out and says why rather than overclaim.
+
+Time: twenty to thirty minutes for a full write-up. The skill asks the user questions while it
+works, so the user should stay reachable or answer the questions when they return.
+
+Permanent install: the user copies the skill folder into the OneDrive folder Documents/Cowork/skills
+(the shared folder also holds a zip of it) and then simply says "help me write my mid-year".
+
+When Copilot reaches this file because a user pointed it at the folder: if it arrived from the
+top-level START HERE it has already routed and proceeds to stage and run. If the folder arrived as
+an attached zip, the files are local once unzipped and are copied from there instead of downloaded.
+
+1. Stage the skill: resolve the folder link, open the skill's subfolder, download SKILL.md plus
+   everything under references/ and scripts/ if present, and copy them in the same layout into the
+   session's working skills folder with SKILL.md at the top. The zip and the START HERE file are
+   skipped. Downloads land in one shared folder under identical names, so each file is copied and
+   verified right after it is downloaded.
+2. Read the staged SKILL.md completely and follow it from its first step. Where it says to copy from
+   an installed skill folder, that copy is skipped because the files are already staged.
+3. The user's request is their own words: whatever followed the link, or followed "and" in the
+   explicit form. If they gave no scope, the skill's own default for their role applies; if nothing
+   resolves, Copilot asks once.
+4. Deliver exactly what the skill's Output section describes.
+
+Maintained by <author> (<sales org>, <market>), reachable at <author email>. Anyone at <company>
+may use it.
+
+Skill Instructions
+------------------
+
+Mission:
+
+Field sales people write results lists: sets of true, quantified, orphaned facts, such as a volume
+target attainment percentage for one <business unit> or the highest brand growth in <market> year
+to date. Neither line says what action produced it, whether it beat anyone, or why <company>
+should care. The reader supplies the context, and in a calibration room nobody does. People are
+already doing the work; they cannot phrase it. This skill closes that gap end to end, for every
+role at <sales org>, from objective setting through year-end submission.
+
+The output becomes a permanent HR record. Every rule below that constrains a claim exists because
+an overclaim, a misattributed peer result or an invented figure can damage a career. When a rule
+and convenience conflict, the rule wins.
+
+When NOT to Use:
+
+- A ranked store visit list belongs to Top Opportunity Stores.
+- A POS presence or signage gap report belongs to POS Gap Scorecard.
+- <business unit 4> or <business unit 3> contract compliance from store photos belongs to
+  Contract Compliance Audit (<business unit 4> and <business unit 3>).
+- Editing, charting or reformatting an existing workbook belongs to the xlsx skill.
+- Evaluating, ranking or comparing other named employees. This skill writes the user's own review;
+  peers appear only as anonymous positions ("highest of any territory in the market").
+- Anything the user did not do or cannot evidence. No document, no claim.
+
+Part 0: Run Doctrine:
+
+The assistant reads this part before anything else; it governs every decision below.
+
+0.1 There Is No Time Limit on This Task:
+
+The assistant is under no time pressure: the user has been told to go do something else and come
+back to a finished write-up. A twenty-five minute run that is right is a success; a four-minute
+run with an unverified number, a fabricated action or a missing section is a failure. The
+assistant never shortens a sweep, skips a verification, drops a section or summarizes instead of
+building because the work is taking a while; never stops at a partial result and describes what
+it would have done; works the 0.3 retry ladder when a step fails rather than noting the gap in the
+summary; and stops early only at the hard stops named in Part 3. Fatigue, run length, retry count
+and output size are not on that list.
+
+0.2 Durability: Write Continuously, Never Hold Work in Memory:
+
+The skill produces durable partial output at every stage, so an interrupted run leaves the user
+something real and a resumed run something to build on. After every stage that produces a
+finding, a number or a paragraph, the assistant appends it to the checkpoint before starting the
+next stage and never carries more than one stage of work in memory. Append points: the Stage 2
+goal ledger, each source as read, never batched; the Stage 3 evidence ledger, each source as
+crawled; Stage 4 metrics, each brand-category pair as computed; Stage 6.4 sweeps, each as it
+completes; Stage 7 proposals, as generated; the Stage 9 draft, section by section, each verified
+before the next; question answers, on receipt.
+
+The heaviest thing is built first while the run is freshest (the sweep with the most rows in Stage
+6.4, the longest section in Stage 9), so the run never reaches its largest piece with nothing left
+and ships three polished objectives and a bare fourth. Each unit is finished completely (drafted,
+verified, checkpointed) before the next begins; objectives are never drafted shallowly and
+deepened later.
+
+0.3 Retry Ladder:
+
+An empty or failed read is unconfirmed, never failed, until the ladder says otherwise; a call that
+succeeds and lands nothing and a service that lags its own write look identical. When attempt 1
+fails, the assistant waits, re-reads and retries with one constraint relaxed; when attempt 2
+fails, it retries with the fallback method named in the stage; when attempt 3 fails, it records
+the gap, uses the documented fallback value and continues.
+A missing headquarters source is not a hard stop: the most recent cached version is used and
+recorded in ITEMS TO VERIFY as stale. The same applies to a missing <monthly POS kit>, an
+unreachable Teams channel, or a mail search that returns nothing.
+
+0.4 Ask Questions to Buy Time:
+
+Asking the user a question costs no correctness and converts dead waiting time into input. When a
+stage will take a while, the assistant asks the questions that stage needs while it runs rather
+than batching them afterward.
+
+0.6 Field Character Limits (Hard Constraint, Verified Per Run):
+
+The HR system truncates without warning, wrapping or telling the user what was lost, so every
+field the skill emits is counted and must fit. Default limits until confirmed otherwise: objective
+field (confirmed for <sales org>) 500 characters; development objective 500; comment entry 500;
+self-assessment free text 4000. Confirmed <sales org> behavior: the objective box holds the title,
+the description and the key results as one field capped at 500 characters in total. A title runs
+35 to 70 characters and a description 75 to 105, leaving roughly 330 to 390 for all key results,
+which is six or seven at 50 to 75 characters each, written as bare imperatives
+("<business unit 4> premium contracts (H1/H2) <from>% to <to>% by 12/31" carries metric, population and deadline in
+about fifty characters; the long form says the same in over eighty).
+
+These are defaults, not facts: limits differ by field, form version and tenant configuration, so
+the assistant confirms them per run through question Q-LIMITS, and a user who has the form open
+can read the counter next to the box. The assistant counts what the system counts (spaces,
+punctuation and line breaks on the exact string to be pasted) and writes short by default rather
+than trimming afterward, targeting 80 percent of the limit so a user edit does not push the field
+over. A 500 character objective is roughly three sentences.
+
+0.6 Field Character Limits - Compression Order, When a Field Is Over:
+
+The assistant cuts in this order and stops as soon as the field fits, never past step 4: (1)
+filler and hedging ("in order to", "continue to", "with a focus on"); (2) restatement, such as a
+description repeating the <business unit> the title already names; (3) lineage and rationale, since
+the enterprise initiative and the incentive compensation (IC) weight belong in the conversation
+and in ITEMS TO VERIFY, not in the box; (4) scope qualifiers repeated across every key result, so
+the territory is stated once. Never cut: a number, a population, a deadline, or a named <company>
+brand. If the field still does not fit, the objective is doing too much and is split in two or a
+key result is moved out. A deadline is never dropped and a truncation never reaches the system.
+
+0.6 Field Character Limits - Where Compression Changes the Shape:
+
+The lineage line ("<HQ objective A>. Sales IC: <incentive metric>, <weight>.") is 100 to 150
+characters and is the first thing to go from the pasted field. It is still reported alongside the
+block as commentary, never inside the field, because it is what the user says out loud in the
+review conversation.
+
+0.5 Reading Attachments and Documents (Mandatory Protocol):
+
+The highest-value input (a supervisor's OKR direction, a target list, a results summary) almost
+always arrives as an email attachment, so a run that cannot open attachments cannot see what it
+most needs. The protocol is not optional and its forbidden list is not advisory.
+
+0.5 Reading Attachments and Documents - The Ladder:
+
+1. List messages. The response usually spills to a result file rather than returning inline; the
+   assistant reads that file from the shell to get the message array and ids. Treating a spilled
+   response as empty reports no mail from a manager who wrote twenty messages.
+2. Enumerate attachments on each candidate message through the mail API (id, name, size, content
+   type, inline flag). The subject line never decides whether a message carries a file; the
+   attachment filename is often the real content. The size field is the MIME-encoded size, about
+   1.4 times the real file, and never decides whether a file is too big.
+3. Fetch the bytes by handing the attachment's raw-content endpoint to the OneDrive file download
+   tool as a download link. This is the primary method and has no size ceiling: the file streams
+   straight to disk in the session's download folder, byte-exact (verified on a multi-megabyte
+   PowerPoint deck no other path could retrieve). The ceiling applies to a tool's JSON response,
+   not to the API; the download tool returns only a short confirmation. The raw-content suffix is
+   safe here and only here, because the bytes are written as binary rather than decoded as text,
+   and the pattern generalizes to any endpoint that returns raw file bytes.
+4. Fallback, only if step 3 fails: fetch the base64 inline through the mail API, one attachment at
+   a time, with no query parameters; the payload arrives in the content-bytes field, capped at
+   roughly 102,400 response characters (about 76,100 decoded bytes), so small files only.
+5. If the fallback is truncated, the assistant recovers what it can: trim the base64 to a 4-byte
+   boundary, walk the ZIP local-file headers and stream-inflate the parts received. Office files
+   are ZIP archives and part order decides what survives (a deck whose media precedes its slides
+   yields images while the slide XML sits past the cutoff), so the assistant reports which parts
+   were recovered. An xlsx often declares a far larger dimension than it holds, so a truncated
+   fetch can still recover all real rows; the recovered row count is checked against any figure
+   the message body states.
+6. If the message references a file rather than attaching it, the assistant resolves it by
+   filename in SharePoint or OneDrive. A file emailed hours ago is not in SharePoint search yet,
+   so a search miss never proves it does not exist.
+7. Only after all of the above does the assistant ask the user to upload it, stating the filename,
+   sender, date and every path attempted. If step 3 was skipped, reaching this step is a defect in
+   the run, not a limit of the platform.
+8. Each path is retried at least twice before moving to the next; transient failures are
+   indistinguishable from real ones on a single attempt.
+
+0.5 Reading Attachments and Documents - Forbidden (All Four Fail Against the Live Tenant):
+
+- Reading the raw-content endpoint through the JSON query tool. The worst one because it does not
+  error: the body is mangled through a text decode into replacement characters, so the file
+  appears retrieved and opens as garbage. The same endpoint handed to the file download tool in
+  step 3 is correct; the difference is streaming to a file versus decoding as text.
+- Selecting the content-bytes field returns HTTP 400, as does selecting the OData type field.
+- Expanding attachments on the message hits the same ceiling while spending a larger call's budget.
+- The single-message read tool returns attachment metadata and pointers only, never bytes.
+
+0.5 Reading Attachments and Documents - Non-Office Formats:
+
+PDF: a text extractor, and if scanned, say so rather than report it empty. DOCX: unzip and read
+the main document XML, stripping tags. PPTX: unzip and read the slide XML, or a presentation
+library. XLSX: a spreadsheet library, applying the Stage 4 parsing contract.
+
+0.5 Reading Attachments and Documents - The Retrieval Gate (Hard Gate, Fails Closed):
+
+A run may not proceed as though <user's manager>'s attachment did not exist. Before drafting, for
+every attachment detected on a supervisor or upline message, one of these holds: it was read and
+folded into the goal ledger; it was read and contains nothing in scope, stated in ITEMS TO VERIFY;
+or it could not be read after the full ladder, in which case the run does not report zero but
+names the file, sender and date, states every path attempted, and says in the opening summary
+that a named source could not be opened and the goal ledger is incomplete. Silently missing a
+supervisor's direction is the most damaging retrieval failure, because every objective downstream
+then aligns to something other than what <user's manager> asked for.
+
+Part 1: Doctrine:
+
+These rules never change and no user instruction overrides them.
+
+1.1 The Credit Rule:
+
+Field sales personnel get credit only for <sales org> <business unit> performance, never for
+<industry> or category growth. The <sales org> <business units> and their brand aliases as they
+appear in source data are listed below, one line per unit, with the aliases as the values.
+
+- <business unit 1>: <our brand 1A>; <price family A>; <price family B>; <price family C>;
+  <our brand 1C>
+- <business unit 2>: <our brand 2A> and its short form; <loyalty program> and its short form;
+  <our brand 2B>; <our brand 2D>
+- <business unit 3>: <our brand 3A>, its initials and its spelled-out form
+- <business unit 4>: <our brand 4A>; <our brand 4A> <price family D>; the <our brand 4A> premium
+  line with and without a space
+- <business unit 5>: <our brand 5A> and its two product lines
+- <business unit 6> (identified by an internal code): <our brand 6A>; <our brand 6B>;
+  <our brand 6C>
+
+Alias matching is normalized, not literal: the assistant casefolds the header, collapses
+underscores and punctuation to spaces, and strips parenthetical unit and period tokens, so that a
+volume column with unit and period suffixes, an election flag column and a primary distributor
+column that all start with the <business unit 1> abbreviation resolve to <business unit 1>. A
+literal lookup misses the most important volume column in a real field file. The bare
+<business unit 1> abbreviation in both spellings resolves to <business unit 1>; the bare initials
+of <our brand 3A> resolve to <business unit 3>.
+
+<our brand 4A> requires sentinel handling because its name is an ordinary English word plus
+punctuation: the literal brand string is replaced with a sentinel token before punctuation is
+stripped, then the sentinel is matched. The bare word is never registered as a <business unit 4>
+alias; on real field files it appears inside ordinary execution flag text (age-verification flags,
+<promotional price program> flags), and a bare-word alias once attributed more than 200 rows of
+unrelated flags to <business unit 4>. The premium-line spellings resolve to <business unit 4>; the
+bare preposition never does.
+
+Umbrella inheritance: a sub-brand inherits its parent <business unit> and category.
+<price family C> is <business unit 1> against total <category 1>; <loyalty program> is <business unit 2> against
+<category 2>; <our brand 4A> <price family D> is <business unit 4> against <category 4>. An
+unrecognized alias is flagged and asked about, never guessed. Not claimable under any
+circumstance: total category volume, competitor volume (<competitor brand 4A>,
+<competitor brand 4B>, <competitor brand 4C>, <competitor brand 5B>), and any deep discount or total-category
+aggregate.
+
+1.2 The Two Comparative Quantities (Never Interchange Them):
+
+Two point-based comparative quantities exist and confusing them produces overclaims of several
+multiples. Growth delta is brand growth percent minus category growth percent, in "percentage
+points of growth": how much faster or slower the brand moved than its category. Share delta is
+share at period end minus share at period start, where share is brand volume divided by category
+volume, in "share points": how much of the category the brand captured or lost. Raw <sales org>
+brand growth percentages and execution counts remain reportable in their own right, provided they
+carry the comparison that gate G1 requires. Every emitted claim names its unit ("grew share of
+<category 3> by <n> share points"; "outperformed the category by <n> percentage points of
+growth"); a bare "points" is never written, because a reviewer who reads share points as growth
+points sees a claim several times larger than the truth.
+
+1.3 The WIN / MISS / FLAT Rule:
+
+Classification is by formula, not by a direction table, so it covers brand up with category down,
+brand down with category up, flat categories and exact zeros: WIN when the growth delta exceeds
++0.1 percentage points, MISS when it is below -0.1, FLAT when its absolute value is 0.1 or less.
+Category growth is never itself a label: a brand that grew 27 percent while its category grew 32
+percent is a MISS at -5.0 percentage points of growth. When the category denominator is zero,
+negative or absent, the label is UNPAIRED and the brand routes to execution claiming (Stage 4,
+contract item 5).
+
+1.4 The Marriage Model:
+
+Every claim carries four parts in this order: ACTION (what the person did, inferred from evidence
+and confirmed by the user); RESULT (the <sales org>-claimable number with its unit); PROOF (peer
+rank with tie count, or the category comparison); CONSEQUENCE (the named headquarters mechanism
+it advances). An unmarried claim is a bare line such as "<business unit 3> share of category +<n>
+pt". Married, it reads: validated <promotional price program> pass-through and expanded
+<our brand 3A> distribution across flagged opportunity stores, growing <business unit 3> share of
+<category 3> by <n> share points while the category declined <n> percent, outperforming the category by <n>
+percentage points of growth and supporting <HQ objective B>. The ACTION half is what people omit;
+it is inferable (Stage 7) and is the reason this skill exists.
+
+1.5 The Lineage Ladder:
+
+Every win is resolved as high as the evidence defends and cited at the highest level reached: L1,
+a <goal horizon year> enterprise goal or current-year enterprise initiative; L2, a <sales org>
+sales IC metric, always with its weight; L3, a section or market OKR; L4, the direct supervisor's
+dated, stated priority; L5, the user's own objective. Ranking: altitude reached, then peer rank,
+then magnitude. An L1 win leads; an L5 win is a footnote and never leads.
+
+Altitude ceiling by role: a claim ladders no higher than the level the person can credibly
+influence, since citing above the ceiling reads as inflation. <market support role>: ceiling L2,
+citing L1 only as context for an execution result, never as ownership. <territory role>: ceiling
+L1, provided the claim is a territory result contributing to the initiative. <market role> and
+above: L1 without qualification. Enforcement is lexical, not judgment: when a claim cites a level
+above the role's own scope, the CONSEQUENCE clause uses a contribution verb (advances, supports,
+contributes to), never an ownership verb (achieved, delivered, drove, led). "Contributing to the
+<goal horizon year> <category group B> volume goal" is legitimate for a <territory role>;
+"Delivered ..." is not. Gate G3 tests this verb list, making the ceiling mechanically checkable.
+
+1.7 Span of Control (What Each Role May Claim):
+
+Span of control decides what counts as a win. Getting it wrong in either direction is fatal: a
+<territory role> who hides behind aggregates looks passive, and a <market role> who claims a single
+store looks like they do not understand their job.
+
+Store-level tier (<territory role>): a store-level result is their direct action (they called on
+the store, sold the set, placed the POS, fixed the inventory), so store wins are attributed to them
+by default and the stores are named. Independents are the top-tier signal: no chain headquarters
+dictates the planogram, assortment or pricing, so everything there happens because the
+<territory role> made it happen, and independent performance that beats the same manager's chain stores and
+other stores in the market is the strongest evidence of individual selling skill; it is surfaced
+first and said explicitly. Local chain wins still count, because a <territory role> influences the
+big chains through the store and district managers even where the contract is set above them
+("<chain A> in my territory grew <business unit 4> <n> percent"). Wins are hunted across every
+dimension of the span: independents as a bloc, each local chain as a bloc, named stores,
+distribution and assortment depth, contract and program upgrades, execution and coverage
+discipline, and engagement, to isolate as many defensible wins as the data supports.
+
+Aggregate tier (<market role>, <account role>, <market support role> at account scope,
+<section role> and above): a store-level result is not their action; someone on their team did it, and
+"store <store id>, which I fixed this year" tells the reader they do not understand their role.
+They win on aggregates: the whole market or section, a whole <top chain tier> account, a whole
+<business unit> across their scope; for an <account role> or <market role> the assistant rolls
+every <top chain tier> account on the sheet and claims the account-level movement. They may claim
+team and system outcomes: coverage across the market, program adoption, distribution across a
+chain, capability built, a practice they installed that the team ran. A named store appears only
+as an illustration inside an aggregate claim, with credit to the team ("including a reset at our
+highest-volume <chain B> that the territory team executed").
+
+Mixed scope: a person holding both a territory and account responsibilities claims store-level
+wins in the territory and aggregate wins in the accounts, never blended in one sentence.
+
+1.6 Source Hierarchy:
+
+Form structure comes from the headquarters sample performance review; OKR methodology from the
+headquarters OKR job aid; the quality bar for rating from the current headquarters performance
+rating criteria; business framing from the enterprise initiatives and <goal horizon year>
+enterprise goals; priority ranking from the sales IC metric weights; local targets from the
+supervisor chain's communications; evidence of work from the user's files, mail, Teams, calendar
+and reports. User documents are read for evidence only, never for format, phrasing or structure.
+Prior-year self-written documents are the input problem this skill fixes, so their shape is never
+inherited, and headings such as "Organization Impact" from employees' own prior documents are not
+on the headquarters form and are not reproduced.
+
+Part 2: Swarm Architecture:
+
+Two analyst agents run in parallel with genuinely different methods, then the orchestrator (the
+main assistant) computes every number once from their agreed mapping. (1) Dispatch, in parallel,
+on the same inputs, with non-overlapping outputs: Analyst Alpha (semantic method) emits column
+meaning only, from header names, known vocabulary and the 1.1 alias table, with no arithmetic;
+Analyst Beta (empirical method) emits candidate column mappings only, from value distribution,
+cardinality, range, null pattern and cross-file ratio behavior, with no header-name reasoning.
+(2) Mapping reconciliation: agreement confirms a mapping; disagreement triggers one
+re-derivation; a mapping still split is UNRESOLVED. (3) Orchestrator computation: all metrics are
+computed once, on confirmed mappings only. (4) Greenlight: the Part 7 verification gates pass, or
+fail and route per 7.1.
+
+Why the split: if both analysts emitted computed metrics, their agreement would prove only that
+they picked the same columns. Alpha answers "what does this column mean" and Beta "what does this
+column's data look like"; agreement between name-reasoning and value-reasoning is genuine evidence
+that a column was identified correctly, and the arithmetic is then done once, deterministically.
+
+2.1 Analyst Output Schemas:
+
+Alpha emits semantics only: header row number; selected sheet and rationale; identity columns;
+brand columns, each with its <business unit> and matched alias; category columns, each with its
+category; execution flag columns; period basis (year to date, last 13, 26 or 52 weeks, month or
+quarter to date, or unknown); and the join key candidate. Beta emits distributions only: header
+row number; selected sheet and rationale; a profile per column (data type, cardinality, null
+percentage, minimum, maximum, median); the join key candidate with overlap row count and
+uniqueness; ratio probes between column pairs (median ratio, share of pairs within 25 percent of
+the factor, pair count); pairing corroboration per brand-category pair (median share, pair count,
+supported or not); unit normalizations per column pair (magnitude, factor, whether to
+auto-normalize); and suspected scale columns.
+
+2.2 Reconciliation Rules:
+
+Only what both analysts can independently emit is reconciled; demanding identical semantic output
+from differently instructed analysts would hard-stop every data-bearing run. Must match exactly,
+any mismatch blocking: header row, selected sheet, join key candidate. Three items are
+corroborated rather than matched, with one analyst authoritative and the other testing it.
+
+- Brand-to-category pairing: Alpha is authoritative; Beta runs a rejection test only, returning
+  per pair the median of brand value over category value for rows where the category value is
+  above zero, the pair count, the share of brand rows that are zero, and REFUTED or NOT_REFUTED.
+  REFUTED when the median exceeds 1 after Stage 4 item 3 normalization, since a brand cannot
+  exceed its own category. NOT_REFUTED is not confirmation: the test is necessary, never
+  sufficient (on real data it failed to refute 18 of 20 deliberately wrong pairings, because
+  almost any brand is smaller than almost any category), so it catches only gross errors and
+  Alpha's pairing plus the alias table remain the authority. Item 3 normalization runs first, so
+  a pairing is never refuted on a units artifact. Sparse brands are not refuted: a median of
+  exactly zero means thin distribution, not mispairing (a large fraction of rows for the newer
+  <business units> is zero on real data), so the zero share is reported and the verdict is
+  INCONCLUSIVE. A Stage 4 item 4 block outranks any NOT_REFUTED verdict; corroboration never
+  overrides a declared rate or unit incompatibility.
+- Period basis: Alpha is authoritative, from header tokens; Beta does not emit it.
+- Unit normalization factor: Beta is authoritative, per Stage 4 item 3; Alpha emits no arithmetic.
+
+On disagreement or refutation: the authoritative analyst re-derives the item once, showing its
+work; if still refuted, the item is UNRESOLVED and its metrics excluded, never averaging two
+values or publishing a disputed derivation; three or more UNRESOLVED items stop the run and
+return to root. The orchestrator performs this count once, immediately after reconciliation; an
+item is one must-match entry or one refuted corroboration, and only items both analysts actually
+emit or corroborate are counted.
+
+2.3 Swarm Execution Contract:
+
+- Precondition: at least one data file parsed to raw form.
+- Action: dispatch both analysts, reconcile mappings, compute metrics once.
+- Postcondition: every confirmed mapping has metrics; every UNRESOLVED item is listed.
+- On fail: an analyst that returns a malformed ledger, times out or returns empty is retried
+  once; the same analyst failing twice on the same file returns the run to root. This two-attempt
+  limit overrides the Part 3 three-attempt default for analyst dispatch only, since a third
+  dispatch wastes a crawl-length wait for no new information. The assistant never reconciles
+  against a single ledger or promotes single-method output; a single analyst produces an
+  UNVERIFIED result, below the standard for an HR record.
+- Wait: both ledgers, or the retry outcome.
+- Stop: the same analyst failing twice on the same file, or three UNRESOLVED items.
+
+Part 3: Execution Contract:
+
+The contract applies to every stage and to Part 2. Each stage states a precondition (what must be
+true to begin), an action, a postcondition (what must be true to proceed), an on-fail policy
+(retry, then fallback, then escalation), a wait (what the stage blocks on) and stop conditions.
+Default retry policy: attempt 2 runs with one constraint relaxed, attempt 3 with the fallback
+method, and a third failure returns to root. "One constraint relaxed" means, in order of
+preference: widen a date window, lower a match threshold, drop an optional filter, or fall back
+from exact to fuzzy matching; a Part 1 doctrine rule is never relaxed as a retry step. Return to
+root means: halt forward progress, write the checkpoint, report in plain language what could not
+be completed and what is needed, and offer the paths forward, never silently continuing with
+partial data.
+
+Hard stops (no retry; immediate halt and ask): the data period does not cover the requested
+write-up period (Stage 4); scope cannot be resolved to a single role and territory or market;
+review mode with no objectives available from any source, including reverse synthesis; three or
+more unresolved analyst disagreements; any required headquarters source unreachable with no cached
+equivalent (a copy already retrieved in this session or present in the workspace and dated within
+the current performance period; anything older is stale); join overlap below the Stage 4 item 2
+floor. Wait points: after scope lock, for user confirmation before the crawl; after Question
+Round 1, for answers before drafting; after Question Round 2, for answers before emitting; before
+emitting, for the orchestrator greenlight.
+
+Part 3.1: Confidence Gating (The Anti-Slop Rule):
+
+Every inference carries a confidence that decides whether the assistant proposes or asks,
+separately from whether a form field is required. At HIGH confidence (evidence unambiguous,
+pointing one way) the assistant proposes it and asks for a light confirm. At MEDIUM (evidence
+supports it but a competing reading exists) it presents both readings and asks which is right. At
+LOW (evidence thin, conflicting or absent) it proposes no prose and asks an open question
+instead. This applies to inferred actions, synthesized
+learnings, reverse-synthesized objectives, brand-to-category pairings, anomaly explanations and
+any causal claim. Low confidence never becomes a sentence; it becomes a question, because a
+confident sentence from thin evidence is the plausible-sounding filler that makes a reviewer
+distrust the whole document.
+
+Worked contrast, where <business unit 4> moved in 23 stores: HIGH when 21 carry the
+distribution-gap flag and a logged call ("You closed distribution gaps in 21 stores. Confirm or
+edit."); MEDIUM when 12 carry a distribution flag and 11 a POS flag, both active in the period
+("Was this distribution work, POS work, or both?"); LOW when no flag correlates above chance ("I
+cannot tell from the data what drove it. What did you do there?"). "Did you actually do this?"
+beats a confident wrong sentence, because users correct a draft far more readily than they catch
+a fabrication that reads well. Confidence is recorded as well as used: every candidate carries it
+into the checkpoint and ITEMS TO VERIFY, so a MEDIUM inference the user confirmed stays
+distinguishable from a HIGH one that never needed confirming.
+
+Part 4: Detection:
+
+4.1 Cycle Position:
+
+SET (period start, no results yet), TRACK (mid-period progress logging), MIDYEAR (first-half
+close) or YEAREND (full year), detected from the current date, the period the user names, the
+period the data covers and whether results exist; if ambiguous, the assistant asks Q-PERIOD.
+Cycle position determines which sections are drafted (Part 8.2); a self-assessment narrative or a
+<behaviors framework> rating is never drafted during a SET or TRACK run.
+
+4.2 Evidence State:
+
+Independent of cycle position, it drives crawl depth and whether reverse synthesis runs: FULL
+(objectives plus documentation plus report files), REPORTS (report files only), FRAGMENT (natural
+language only, such as "I grew <business unit 4>, did resets, helped with POS") or EMPTY (nothing
+supplied). FRAGMENT and EMPTY trigger reverse synthesis: crawl the year, derive the objectives the
+work actually laddered to, and present them for the user to edit rather than author. Most people
+cannot fill a blank objective field but can correct a draft containing their real work; this path
+is the product and no data gate may block it.
+
+No-data branch, when evidence state is FRAGMENT or EMPTY or cycle position is SET: Stage 4 period
+validation and Stage 6 metric requirements are skipped, the swarm is not dispatched, objectives
+and key results are built from the goal ledger, the evidence ledger and the user's answers, and
+every key result carries a target the user supplies or approves via Q-TARGET. A user with no
+spreadsheet is fully supported and is never halted for a file they do not have.
+
+4.3 Role Tier:
+
+The role tier sets scope, the peer comparison set and the 1.5 altitude ceiling. For a
+<territory role> the scope is the territory, peers are sibling territories, and the span is store level
+(store wins are their own action, independents the top signal). For a <market support role> the
+scope is the assigned stores, peers are the market's <market support role>s, and the span is store
+level for directly worked stores and aggregate for account-scope work. For a <market role> the
+scope is the market, peers are the markets in the section, and the span is aggregate only, with
+<top chain tier> accounts in aggregate and never an individual store claim. For a <section role>
+and above the scope is the section, peers are the sections in the region, aggregate only. Any
+tier with direct reports also carries the mandatory people-leader OKR, auto-populated in the
+<HR system> and baselined on averaged <engagement survey> scores; it is read from headquarters in
+Stage 2, never invented.
+
+Part 5: Stages:
+
+Stage 0: Scope Lock:
+
+- Precondition: skill invoked.
+- Action: resolve identity, role, manager and upline chain from the people directory; propose
+  scope, period and objective source as confirmations, never as open prompts.
+- Postcondition: single role, scope and period, known objective source, cycle position and
+  evidence state determined.
+- On fail: ask Q-SCOPE; two failed attempts stop the run.
+- Wait: user confirmation.
+- Stop: scope unresolvable. Scope is never guessed silently; a write-up built on the wrong
+  territory is worthless.
+
+Stage 1: Coffee Gate:
+
+- Precondition: scope locked.
+- Action: state the work, estimate the time, set the return expectation. Estimate bands, assuming
+  the reference cache is current: SET or TRACK, 4 to 6 minutes; MIDYEAR with two files, 8 to 12;
+  YEAREND with a full crawl, 12 to 20; an expired cache adds 3 to 5 minutes and the estimate says
+  which references are being refreshed. The gate language names what was locked (role, scope,
+  period), says the assistant will crawl the full period (headquarters initiatives, the sales IC
+  scorecard, <user's manager>'s directives, and the user's own year in email, Teams, files and
+  calendar) and then parse the reports and rank everything against peers, names the duration,
+  and tells the user to step away and return to findings and a short list of targeted questions.
+  A long run is not a problem; an unexpected long run is.
+- Postcondition: user informed of the duration and what they return to.
+- On fail: if the estimate cannot be computed, state the work without a duration.
+- Wait: none; the stage informs, it does not block.
+- Stop: none.
+
+Stage 2: Goal Ledger (Cache-First):
+
+Six of the eight sources this stage needs change once a year or less; re-crawling them every run
+is the largest waste in the skill and the main reason a run overruns, so the cache is read first
+and SharePoint is visited only for what is stale or genuinely per-run.
+
+- Precondition: scope locked.
+- Action: read the reference cache, run the expiry gate on every file, refresh what is stale, then
+  fetch the two always-live sources, appending each to the checkpoint as it is read.
+- Postcondition: every reference file present and within validity or explicitly recorded as
+  stale; live sources fetched; all of it in the checkpoint.
+- On fail: work the 0.3 ladder, then fall back to stale or most-recent and continue.
+- Wait: none; it runs during the coffee gate, and Stage 8's questions are asked meanwhile if the
+  crawl is long (0.4).
+- Stop: none. A missing IC document for a SET run is normal, since objective setting precedes
+  that period's IC publication; the most recent prior IC table is used as directional input and
+  recorded as prior-period.
+
+Stage 2 - 2a. The Embedded Reference Appendix:
+
+The headquarters layer is embedded in the skill file at Part 12, so nothing external is fetched
+and one file is distributed. Each block opens with a validity header (valid-through date, source
+path, fetched date). The blocks: 12.1 enterprise initiatives (the current year's pillars and
+sub-bullets); 12.2 the <goal horizon year> enterprise goals (the goal set and purpose and vision
+framing); 12.3 sales IC metrics (names, measurement levels, weights); 12.4 headquarters form
+structure (sections, questions, scales, character limits); 12.5 rating criteria (the what/how
+rubric and distribution); 12.6 OKR methodology (objective and key result definitions).
+
+Stage 2 - 2b. The Expiry Gate (Blocking):
+
+For every Part 12 block the assistant compares today's date to its valid-through date. On or
+before it, the embedded block is used without crawling or verifying. After it, the block is stale
+and may not be used as is: the assistant re-fetches from the source path in the block's header,
+uses the fresh content for this run, and tells the user at the end which blocks are out of date so
+the file can be updated for everyone; running on expired doctrine builds a write-up against last
+year's initiatives or the prior half's IC weights. Refresh fallback: if the re-fetch fails after
+the 0.3 ladder, the stale block is used, "Part 12.x is past its validity date and could not be
+refreshed" goes into ITEMS TO VERIFY, and the run continues. Validity periods are set on any
+refresh as follows: 12.2 through the end of <goal horizon year> (a five-year goal set); 12.1
+through the last day of February of the following year (published annually); 12.3 through the end
+of the current half (June 30 or December 31); 12.4, 12.5 and 12.6 through December 31 of the
+current year. Refreshed
+content is reported in the closing summary so the user can paste it into Part 12, keeping one
+file authoritative for the whole organization.
+
+Stage 2 - 2c. Always Live, Never Cached:
+
+Two sources are per-person or per-cycle and are fetched on every run. Cycle initiatives
+(monthly): the current <monthly POS kit> from <sales org>'s planning site on <company>'s
+SharePoint, with prior kits in its archive folder by year; a missing kit is not a hard stop, the
+most recent available is used and noted. Supervisor and upline direction (continuous, per
+person): mail and Teams are searched for <user's manager> and each upline person across the period,
+targeting dated directives that carry targets (store counts, deadlines, named initiatives, "we
+will add to the OKR" language), plus assigned training with reflection prompts, org announcements
+and section communications. This is the highest-value live source and differs for every user and
+changes weekly. Attachments on these messages are part of the source: a manager who writes "here
+are the team OKRs for 2H, make them your own" and attaches a deck has put the entire goal ledger
+in that attachment, so the 0.5 ladder runs on every attachment found on a supervisor or upline
+message and the Retrieval Gate is honored. Also live when applicable: the market or section OKR
+artifact, and for people leaders the people-leader OKR directions document in the Performance
+folder of <company>'s talent development site.
+
+Stage 2 - 2d. Source Paths for Refresh:
+
+Used only when the expiry gate fires. The enterprise initiatives and <goal horizon year> goals
+come from <company>'s strategy framework site on SharePoint, in its folders for the current year's
+initiatives and the <goal horizon year> goals, plus its strategy alignment PDF. The sales IC
+metrics come from <sales org>'s communications site, in the <trade announcement> folder for the
+year, in a file whose name contains "Sales IC", the period and "Program Details"; the assistant
+searches by content if the name pattern does not match, since naming drifts, and extracts the
+full payout weighting table (metric, measurement level, weight percent, payout adjustment
+mechanics), because metric weights are the company's stated priority ranking and the skill ranks
+wins by them. Form structure, rating criteria and OKR methodology come from the Performance
+folder of <company>'s talent development site (sample performance review, performance rating
+criteria, the year's OKR job aid, and the year-end performance dates, actions and FAQ document),
+from which the assistant extracts the section list and order, the exact count and names of the
+<behaviors framework> behaviors, the exact scale values, the exact self-assessment question
+wording and the character limit. Each source is appended to the checkpoint as it is read, never
+batched.
+
+Stage 3: Evidence Ledger:
+
+- Precondition: scope locked.
+- Action: crawl in tiers, appending each tier to the checkpoint before the next, and stop
+  widening as soon as the ledger is sufficient for the cycle position. Tier 1 (always, highest
+  yield per second): sent mail across the period, where the invisible wins live (what the user
+  led, requested, escalated, built and delivered; a request granted by headquarters appears
+  nowhere else). Tier 2 (always): received mail naming the user (recognition, results
+  announcements, target attainment notices). Tier 3 (YEAREND and MIDYEAR only): Teams posts,
+  calendar events organized or led, files authored. Tier 4 (only when the user says something is
+  missing, or Tiers 1 to 3 produced fewer than three items): widen the window, search shared
+  drives, search by project name rather than person. A SET run needs only Tiers 1 and 2, because
+  it uses evidence to establish what is in flight, not to prove a year of results. Each item
+  records what, when, the quantified outcome if present, the source, and whether it is a business
+  result or an organization contribution. Verbal wins and requests granted by headquarters are
+  invisible in any report, which is why Question Round 1 asks for them.
+- Postcondition: evidence ledger populated, or evidence state confirmed EMPTY.
+- On fail: reduce the window and retry, then proceed with what was found and note the gap.
+- Wait: none; runs during the coffee gate.
+- Stop: none. An empty ledger is valid and routes to reverse synthesis plus Q-UNDOC.
+
+Stage 4: Data Ingestion and Period Validation:
+
+- Precondition, first match wins: cycle position SET skips the stage entirely (a SET run never
+  computes results, even when files were supplied; they are retained for the next TRACK or
+  MIDYEAR run); evidence state FRAGMENT or EMPTY skips it per 4.2; otherwise at least one data
+  file is present and is parsed.
+- Action: parse per the contract below, then validate period coverage. The stage is sheet
+  agnostic: any xlsx or csv carrying store identifiers and business performance metrics. If a
+  single sheet carries prior-period columns, metrics are computed from it alone; otherwise a
+  second file or sheet is required.
+- Postcondition: period validated or explicitly confirmed by the user; mappings reconciled per
+  Part 2.
+- On fail: parse retry per the contract, then return to root.
+- Wait: on UNCERTAIN or mismatch, wait for Q-DATA.
+- Stop: period mismatch unresolved, or join overlap below the floor.
+
+Period validation is a hard gate. (1) Establish the window each file covers, in this order of
+authority: an explicit as-of or report-date field or cell; a filename date carrying an explicit
+year and an as-of, through or ending qualifier (a bare month name in a planning filename is a
+cycle label, often for a future cycle built from data current through the prior month, so a bare
+month or any filename date lacking a year is no evidence at all); workbook metadata (created or
+modified date); the period basis token plus the file's own date columns, as a bound only. (2) If
+the first three are absent, the window is UNCERTAIN; basis tokens such as year to date or last 13
+weeks state a lookback length, not a cutoff date, and operational columns such as last call date
+or photo date describe visits, not metric coverage. (3) On UNCERTAIN, Q-DATA fires as blocking and
+the user confirms the as-of date. (4) The confirmed window is compared with the requested write-up
+period; if the data cannot compute it, the run stops and reports exactly what period the data
+covers, what period the write-up needs, what file would close the gap and where to obtain it. A
+year-end is never silently written from partial-year data.
+
+Stage 4 - Spreadsheet Parsing Contract:
+
+The assistant assumes nothing; every element drifts between cycles.
+
+1. Worksheet selection and header detection. A workbook may hold the working sheet, partial
+   extracts, personal subsets and unrelated data, so a sheet is selected before parsing. Scoring,
+   highest wins: contains the resolved scope identifier (territory, market or section code); has
+   the largest count of unique store identifiers; has a schema consistent with the other file, if
+   two are present. Excluded: any sheet whose store-key set is a strict subset of a higher-scoring
+   sheet (a personal or partial extract that would double-count), and any sheet whose schema or
+   scope does not match the resolved scope. The selected sheet and rationale are reported; a tie
+   is put to the user. The header row is never assumed to be row 1: the first 10 rows are scored
+   by count of non-null distinct string values and the highest wins; banner and title rows score
+   low.
+2. Join key resolution and overlap floor. Names differ across versions, so candidate columns are
+   tested for maximum overlap. Candidates may be integer-like or string and are normalized first
+   (trim whitespace, strip leading zeros, casefold, remove non-alphanumeric separators), so a
+   store code stored as text with a leading zero matches its integer twin. A valid key is
+   near-unique in both files (uniqueness at or above 0.98) and one-to-one; many-to-many
+   candidates are rejected, and a column whose name or profile suggests a store or account
+   identifier is preferred over a geographic or personnel code (zip and employee columns overlap
+   heavily and are not store keys). Overlap floor, a hard stop: matched rows must be at least 60
+   percent of the smaller file's row count, or the run stops and reports both rosters, because a
+   near-empty intersection yields metrics both analysts derive identically from the same empty
+   set and promote to CONFIRMED, shipping a fabricated peer rank with two-method validation. Three
+   or more files are chained pairwise against the period-end file as anchor; the assistant
+   reports which files were used and never silently discards a file the user supplied.
+3. Unit drift detection. Run only on pairs both classified rate-volume in item 5; across all
+   numeric columns it false-fires on identity columns (a chain account number against a territory
+   code fires at factor 2). Joined on the key, the assistant computes each pair's per-store ratio
+   of start value to end value, then orients it before any other step: if the median is below 1
+   the ratios are inverted so the median is at or above 1, and the magnitude is the median of the
+   oriented ratios. Orientation is mandatory because otherwise the result depends on which file
+   was divided by which (one direction detected both genuine factor-10 conversions on real files;
+   the reverse detected neither). Candidate factors are 2, 5, 10, 20, 100 and 1000. A unit change
+   is declared only when all hold: at least 30 positive pairs; magnitude within 3 percent of a
+   candidate factor; at least 60 percent of oriented ratios within plus or minus 25 percent of
+   it. Dispersion is not tested with a tight interquartile band, because store-level metrics are
+   naturally dispersed (a genuine cartons-to-packs conversion showed an interquartile range of 18
+   to 24 percent of the median while 80 to 88 percent of pairs sat inside the 25 percent band);
+   concentration near the factor is the test, not tightness. A header token mismatch (cartons
+   against a bare volume token) is evidence, not an automatic block: the test runs to validate
+   the implied factor, the pair is normalized if it confirms one, and Q-UNIT fires if not.
+   Per-week columns for cans, units or sticks are all per-week and never a mismatch on their own;
+   the leading letter is a category hint (the same metric relabeled between cycles showed a
+   magnitude near 1.13, ordinary period movement, and treating it as a mismatch blocked three of
+   four pairs on real data). Only validated magnitudes of 10, 20, 100 or 1000 auto-normalize; a
+   validated 2 or 5 fires Q-UNIT instead, because a genuine doubling of a brand produces a
+   magnitude near 2 and silently correcting it would erase the user's best result of the year.
+   Applied normalizations record factor and evidence in internal notes and ITEMS TO VERIFY; the
+   arithmetic never surfaces in user-facing prose.
+4. Rate, unit and lookback compatibility, a blocking precondition to any math. Three properties
+   stay separate: the rate denominator (the time base, such as per week; a raw period total has
+   none), the unit (cartons, packs, cans, sticks, pods) and the lookback length (year to date;
+   last 13, 26 or 52 weeks; month or quarter to date). In order: (a) the rate denominator must
+   match, and a per-week value against a period total is blocked with no override; (b) the unit
+   must match or a validated item 3 normalization must be applied and recorded, so cartons against
+   packs without normalization is blocked, which prevents a 90 percent phantom collapse; (c) the
+   lookback may differ: when (a) and (b) hold, a differing lookback is a permitted run-rate
+   comparison, recorded in ITEMS TO VERIFY as a run-rate comparison of the start basis against
+   the end basis, stated in any focus or challenges narrative that leans on the figure, and never
+   used to open the write-up. (c) is permitted because a year-to-date weekly average and a 13-week
+   weekly average both express units per week; the lookback changes how much history is
+   smoothed, not what is measured, and planning tools routinely change their window between
+   cycles (on two real files all four pairs differed in lookback and none in rate denominator).
+   A rate mismatch or an unnormalized unit mismatch silently ignored produces a number wrong by an
+   order of magnitude that traces perfectly to real cells. On any block the pair is marked
+   UNPAIRED, Q-UNIT fires for a unit mismatch or Q-DATA for a rate mismatch, and nothing is
+   computed for that pair until it resolves.
+5. Column resolution by routing. A column is classified and routed before any alias is matched
+   against it; an alias search is never run across the whole sheet, which is how an execution
+   flag about age-verification signage on registers becomes a <business unit 4> volume result and
+   a county name lands in a city column.
+   - 5a. Classify every column on two axes: entity (<sales org> brand with its <business unit>,
+     total category, competitor, or none) and measure type (rate-volume, share, count, flag,
+     identity, date, text). Only rate-volume columns enter the arithmetic of items 3, 4 and 5; a
+     "<business unit 4> high volume high velocity store" column is entity <business unit 4>,
+     measure type flag, and never a volume metric.
+   - 5b. Resolve absences by rule, never by value search: independent is a blank chain-name
+     column after null normalization; chain store is a populated chain-name column; unpaired
+     brand is no category column present for that brand. The rule overrides any text match,
+     because the literal word "independent" appears in no planner and a value-searching resolver
+     silently widens to every store in scope. This is the most consequential absence in the file,
+     since independents are the top-tier win signal for a <territory role> (1.7).
+   - 5c. Normalize before matching: casefold both sides, convert underscores and punctuation to
+     spaces, collapse whitespace, strip parenthetical unit tokens, but protect sentinels first.
+     <our brand 4A> is swapped for a sentinel before punctuation is stripped and matched as the
+     sentinel; the bare word is never a <business unit 4> alias (it sits inside more than 200 rows
+     of unrelated flag text on real files). Coincidental substring containment, as when one
+     two-letter state code happens to sit inside its state's name and another does not, is never
+     evidence; values pass through an explicit table, then match exactly.
+   - 5d. Match cascade, within routed columns only: exact, normalized-exact, prefix, then
+     bidirectional substring, which lets a query of a bare chain name reach a stored value of
+     that chain name plus a store number, and a longer query reach a shorter stored value.
+   - 5e. Brand and category aliases. Category headers drift and are often misspelled: the
+     abbreviated and spelled-out industry-<category 1> tokens, "<category 1> volume" and a real
+     observed misspelling all resolve to total <category 1>, without which <business unit 1> has
+     no denominator. Brand to category: <business unit 4>, <our brand 4A> (sentinel), its
+     <price family D> and premium line pair with <category 4>; <business unit 1>, its abbreviations,
+     <our brand 1A>, <price family C> and <our brand 1C> with total <category 1>; <business unit 3>,
+     <our brand 3A> and its initials with <category 3>; <business unit 2>, <our brand 2A>, its
+     short form, <our brand 2B>, <loyalty program> and <our brand 2D> with <category 2>;
+     <business unit 5> with <category 5>. Competitor and aggregate columns (<competitor brand 4A>,
+     <competitor brand 4B>, <competitor brand 4C>, <competitor brand 5B>, deep discount
+     aggregates) are never claimable and exist only to compute category totals.
+   - 5f. Unpaired brands are split by what the brand is. <business unit 6> brands
+     (<our brand 6A>, <our brand 6B>, <our brand 6C>) are non-<industry> products, usually activity flags with
+     no category denominator: execution outcomes are claimed with a denominator population and
+     laddered to the <goal horizon year> non-<industry> goal at L1. Any other brand with a missing
+     or unusable category column is a data gap, not a product characteristic: execution outcomes
+     are claimed with a denominator population and laddered through that brand's own
+     <business unit> subject to the 1.5 ceiling; an <industry> brand is never laddered to the non-<industry>
+     goal.
+   - 5g. Record the resolution for every routed column: the phrase, its resolved entity and
+     measure type, the column, the operator, and the matched value set with row counts, which is
+     what makes a disputed number traceable.
+6. Execution and flag columns. Newer files carry classification and opportunity columns
+   (performance identifiers, target store flags, distribution gaps, contract tiers, validation
+   status, assortment depth, last call date, photo date), mined for counts, coverage, staleness
+   and depth as the action evidence for Stage 7.
+7. Peer comparison. Grouped by the territory or market column, every metric is computed for every
+   peer; the user is ranked and the number of peers sharing the user's value is counted, a tie
+   count that is mandatory and feeds gate G12. The peer set is defined by the period-end file and
+   every comparison runs on the same-store intersection used for the user's own metrics, because
+   rosters change between periods (a real pair of files differed by a whole territory and several
+   hundred stores) and a rank against peers absent from one file cannot be reproduced. The peer
+   count and store basis are stated alongside every rank.
+
+Stage 5: Checkpoint:
+
+- Precondition: any of Stages 2 through 4 producing output.
+- Action: write an incremental checkpoint to the session's working folder, never to the user's
+  output folder, where only finished work goes. It is named to announce its state (a findings
+  checkpoint for the period); opens with a stop banner (work in progress, not submittable, what
+  is done, what is missing); holds ledgers only (raw findings, computed deltas, peer ranks, tie
+  counts, lineage matches, parse log) and no assembled objectives, narrative or copy-paste
+  blocks, so nothing in it can be mistaken for finished; records resume state (stages complete,
+  pending questions); and is deleted when the real report publishes, so one artifact survives a
+  run. In chat the assistant never says findings are ready; it says the crawl is done, then asks.
+- Postcondition: checkpoint written with resume state current.
+- On fail: retry once; if it cannot be written, continue and warn the user that an interruption
+  will require restarting the crawl.
+- Wait: none; runs alongside Stages 2 through 4.
+- Stop: never. A checkpoint failure degrades durability, not correctness.
+
+Stage 6: Marriage and Scoring:
+
+- Precondition: reconciled mappings and orchestrator-computed metrics, the goal ledger and the
+  evidence ledger; in the no-data branch, metrics are absent and the stage works on the evidence
+  ledger alone.
+- Action: match each evidence item to the highest-altitude goal it discharges, subject to the 1.5
+  ceiling, and record the lineage path; label every paired metric WIN, MISS, FLAT or UNPAIRED per
+  1.3; compute peer rank and tie count for every metric; rank by altitude, then peer rank, then
+  magnitude. Unmatched evidence goes to the organization contribution holding list for use inside
+  self-assessment question 1, never discarded.
+- Postcondition: every claimable metric labeled and ranked; every superlative carrying a tie
+  count; every claim carrying its unit per 1.2.
+- On fail: return to root.
+- Wait: none.
+- Stop: evidence state is FULL or REPORTS and no brand-category pair produced a claimable metric
+  and no unpaired brand produced a claimable execution outcome. A file carrying only execution
+  flags is valid and never halts the run. This stop does not apply to the no-data branch.
+
+Stage 6.4: Win Discovery Sweep:
+
+One total-volume number per category is not a performance review; the objective is to isolate
+every defensible win the data supports across the person's whole span of control, then let them
+choose. Under-finding wins is the most common failure of a self-written review.
+
+- Precondition: scored metrics from Stage 6, role tier and span of control from 1.7.
+- Action: run every sweep below that the role and data permit. Each candidate win records the cut,
+  the <sales org> brand, the claimable number with its unit, the comparison that proves it, the
+  peer rank with tie count, and a confidence per 3.1.
+- Postcondition: a candidate win list ranked by altitude, then span-of-control strength
+  (independent bloc first at store tier, account aggregate first at aggregate tier), then peer
+  rank, then magnitude, every candidate carrying a confidence.
+- On fail: a sweep the data cannot support is recorded as unavailable and the run continues.
+- Wait: none.
+- Stop: none. A run with zero candidate wins proceeds to the questions, where the user supplies
+  what the data missed.
+
+Store-level tier sweeps (<territory role>): (1) independents as a bloc, filtered per Stage 4 item
+5b (blank chain name, never a text search), every brand-category pair computed over the bloc alone
+and compared three ways, against the same manager's own chain stores, against independents
+elsewhere in the market, and against the market total; outperformance on any of the three is a
+top-tier win ranked above an equivalent total-volume win. (2) Each local chain as a bloc, grouped
+by chain name; for every chain with enough stores to be meaningful, the pairs inside the territory
+are compared against the same chain across the market ("<chain A> in my territory grew
+<business unit 4> <n> percent against <n> percent for the same banner across the market"). (3) Individual
+named stores, ranked by contribution to each brand's movement; the top few are claimable and
+named. (4) Distribution and assortment: items carried, SKU depth, distribution gaps closed,
+target-list completion, often the cause behind a volume win. (5) Contract and program: tier
+upgrades, elections gained, program participation, validation rates. (6) Execution and
+coverage: call coverage, staleness eliminated, photo compliance, flagged-store completion against
+the population flagged. (7) Engagement: consumer engagements, events, blitz participation.
+
+Aggregate tier sweeps (<market role> and above, <account role>, <market support role> at account
+scope): (1) total scope performance, every brand-category pair across the entire market, section
+or account versus the next level up; (2) every <top chain tier> account in aggregate, each rolled
+across the whole scope and compared to that account's performance outside the scope, the core
+aggregate-tier win and usually under-claimed; (3) <business unit> roll-up across the whole scope;
+(4) team and system outcomes: coverage across the scope, program adoption rate, distribution
+breadth, a practice installed and run by the team; (5) distribution of performance: how many
+territories or accounts improved and how the spread tightened, since a leader who lifted the
+bottom of the distribution has a real win no single-store number shows. No individual-store claim
+is emitted at this tier; a named store appears only as an illustration inside an aggregate claim,
+with credit to the team.
+
+Stage 6.5: Reverse Synthesis:
+
+Runs only when no objectives were supplied and the user chose "reconstruct from my work" at
+Q-OBJ. This path is the product; without an executable definition the agent would improvise the
+highest-stakes step in the skill.
+
+- Precondition: goal ledger (Stage 2) and evidence ledger (Stage 3) both populated; no objectives
+  from any other source.
+- Action: cluster the evidence ledger by the goal it discharges, using the lineage ladder; each
+  cluster with at least two supporting items becomes a candidate objective, capped at 5, with the
+  weakest clusters merged into the nearest neighbor rather than emitting a sixth; write each
+  objective in headquarters enterprise language at the user's altitude ceiling; derive key
+  results from the quantified outcomes inside the cluster, where a cluster with none yields a key
+  result with no target that routes to Q-TARGET; attach the supporting evidence citations to every
+  objective for user review.
+- Postcondition: between 1 and 5 candidate objectives, each flagged RECONSTRUCTED with its
+  evidence citations and lineage path.
+- On fail: if no cluster has two items, emit a single objective built from the user's own Q-UNDOC
+  answer, flagged RECONSTRUCTED. Never halt for lack of clusters.
+- Wait: none; objectives are presented for edit at Question Round 1.
+- Stop: none.
+
+Every reconstructed objective is shown to the user for edit or rejection before it enters a
+draft, and carries "[reconstructed, confirm]" in place of start and due dates per Stage 9.
+
+Stage 7: Action Inference and Learning Synthesis:
+
+This stage is why the skill exists; it runs before Question Round 1 so its proposals can be
+confirmed there.
+
+- Precondition: scored metrics or the evidence ledger, with execution flags where present.
+- Action A, infer winning actions: for every WIN, correlate the stores where the metric moved
+  against the stores carrying the relevant activity flag and a logged call in the period; the
+  intersection is the likely action, expressed in headquarters vocabulary and presented as a
+  proposal (found <business unit 3> share up <n> share points with the category down <n> percent;
+  flags present for <promotional price program> signage and pricing opportunity and
+  <allowance type A> validation; proposed language "validated <promotional price program> pass-through and
+  expanded <our brand 3A> distribution across flagged opportunity stores"; confirm, edit or
+  replace). Attribution check for people leaders: where the evidence identifies who did the work,
+  it is tagged, and a direct report's work is written as team credit ("the team executed", "I
+  directed"), never as the leader's first-person action, since a record claiming personal
+  execution of a subordinate's field work has an integrity problem if checked against call logs.
+- Action B, synthesize learnings from losses: for every MISS, diagnose from the data and propose a
+  transferable learning that ladders to a headquarters objective and names the mechanism, never
+  "I need to do better". The diagnostic isolates which lever failed by comparing the user's rank
+  across related execution measures: coverage complete but share falling points away from
+  frequency and toward depth, assortment or distribution. Illustration: zero stale stores past 90
+  days across the upside list, but 7 of 11 territories also achieved zero stale (tied best, not
+  uniquely best); SKU depth tied in the bottom third; share down and near the bottom. Proposed
+  learning: coverage frequency alone does not capture share in a rapidly expanding category; the
+  lever is depth of assortment at each call, not more calls.
+- Postcondition: every WIN has proposed action language and every MISS a proposed learning, all
+  flagged PROPOSED and unconfirmed; every superlative has a tie count.
+- On fail: if no activity flag correlates to a WIN, the assistant retries once with a widened
+  store set, then emits the result without an action clause and routes that win to Q-UNDOC. An
+  action is never invented.
+- Wait: none; proposals are carried into Question Round 1.
+- Stop: none.
+
+Tie handling is mandatory: when the user's rank is shared, the claim says so. "Tied best in
+market" is honest; "led the market" is an overclaim when six peers matched the result, and a
+superlative a reviewer can disprove in one query destroys the credibility of every other claim, so
+the count of peers at the same value is computed before any superlative is written. Correlation
+across a peer set is weak evidence for causation, so diagnoses are presented as candidates ("Here
+is what stands out. Does this ring true?"), never as proven cause.
+
+Stage 8: Question Round 1 (Grounded):
+
+- Precondition: crawl complete, Stage 7 proposals available, and either the checkpoint written or
+  a recorded checkpoint-unavailable warning per Stage 5.
+- Action: open with findings, then ask (bank and gating in Part 6). The return language leads
+  with the best finding ("Back with <N> findings across <M> categories. Your strongest claim this
+  period is <best win, with its unit and proof>. <K> questions and I can draft."), never "I have
+  completed the analysis." Interactive win review: the ranked Stage 6.4 list is presented as a
+  working list the user edits, not a finding they receive, showing per candidate the cut, the
+  claimable number with its unit, the proof and the confidence, with an invitation to add, modify
+  or drop anything and say what was missed. The user may add a win the data cannot see, modify a
+  framing that is technically right but reads wrong, or drop one they do not want to claim; this
+  is the cheapest moment to correct the analysis. Dropped wins leave the candidate list entirely
+  and are not carried to the closing FOCUS section as consolation.
+- Postcondition: every blocking question for this stage answered, or the run halted per the Part
+  6 skip semantics.
+- On fail: if the user does not respond, write the checkpoint and route to Stage 12.1; the
+  assistant never drafts around an unanswered blocking question by inventing its answer.
+- Wait: block on answers.
+- Stop: user cancels.
+
+Stage 9: Draft Assembly:
+
+- Precondition: the Stage 7 proposal ledger exists, and it may be empty; a SET run, or a period
+  where every metric is FLAT, legitimately produces zero proposals and must still draft.
+  Proposals in state PROPOSED, CONFIRMED or REMOVED are all valid input; confirmation is a Stage
+  10 postcondition, never a Stage 9 precondition.
+- Action: assemble per the cycle-appropriate template in Part 8.2, compute Completion percentages
+  against stated targets, and date Comments entries to the dates the work occurred. A Comment
+  states when the work occurred, not when the entry was written; reconstructed entries are never
+  characterized as contemporaneous logging, and where the host system timestamps entry creation
+  that timestamp is the truth about authorship. Reverse-synthesized objectives have no true
+  start or due date and are emitted with "[reconstructed, confirm]" in place of both the start
+  and the due date, flagged in ITEMS TO VERIFY and disclosed before emit; an objective is never
+  silently backdated into an HR record. Key results with no stated target are marked
+  UNGRADABLE, fire Q-TARGET at Stage 10 and route to Stage 11 for rewrite; a target is never
+  inferred to manufacture a percentage. Any section whose sole input is a Stage 10 question is
+  emitted as a RESERVED placeholder naming that question (for example "[RESERVED - Q-BEHAVIORS]" for
+  the <behaviors framework> rating), which is neither fabrication nor omission: Stage 10.5
+  replaces it with the user's answer, so no section is fabricated and Stage 9 never blocks on an
+  input that arrives later.
+- Postcondition, by cycle: SET, every objective has key results each with a target, start date
+  and due date, and no Status, Comments or Completion; TRACK, every objective has dated Comments
+  and a Completion percentage or UNGRADABLE flag; MIDYEAR, every objective has a Status, dated
+  Comments, and a Completion percentage or UNGRADABLE flag; YEAREND, as MIDYEAR plus every section
+  8.2 lists for YEAREND.
+- On fail: retry assembly once, then return to root.
+- Wait: none.
+- Stop: no objectives available from any source, including reverse synthesis.
+
+Stage 10: Question Round 2 (Field Level):
+
+- Precondition: draft assembled.
+- Action: ask the field-level questions from Part 6.
+- Postcondition: every blocking question answered or routed to Stage 12.1; every proposal
+  resolved to CONFIRMED or REMOVED. A proposal whose question was skipped or never fired is
+  REMOVED, not carried forward; unconfirmed inferred content never reaches the output.
+- On fail: write the checkpoint and route to Stage 12.1. A self-assessment answer, a <behaviors framework> rating, a learning or a target the user did not supply is never fabricated.
+- Wait: block on answers.
+- Stop: user cancels.
+
+Stage 10.5: Re-Assembly:
+
+Without this stage, Round 2 answers are collected but never folded into the draft and proposals
+flipped to REMOVED stay in the emitted text, both putting unapproved content into an HR record.
+
+- Precondition: Stage 10 complete; every proposal resolved to CONFIRMED or REMOVED.
+- Action: fold every Stage 10 answer into the Stage 9 draft, replacing that section's reserved
+  placeholder; strip every REMOVED proposal by deleting the sentence or clause it produced (a
+  REMOVED action clause leaves the result standing without an action half, never an unconfirmed
+  action in the text); apply any Stage 11 rewrite the user accepted by re-running Stage 9 for
+  those key results only.
+- Postcondition: no reserved placeholder remains for an answered question; no emitted sentence
+  derives from a proposal outside state CONFIRMED.
+- On fail: retry once, then return to root.
+- Wait: none.
+- Stop: none.
+
+Stage 11: OKR Grading:
+
+- Precondition: draft complete.
+- Action: score every key result against the headquarters OKR job aid axes: an objective is crisp,
+  one line, significant, concrete and action-oriented; a key result is measurable and verifiable,
+  specific and time bound, aggressive but realistic; its type is input (the person controls it)
+  or output (the person does not). Four failure patterns are flagged automatically: no metric
+  ("improve <business unit 4> visibility"), no deadline ("grow <business unit 3> distribution"),
+  no population ("increase share"), and activity rather than outcome ("visit my top stores
+  monthly"), the most common and most damaging, because activity is not claimable. The assistant
+  shows the original, the rewrite and a one-line reason (visible coaching, not silent
+  correction), following the job aid pattern of verb, metric, population, deadline: "improve
+  <business unit 4> visibility in my stores" becomes "execute at least one lit POS component in 90
+  percent of premium contracted independent stores by June 1". Those numbers illustrate the shape
+  only; every figure, population and date in an accepted rewrite must trace to the goal ledger, a
+  Q-TARGET answer or the data, and anything unsourced is emitted as a bracketed placeholder,
+  because a rewrite seeded with an invented target becomes the standard the employee is graded
+  against next period.
+- Postcondition: every key result scored; every UNGRADABLE one carrying a proposed rewrite and a
+  reason.
+- On fail: emit the key result unscored and note that it could not be graded; a key result is
+  never suppressed for failing grading.
+- Wait: none. Rewrites are presented with the draft at Stage 12; accepted rewrites are applied by
+  re-running Stage 9 for the affected key results only, then re-gating, since an accepted rewrite
+  that never reaches the emitted text is a silent loss of the coaching this stage delivers.
+- Stop: none.
+
+Stage 11.5: Preview:
+
+- Precondition: draft assembled and re-assembled per Stage 10.5, grading complete.
+- Action: show the user the full draft before the final formatted emit, structured as the write-up
+  will appear with every claim in place, plus a short summary of what changed since the win
+  review, asking for anything to remove or soften, anything that reads as overclaiming, and
+  anything that is not how the user would say it. Flagged inline: every claim from a MEDIUM or LOW
+  confidence inference, every superlative with its tie count, every reconstructed objective and
+  date, and every remaining placeholder. Nobody should discover what their review says by reading
+  it in the <HR system>; the preview is the last cheap moment to change anything.
+- Postcondition: the user has seen the complete draft and responded, or explicitly declined.
+- On fail: if the user does not respond, write the checkpoint and route to Stage 12.1.
+- Wait: block on the user's response.
+- Stop: user cancels.
+
+Stage 12: Greenlight and Emit:
+
+- Precondition: all Part 7 gates pass.
+- Action: the orchestrator reviews against the gates; any failure routes per 7.1 to the stage
+  that can remediate it, never to one that only evaluates. On pass, the cycle-appropriate blocks
+  are emitted with character counts, then the out is offered: "Anything here you would remove or
+  soften?" People will not submit something that overstates them, and without an easy way to dial
+  back they abandon the whole draft rather than edit it.
+- Postcondition: blocks emitted, ASCII sweep passed, checkpoint deleted.
+- On fail: route per 7.1; three failed returns on the same gate escalate to return to root with
+  the gate named.
+- Wait: none.
+- Stop: a gate fails three times.
+
+Stage 12 - 12.1 Incomplete Emit Path:
+
+Triggered when a blocking question went unanswered or a required section has no source; a partial
+draft the user can finish is worth far more than nothing after a ten-minute crawl.
+
+- The cycle-appropriate blocks are emitted with "[NOT PROVIDED BY EMPLOYEE]" in every field whose
+  blocking input is missing.
+- The output is bannered "INCOMPLETE - DO NOT SUBMIT", followed by a named list of what is
+  outstanding and which question would resolve each item.
+- Fields carrying the placeholder are exempt from gates G5, G6 and G13.
+- The checkpoint is not deleted; the user returns to finish.
+- An incomplete draft is never presented as finished.
+
+Stage 8 and Stage 10 on-fail route here, not to a silent stop.
+
+Part 6: Question Bank and Gating:
+
+Every question the skill may ask is a row in a fixed table: ID, trigger, weight from 1 to 10,
+blocking flag and the stage at which it fires. "Review mode" means the cycle position is TRACK,
+MIDYEAR or YEAREND. The question that rates the <behaviors framework> (the company's named set of
+behaviors rated on the HQ form) is Q-BEHAVIORS here; the question feeding the form's
+<leadership rating section> is Q-IL.
+
+| ID | Trigger | Weight | Blocking | Stage |
+|---|---|---|---|---|
+| Q-LIMITS | always, before drafting | 10 | yes | 8 |
+| Q-SCOPE | scope not inferable | 10 | yes | 0 |
+| Q-DATA | period uncertain or mismatched | 10 | yes | 4 |
+| Q-OBJ | review mode and no objectives on hand | 10 | yes | 0 |
+| Q-PERIOD | period ambiguous | 9 | yes | 0 |
+| Q-UNIT | a unit factor below 10 detected between two files | 10 | yes | 4 |
+| Q-STATUS | review mode, one grid per objective set | 9 | yes | 10 |
+| Q-LEARN | midyear or yearend, only if the template has a section it feeds | 9 | yes | 10 |
+| Q-BEHAVIORS | yearend | 9 | yes | 10 |
+| Q-TARGET | any key result with no target | 9 | yes | 8 in SET, 10 in review |
+| Q-UNDOC | always, after the evidence crawl | 8 | no | 8 |
+| Q-DEV | SET or yearend | 8 | no | 10 |
+| Q-ACTION | any WIN with a HIGH or MEDIUM confidence inferred action (one grid) | 9 | yes | 8 |
+| Q-CAUSE | any WIN whose action is LOW confidence (open question, no proposal) | 9 | yes | 8 |
+| Q-ANOM | material anomaly, at most 3 | 7 | no | 8 |
+| Q-CHALLENGE | yearend | 7 | no | 10 |
+| Q-PRIORITY | more than 3 headline candidates | 6 | no | 8 |
+| Q-IL | yearend, all roles; blocks only for people leaders | 9 | yes | 10 |
+| Q-WINS | always, after win discovery (add, modify or drop candidates) | 9 | yes | 8 |
+| Q-PREVIEW | always, before emit | 9 | yes | 11.5 |
+| Q-SOFTEN | always, final | 5 | no | 12 |
+
+6.1 Budget and Precedence:
+
+Blocking questions are requirements, not preferences. Each round the skill fires every blocking
+question whose trigger is met and whose stage is the current stage, counts them (B), and fills a
+non-blocking budget of the larger of 0 and 4 minus B, by weight. It never presents more than 4
+questions at one time; when more are outstanding they go in weight order, highest first, in
+successive batches within the same stage. A wall of questions is abandonment.
+
+Form-required exemption: at YEAREND, Q-CHALLENGE and Q-DEV are exempt from the budget and always
+fire, because they are the sole inputs to the second self-assessment question and to Development
+Objectives, both HQ form sections that arithmetic may not drop.
+
+Composite questions: Q-STATUS, Q-BEHAVIORS, Q-TARGET, Q-IL, Q-ACTION and Q-LEARN are each one grid
+covering all objectives, behaviors or ungradable key results, and each counts as 1 toward B. Ties in
+weight resolve by table position, top first; batch composition is never left to judgment. A question
+never fires before the stage that supplies its context; the stage column is authoritative.
+
+6.2 Skip Semantics:
+
+Non-blocking questions are freely skippable; an empty answer means skip, never cancel. A blocking
+question the user declines or leaves unanswered terminates the run through the incomplete emit path
+of Stage 12.1. The skill never fabricates the missing value and never proceeds as if the question
+had been answered: a user leaving a field blank is not the skill inventing content for a permanent
+HR record.
+
+6.3 Question Forms:
+
+Every question is answerable in under 30 seconds, carries its findings, is posed through the
+structured question tool (never plain text in chat) and never asks what the tools can answer.
+Q-SCOPE, Q-PRIORITY, Q-CHALLENGE, Q-DEV and Q-SOFTEN are single short questions whose intent the
+table states ("Anything here you would remove or soften?"); the rest follow, grouped, with
+representative wording.
+
+Setup and data (Q-LIMITS, Q-OBJ, Q-DATA, Q-UNIT).
+
+- Q-LIMITS asks the character limit on the objective box and on each key result in the <HR system>
+  (the performance management system holding the form); if the user is unsure the skill targets 500
+  for each, the common default. Blocking because a wrong limit means truncated text in a permanent
+  record.
+- Q-OBJ asks whether current objectives exist in the <HR system>, with three options: paste them,
+  they are in a file, or reconstruct from my work. The third triggers reverse synthesis.
+- Q-DATA states the window the data covers against the period the write-up needs and asks for the
+  missing file; when the as-of date cannot be established it asks what date the file is current
+  through.
+- Q-UNIT: "<Metric> moved by a factor of <N> between the two files. That is either a unit change or
+  a real result. Which is it?"
+
+Wins and actions (Q-UNDOC, Q-WINS, Q-ACTION, Q-CAUSE, Q-ANOM).
+
+- Q-UNDOC lists what was found in writing and asks what never hit email or a report: chain
+  conversations, sell-ins, coaching a teammate, problems solved for someone else.
+- Q-WINS presents every win isolated across the span of control, strongest first, as an editable
+  list to add, modify or drop, never as a finished finding.
+- Q-ACTION, one grid with one row per win: "For <win>, I think you did <inferred action>. Confirm,
+  edit, or replace." MEDIUM-confidence rows show the competing readings rather than one proposal.
+- Q-CAUSE is the open question for LOW-confidence wins (the result happened; what did the user do
+  there), never accompanied by a guess.
+- Q-ANOM asks what sits behind a metric that moved against its comparison: store closures,
+  competitor activity, territory change or a genuine miss. Capped at 3, ranked by absolute growth
+  delta in percentage points against the peer median.
+
+Review-mode grids (Q-STATUS, Q-TARGET, Q-LEARN, Q-BEHAVIORS, Q-IL).
+
+- Q-STATUS: per objective, On Track or Behind; the skill proposes, the user overrides.
+- Q-TARGET covers every ungradable key result: no stated target, so no completion percentage; what
+  was the target. Each row offers "no target was set for this", which keeps the key result
+  UNGRADABLE (honest and acceptable) and routes it to Stage 11 for a rewrite that will be gradable
+  next period. A retrospective target is never invented to manufacture completion math.
+- Q-LEARN lists every Stage 7 learning, one row per MISS, each acceptable, editable or removable,
+  plus a free-text row ("What is one thing you learned this period that changed how you work?"); a
+  single free-text prompt would strand several proposed learnings unconfirmed.
+- Q-BEHAVIORS rates the <behaviors framework> behaviors on the frequency scale; the count, names and
+  scale values come from the live HQ form.
+- Q-IL asks whether the user's actions this period match the top descriptors of the
+  <leadership rating section>'s scale, with one or two specific examples. Required for people
+  leaders, optional for individual contributors unless functional leadership directs otherwise;
+  never inferred from other evidence.
+
+Closing (Q-PREVIEW).
+
+- Q-PREVIEW shows the full assembled draft with confidence flags, tie counts and placeholders marked
+  inline and asks what to remove, soften or reword before formatting.
+
+Part 7: Verification Gates:
+
+7.0 Gate States:
+
+Every gate resolves to PASS, FAIL or NOT APPLICABLE. The last is a passing state that never blocks
+emit and applies when the run does not produce the artifact the gate inspects: with the no-data
+branch active (4.2), G4, G7, G9, G10, G12 and G14; at cycle position SET, G5 (no results exist yet;
+targets and dates are validated instead); at TRACK, G6 applies only to Comments text; with no
+superlative in the output, G12. Without this rule the no-data and objective-setting paths could
+never emit: they skip the stages those gates inspect, fail gates that route back to the skipped
+stages, exhaust the retry count and die. Those paths are the product.
+
+The gates, in the source's order.
+
+- G1, claim subject and basis, applies to every quantitative claim, per number rather than per
+  sentence (a sentence with two numbers is tested twice and fails if either fails). (a) The measured
+  entity of the result clause, not its grammatical subject, is a <sales org> <business unit> brand
+  from the alias table in 1.1, or a named execution population inside the user's scope explicitly
+  attached to a named <sales org> brand or initiative ("<n> of <m> flagged <our brand 3A>
+  pass-through stores"). Action-first phrasing ("Validated pass-through and expanded <our brand 3A>
+  distribution, growing <business unit 3> share of <category 3> by <n> share points") passes and is
+  the house style. (b) Volume and share claims carry a category comparison; peer rank never
+  substitutes, since a brand can rank first among peers while lagging its category, a MISS.
+  Execution claims (distribution achieved, stores ordered, calls completed, percent of a target list
+  executed) satisfy (b) with a denominator population. No-data-branch narrative claims with no
+  number are exempt and listed under ITEMS TO VERIFY. A sentence whose measured entity is a category
+  fails, however well benchmarked.
+- G2: every number traces to a cell or a tool result; everything else is a bracketed placeholder.
+- G3: no claim exceeds the user's scope or the altitude ceiling in 1.5.
+- G4: the unit drift test ran, with dispersion evidence, before any comparison was computed.
+- G5: every key result carries a completion percentage (0 or greater, naming its target) or an
+  explicit UNGRADABLE flag with a proposed rewrite. Values above 100 are legitimate, stated as
+  achieved-over-target and never clipped.
+- G6, field limits: every emitted field carries its exact character count, at or under the limit
+  confirmed per 0.6. An over-limit field had the 0.6 compression order applied and either fits or
+  the objective was split; nothing is written long for the user to trim. A truncated field reaching
+  the system is the failure this gate prevents.
+- G7: every category in the data appears in the output: CONFIRMED metrics in the body, UNRESOLVED or
+  UNPAIRED metrics only under ITEMS TO VERIFY since their numbers are not trustworthy. Nothing is
+  dropped for being unflattering.
+- G8: no named third parties anywhere, not only peers; positional language only. Also fails on
+  indirect identification: elimination in a small peer set, or a compound identifier (a uniquely
+  held account plus a rank). A peer set smaller than four is generalized, not ranked.
+  <leadership rating section> examples never name the colleague or direct report involved, since
+  they touch personal circumstances and travel into a record that person cannot see.
+- G9: mapping reconciliation is complete; UNRESOLVED items are excluded from claims and listed under
+  ITEMS TO VERIFY.
+- G10: period validation passed or was explicitly confirmed by the user.
+- G11: the ASCII sweep of Part 10.1 ran on all authored text.
+- G12: every superlative ("led the market", "highest", "best", "first") carries a verified tie
+  count; a shared result is stated as tied.
+- G18, attachment retrieval: every attachment on a supervisor or upline message was read, or read
+  and found out of scope, or named in the output as unreadable with the paths attempted; none was
+  fetched through the raw attachment-content endpoint. Silently ignoring a manager's attached
+  direction fails.
+- G17, reference validity: every reference file used was within its valid-through date, or
+  refreshed, or recorded under ITEMS TO VERIFY as stale and unrefreshable. Also fails if the
+  <sales incentive plan> metric weights used (the field sales incentive program's payout weights) do
+  not match the period written.
+- G16, span of control: every claim matches the tier in 1.7. A store-level tier user may claim named
+  stores; an aggregate-tier user may not, and a named store appears only as an illustration inside
+  an aggregate claim credited to the team. Also fails if a store-level user's write-up has no
+  independent-bloc analysis when independents exist in the data, their strongest signal.
+- G15, proposal confirmation: no emitted sentence derives from an inferred action or synthesized
+  learning not in state CONFIRMED; an unconfirmed first-person claim about what the employee did is
+  the worst thing this file can produce. Also fails if a RESERVED placeholder survives for a
+  question the user answered.
+- G14, rate and unit compatibility: no growth, share or delta figure computed from two columns whose
+  rate denominator differs, or whose unit differs without a validated, recorded normalization. A
+  differing lookback length is permitted and recorded as a run-rate comparison (Stage 4 contract
+  item 4).
+- G13, unit naming: every numeric claim names its unit per 1.2 (share points, percentage points of
+  growth, percent, count or currency); a bare "points" fails.
+
+7.1 Gate Failure Routing:
+
+Every failure routes to a stage that can remediate it, never to one that only evaluates.
+
+- G1, G3, G7, G12: Stage 6 (labels, lineage, ranks, tie counts), then Stage 9 (rewrites the prose
+  that carried the defect), then Stage 12. Stage 6 alone cannot fix a sentence; without Stage 9 the
+  re-gate inspects unchanged text and fails identically.
+- G2, G6, G8, G13: Stage 9, then Stage 12.
+- G4, G10, G14: Stage 4, Stage 6, Stage 9, Stage 12.
+- G5: Stage 10 (fire Q-TARGET), Stage 9, Stage 11, Stage 12.
+- G9: Part 2 re-reconciliation per 2.3, Stage 6, Stage 9, Stage 12.
+- G15: Stage 10.5, then Stage 12.
+- G16: Stage 6.4, Stage 9, Stage 12.
+- G17: Stage 2 (refresh the stale file), Stage 6, Stage 9, Stage 12.
+- G18: Stage 2 (work the 0.5 attachment ladder again), Stage 6, Stage 9, Stage 12.
+- G11: apply the Part 10.1 substitution rule and re-gate in place.
+
+A failure re-runs only the stages in its chain and may fire only the question named in the chain,
+only for items never asked about; a user is never asked the same question twice because a downstream
+gate failed. Three failed returns on one gate route to Stage 12.1, which emits the draft with the
+offending claim replaced by a placeholder and the gate named in the banner, never returning to root,
+since after a ten-minute crawl and two question rounds a bannered partial draft always beats an
+empty result. A global budget of 8 remediation cycles per run applies across all gates; beyond it
+the run routes to Stage 12.1 whichever gate is failing, since alternating failures between two gates
+could otherwise cycle longer than any user will wait.
+
+Part 8: Output Format:
+
+8.1 The HQ Form:
+
+The output mirrors the live HQ sample performance review structure in plain text: no markdown, no
+tables, nothing that breaks when pasted into the <HR system>. Sections, in order, as of the last
+verified reading: 1. Employee Information; 2. Objectives and Key Results; 3. Development Objectives
+(each may carry Learning Activities); 4. <behaviors framework> (rated by both manager and employee);
+5. Self-Assessment (two questions); 6. <leadership rating section>; 7. Performance Assessment
+(manager-completed, never drafted by this skill). The live form is read every run for the section
+list, behavior count and names, scale values, question wording and character limit; the list is a
+map, not a hard-coded schema. There is no "Organization Impact" section; that heading comes from
+employees' self-written prior documents and is never reproduced. Contributions beyond the user's own
+scope belong inside Self-Assessment Q1, which explicitly invites work whether or not it is captured
+in the OKRs.
+
+8.2 Cycle-Specific Templates:
+
+Only the sections the cycle position calls for are drafted; a self-assessment narrative or
+<behaviors framework> rating is never drafted in a SET or TRACK run.
+
+- SET: Objectives, Key Results with targets and dates, Development Objectives. No Status, Comments,
+  Completion, self-assessment or <behaviors framework> rating.
+- TRACK: dated Comments and Completion percentages against existing objectives. No self-assessment,
+  <behaviors framework> rating or Focus section.
+- MIDYEAR: Objectives with Status, Comments and Completion, plus Focus for the next period.
+  Self-assessment and <behaviors framework> rating only if the live mid-year form includes them,
+  checked before drafting.
+- YEAREND: all of sections 1 through 6.
+
+8.3 Emission Shape:
+
+The copy/paste region, top to bottom: a header line "<PERIOD> PERFORMANCE WRITE-UP" and a line with
+name, title and scope separated by pipes; per objective, an "OBJECTIVE <n>" line carrying the crisp
+verb phrase (no metrics) with its character count in brackets, a Status line (On Track or Behind)
+and a Lineage line naming the enterprise initiative and the <sales incentive plan> metric with its
+weight; numbered Comments, each headed by the user's name and the date the work occurred and stating
+in plain first person what happened; Key Results, one dash item each (verb, metric, population,
+deadline) with its character count, then Start, Due and Completion (a percent naming its target, or
+"UNGRADABLE - no target stated"); Development Objectives in the same structure, with Learning
+Activities (what the activity builds and why it applies; Status Started or Completed; Start and
+Completed dates); the <behaviors framework> employee self-rating, one line per behavior as read from
+the live form; Self-Assessment Q1, accomplishments (two paragraphs on business impact and the
+behaviors, where contributions beyond own scope belong) and Q2, challenges and missed opportunities
+(two paragraphs: the miss, the cause, the response, the learning, the forward change), each with its
+character count; and the <leadership rating section>, with its applicability note, the Yes or No
+rating line labeled as the live form labels it, and supporting examples that name no third party.
+
+Below the copy/paste region, separated by the banner "----- NOT FOR SUBMISSION -----", sit two
+blocks. FOCUS FOR <NEXT PERIOD> states each gap with the <sales org> brand result and its category
+delta, then the actions; it is planning content for the conversation and next period's objectives,
+with no live-form counterpart, kept out of the body for the same reason "Organization Impact" is.
+ITEMS TO VERIFY lists figures needing <CRM> or Power BI confirmation, reconstructed objectives and
+dates awaiting confirmation, UNRESOLVED analyst items and unit normalizations applied; it is never
+inside a copy/paste block, so it cannot travel into the HR system by accident.
+
+8.4 Category Visibility Without Category Credit:
+
+Every category in the data appears in the body, which does not authorize a category-growth
+achievement sentence. Allowed: the <sales org> brand's result with its category delta ("Grew
+<business unit 4> <n> percent against a category that grew <m> percent on the <volume index>, a
+shortfall of <m minus n> percentage points of growth"), and a category figure as the denominator of
+a share statement. Forbidden: a standalone sentence whose subject is a category or its growth,
+however well benchmarked ("The <volume index> category grew <m> percent, ahead of the national
+rate", the Part 11 failure case). The subject of the sentence decides, and G1 enforces it.
+
+Guardrails:
+
+The eleven NEVER rules of Part 9 are the operating guardrails; those protecting people and records
+are restated so they are never missed: no fabricated action, number, date, target, learning or
+rating (unconfirmed inferences are fabrication; missing values become bracketed placeholders in
+ITEMS TO VERIFY); no evaluating, ranking or naming of other employees (peer comparison is anonymous
+and positional); no aggregate above the user's scope attributed to the user and no category growth
+claimed as achievement; no value whose two derivations disagreed and no reconstructed comment
+presented as contemporaneous; no checkpoint written into the user's output folder and no
+user-supplied document overwritten or deleted (all drafts are new files). The output becomes a
+permanent HR record: when in doubt the claim is left out and the reason is stated.
+
+Part 9: Guardrails:
+
+1. The skill never fabricates an action, number, date, target, learning or <behaviors framework>
+   rating; an unconfirmed inferred action is fabrication even when the number is real, and missing
+   values become bracketed placeholders naming their source, listed in ITEMS TO VERIFY.
+2. It never claims industry or category growth as achievement.
+3. It never attributes an aggregate above the user's scope, or above the altitude ceiling, to the
+   user.
+4. It never copies a prior-year document's structure or phrasing.
+5. It never evaluates or ranks other named employees; peer comparison is anonymous and positional
+   ("highest of any territory in the market", never "ahead of <name>").
+6. It never opens with methodology, caveats or data reconciliation, which are internal.
+7. It never asserts causation from correlation; diagnoses are candidates for confirmation.
+8. It never characterizes reconstructed comments as contemporaneous logging.
+9. It never backdates a reverse-synthesized objective without flagging it as reconstructed.
+10. It never writes a checkpoint to the user's output folder.
+11. It never publishes a value whose two derivations disagreed.
+
+Part 10: Prose Rules:
+
+10.1 ASCII Enforcement:
+
+Scope: every character of text the skill authors (chat responses, copy/paste blocks, checkpoint
+contents and every string written into a file, including strings inside Word, Excel and PowerPoint
+containers), but never the raw bytes of a binary container, which hold bytes above 127 by
+construction; the authored strings are scanned, not the file envelope. Default rule: any code point
+above 127 is transliterated to its closest ASCII equivalent; with no reasonable equivalent it is
+dropped and the substitution logged to ITEMS TO VERIFY, so no character class can slip through.
+Common substitutions, applied before any output leaves the skill: em, en and figure dashes and
+non-breaking hyphens to hyphen; curly quotes to straight quotes; bullets and middots to hyphen; the
+ellipsis character to three periods; arrows to "to" or "->"; non-breaking, thin and zero-width
+spaces to a regular space or removed; byte order marks and soft hyphens removed; registered,
+trademark and copyright marks removed; unicode minus to hyphen-minus; less-or-equal and
+greater-or-equal to "<=" and ">="; degree, cent and fractions to "deg", "c" and "1/2"; accented
+letters to the base letter; emoji, dingbats and box drawing removed.
+
+Names: a store or person name carrying an accent is transliterated to base letters, never dropped or
+truncated, and every name transliteration is logged to ITEMS TO VERIFY so the user can correct the
+spelling if the target system supports it; losing a name is worse than losing an accent. Quoted
+source text keeps its words and transliterates its characters, since character fidelity never
+outranks system compatibility. Source contamination is the main risk: HQ PDFs, Word documents, email
+bodies and spreadsheet cells carry curly quotes, em dashes, registered marks, unicode minus signs
+and non-breaking spaces, so text is swept before it enters a draft, not after, and Excel's unicode
+minus on negative numbers is a sign error waiting to happen. Verification is mechanical, never
+visual: every authored string is scanned programmatically and rejected on any code point above 127,
+since a visual pass misses non-breaking spaces, zero-width spaces and byte order marks.
+
+10.2 Style:
+
+Plain hyphen and straight quotes only. Title Case for headings (first, last and major words
+capitalized; a, an, the, coordinating conjunctions and prepositions of four letters or fewer
+lowercase unless first or last; the first word after a colon capitalized); never ALL CAPS except the
+fixed block labels. Banned: delve, leverage, seamless, robust, unlock, "not just X but Y", and the
+bold-phrase-plus-colon bullet cascade. Register: corporate, confident, brief, articulate, never
+chatty. Objectives and framing use enterprise language; results are plain declaratives with bare
+numbers and named units, never dressed up. Metric names are the exact <sales incentive plan> strings
+read from the current program document (<incentive metric A> through <incentive metric J>, listed in
+12.3), verified against the live document each run.
+
+Part 11: Regression Cases:
+
+All seven cases run before any change ships; they appear in the source's order.
+
+- Case 1, the industry-credit trap. Inputs: period-start and period-end reports for one scope where
+  a <sales org> brand grew strongly while its category grew faster. Expected: the brand is labeled
+  MISS, appears in the body with its own growth number and its category delta in percentage points
+  of growth, and its share gap appears in FOCUS with named actions. Failure: any output leading with
+  category growth as achievement ("The <volume index> category grew <m> percent, ahead of the market
+  by <k> points"), the most seductive error in this data because it reads as a triumph and is a
+  miss.
+- Case 2, the no-data user. Inputs: no spreadsheet, only "I grew <business unit 4>, did a bunch of
+  resets, and helped with the POS thing." Expected: a complete reverse-synthesized draft with
+  objectives derived from the crawl, reconstructed dates flagged and targets gathered through
+  Q-TARGET. Failure: any halt that asks for a file, or any silently backdated objective.
+- Case 4, the altitude ceiling. Inputs: a <market support role> and, separately, a <territory role>,
+  each with a strong execution result plausibly related to an enterprise goal (12.2). Expected: the
+  <market support role> cites the goal only as context with a contribution verb; the
+  <territory role> may cite it, also with a contribution verb. Failure: any ownership verb
+  (achieved, delivered, drove, led) attached to a goal above the person's own scope.
+- Case 5, the unconfirmed action. Inputs: the user skips or ignores the action-confirmation
+  question. Expected: the result is emitted without an action clause. Failure: any inferred action
+  reaching the output in a state other than CONFIRMED.
+- Case 6, span of control. Inputs: the same data run once as a <territory role> and once as a
+  <market role>. Expected: the <territory role> write-up names individual stores and leads with an
+  independent-bloc win; the <market role> write-up has no individual-store claim and leads with a
+  Level 1 account aggregate. Failure: a named store claimed as personal action at aggregate tier, or
+  a <territory role> write-up that never analyzes independents separately.
+- Case 7, low-confidence inference. Inputs: a win where no activity flag correlates above chance.
+  Expected: an open question asking what the user did, and if unanswered the result emitted with no
+  action clause. Failure: any confident action sentence from thin evidence.
+- Case 3, the tied superlative. Inputs: a metric where the user ties several peers at the best
+  value. Expected: "tied best in market" with the tie count stated. Failure: "led the market",
+  "highest", "best" or "first" without a tie count.
+
+Part 12: Embedded HQ Reference:
+
+Six blocks are read instead of crawling SharePoint; the Stage 2b expiry gate runs on each before
+use, and a refreshed block is reported so the file can be updated once for everyone. Each block
+opens with a valid-through <date>, the source document's location and the fetched <date>. The
+content is the company's own text, outlined here with placeholders.
+
+12.1 Enterprise Initiatives:
+
+Source: the current year's enterprise initiatives document on <company>'s strategy site. The
+initiatives are stated as a few dated pillars (four in the source), <HQ initiative pillar 1> through
+<HQ initiative pillar 4>, each with a one-sentence quoted intent statement and three to six
+initiatives (<HQ initiative 1A>, <HQ initiative 1B> and so on). For lineage the skill relies chiefly
+on <HQ field sales initiative>, the portfolio-pillar item on field sales capability and retail
+execution to which most field objectives ladder; on <HQ volume and share target>, the item
+committing to the year's volume and share targets, cited for any volume or share result; and on
+<HQ talent and capability initiative> under the enablers pillar, to which development objectives
+ladder. Any other initiative is cited only when a result is explicitly attached to it.
+
+12.2 <target year> Enterprise Goals:
+
+Source: the enterprise goals document on <company>'s strategy site. The goal set states its purpose
+(clarity, progress tracking, accountability) and groups its goals: <HQ goal group A> (corporate
+financial and market-position goals), <HQ goal group B> (<category group B> product volume and
+revenue goals) and <HQ goal group C> (long-term growth in new markets and adjacent categories). Each
+goal names a metric, a target value and a base year (<HQ metric target>). A note lists products
+whose goals depend on regulatory authorization, and a framing block gives <HQ purpose statement>,
+<HQ vision statement> and <HQ measures of success> (the enterprise goals plus corporate
+responsibility goals and inclusion aiming points). A field result maps to an enterprise goal only as
+context and only with a contribution verb (1.5; Case 4).
+
+12.3 <sales incentive plan> Metrics:
+
+Source: the current half's <sales incentive plan> program details document on <sales org>'s
+communications site, valid through the end of the half. The quoted purpose
+(<HQ incentive purpose statement>) ties field incentive pay to progress toward the <target year>
+goals and to the in-store experience of <adult consumers>; the first core principle is alignment
+with enterprise and <sales org> common goals.
+
+Payout weighting: the weights are the company's stated priority ranking, and wins are ranked by
+them. Each row carries the metric, its payout weight and the geography at which it is measured
+(national; the higher of market or section; market; section; or the employee). The rows as of the
+last reading follow.
+
+- <incentive metric A>: <weight>; national (a management-plan rating).
+- <incentive metric B>: <weight>; higher of market or section (POS visibility execution).
+- <incentive metric C> and <incentive metric D>: <weight> each; market (on-shelf availability for
+  <business unit 2> and for <business unit 4>).
+- <incentive metric E>: <weight>; market (the <business unit 4> volume target), the heaviest
+  controllable metric for a field role and so the first-ranked win.
+- <incentive metric F>: <weight>; market (<our brand 1A> pack allowance pass-through).
+- <incentive metric G>: <weight>; section (<business unit 3> <promotional price program>
+  pass-through, new for the current half).
+- <incentive metric H>: <weight>; section (loyalty-identified transaction count).
+- <incentive metric I>: <weight>; section (age-verification technology adoption and regulatory
+  violation rate).
+- <incentive metric J>: a payout multiplier, not a weighted metric, on the share of visits with a
+  same-day <photo platform> photo: no adjustment at or above <upper photo threshold> percent, a
+  reduced payout between <lower photo threshold> and <upper photo threshold>, a further reduction
+  below. <territory role> and <market support role> are scored at employee level on who completed
+  the visit in <CRM>; <market role> at market level.
+
+Metric names are used exactly as the document spells them. Each metric's detail block records its
+measured population, SKU set and payout rule, and the skill reads these to decide which population a
+claim must cite: the volume metric is shipments net of returns in called-on stores excluding
+business development prospects, with a team payout rule tied to national attainment; pass-through
+metrics are measured in targeted stores on named SKUs; the transaction-count metric counts
+transactions, not utilization, across all called-on stores reporting scan data, with an accelerator
+tied to <HQ accelerator goal>.
+
+12.4 HQ Form Structure:
+
+Source: the sample performance review on <company>'s talent development site. Sections are the seven
+of 8.1; Employee Information carries last name, first name, title, department, manager and division;
+there is no "Organization Impact" section. Objective structure: a title (crisp verb phrase, no
+metrics); Status On Track or Behind; Objective Details and Comments with Start Date, Due Date and
+numbered dated Comments; Key Results each with Start Date, Due Date and Completion percent.
+<behaviors framework>: five behaviors, <behavior 1> through <behavior 5>, rated by both manager and
+employee on three observed frequency values (Almost Always, Frequently, Occasionally); the skill
+drafts only the employee self-rating. Self-assessment questions are quoted verbatim from the live
+form: <self-assessment question 1> (one or two accomplishments reflecting impact to the business and
+the behaviors, whether or not captured in the OKRs) and <self-assessment question 2> (one or two
+challenges or missed opportunities, what contributed, the response, the learning); last observed
+limit 4000 characters per free-text field, verified per run. <leadership rating section>: required
+for people leaders, optional for individual contributors unless functional leadership indicates
+otherwise; a Yes or No field against <leadership rating descriptor> plus supporting comments.
+Process calendar shape (confirmed each year): self-assessment about two weeks from
+<self-assessment month>, manager assessment about two weeks, calibration about three weeks, system
+freeze for executive review about two weeks, one-on-one conversations about four weeks, employee
+acknowledgement about ten days; forms auto-advance at <form cutoff time> on the due date.
+
+12.5 Rating Criteria:
+
+Source: the performance rating criteria document on <company>'s talent development site. Ratings
+differentiate on scope and magnitude of impact, consistency in meeting or exceeding expectations,
+and ownership and independence, along a "What" axis (impact, value creation, prioritization and
+execution) and a "How" axis (the <behaviors framework>, ownership and growth, inclusion,
+compliance). The five-point scale carries a target share of the organization per level
+(<rating distribution targets>, with a combined ceiling for the top two): 5, significantly exceeded
+(outsized value, hard enterprise trade-offs, stopping lower-value work, substantial autonomy,
+enterprise-first judgment, behaviors role-modeled beyond the immediate area of responsibility); 4,
+consistently exceeded (strong sustained value, better ways of working within scope, minimal
+guidance); 3, consistently met and sometimes exceeded; 2, inconsistently met; 1, unacceptable, as
+needed. The operative test for 5 versus 4: a 4 improves ways of working within scope, a 5 materially
+shapes outcomes, decisions or ways of working beyond it; work that crosses scope boundaries is the
+differentiator. The rubric was rewritten in <date> and its axes changed, so they are not assumed to
+persist beyond the validity date.
+
+12.6 OKR Methodology:
+
+Source: the OKR job aid on <company>'s talent development site. Its quoted framing
+(<HQ OKR framing statement>) says objectives focus the most important work and that business and
+development OKRs align with <HQ strategic framework>, the enterprise initiatives, the function's and
+team's goals and the user's career goals. Objectives state what to achieve: crisp, one line,
+significant, inspirational, concrete, action-oriented, short-term or long-lived. Key results state
+how: measurable and verifiable, specific and time bound, aggressive but realistic. Input key results
+are tasks within the user's control; output key results are quantifiable metrics usually outside it.
+OKRs are reviewed with the manager at least quarterly: continue, update, start or stop.
+
+The official worked example is a field sales objective (make <our brand 4A> the most available and
+best positioned brand at retail to achieve 100 percent of the <business unit 4> volume target by
+<date>) with key results such as closing distribution gaps to the full <n>-SKU portfolio in 100
+percent of contracted stores by <date> and averaging <n> <adult consumer> engagements per week at a
+<n> percent conversion goal as tracked in <CRM>. The pattern enforced: verb + metric + population +
+deadline. The development example is improving digital and AI skills, with a certification by <date>
+and a mentor-guided new AI or digital process saving about one hour per week by <date>. Sanctioned
+AI use: the talent function publishes a guide to drafting OKRs with <company>'s internal AI
+assistant (for example, critique my OKR as my direct line manager would), so AI-assisted OKR
+drafting is an established, documented practice.

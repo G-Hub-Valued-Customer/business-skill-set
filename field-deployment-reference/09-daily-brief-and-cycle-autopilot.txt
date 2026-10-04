@@ -1,0 +1,1610 @@
+----------------------------------------------------------------------------------------------------
+Part 9 of 11: Daily Store Brief and Cycle Autopilot
+----------------------------------------------------------------------------------------------------
+
+Daily Store Brief and Cycle Autopilot
+=====================================
+
+Purpose: A scheduled autopilot for a <territory role>. Every weekday it reads the rep's <CRM>
+"Daily Schedule" email and emails one phone-friendly brief of that day's planned store visits;
+every Saturday it rebuilds the cycle's per-store content from the newest cycle files in OneDrive
+and the inbox and from 13 weeks of business data in <data warehouse>.
+
+Triggers: "I'd like to enable daily briefings"; "the email is all set up for 5:00 AM"; "what is my
+plan today"; "refresh the cycle" or "new planner dropped, rebuild"; "build my route-day guide for
+the cycle"; and similar phrasings asking for per-store actions on planned <CRM> visits.
+
+Inputs:
+- The <CRM> "Daily Schedule" subscription email (inbox, each weekday morning): every remaining
+  planned visit in the cycle, as a CSV attachment, an HTML table or text.
+- The <planning workbook> (the monthly planner, one row per store): the user's OneDrive-backed
+  Desktop or Documents folder, or the monthly planner email from <user's manager>. Mandatory.
+- The <distribution gap export>, the <loyalty program target list> and the contract audit workbook
+  (the Contract Compliance Audit skill's output): the same folders or inbox attachments. Optional.
+- The <market cycle workbook> (found by name), any other store-keyed spreadsheet ("Other Cycle
+  Data"), and presentations, PDFs and Word files that direct the cycle's work.
+- The <monthly POS kit> email and <user's manager>'s cycle emails (inbox); the user's calendar.
+- 13-week shipment and scan data by store, category and brand from <data warehouse> (Power BI).
+- The signed-in user's profile (role, territory, market, email).
+
+Outputs:
+- One phone-friendly HTML email per selling day (Monday to Friday), to the user only, with the
+  per-stop content standard for each planned stop in start-time order plus the day's calendar.
+- On refresh: the per-store content file (JSON) for every ranked store; with a new planner, also
+  the plan workbook (Excel) and the route-day guide (Word, one page break per sales day). All are
+  copied to the user's OneDrive folder daily-store-brief; the guide is never emailed.
+- A two-line "needs attention" email when a Saturday step fails; nothing otherwise.
+- The cycle configuration file, a workspace notes file with the rep's times, and a refresh report.
+
+Parameters to Fill In:
+- <company>, <sales org> - the company and its field sales organization, whose cycles run four
+  weeks, Saturday to Friday.
+- <business unit>, <business unit 1>, <business unit 2>, <business unit 3>, <business unit 4>,
+  <business unit 5> - the operating units whose contracts and kit activities the planner, the kit
+  and the brief name.
+- <category 1>, <category 2>, <category 3>, <category 4>, <category 5> - the five product
+  categories in the business table.
+- <our brand 1A>, <our brand 2A>, <our brand 2B>, <our brand 2D>, <our brand 3A>, <our brand 4A>,
+  <our brand 5A> - the lead brands per category; 2D is a second <category 2> brand whose on-shelf
+  count the target list carries.
+- <competitor brand 1A>, <competitor brand 1B>, <competitor brand 1I>, <competitor brand 1K>,
+  <competitor brand 1L>, <competitor brand 2A>, <competitor brand 2C>, <competitor brand 2G>,
+  <competitor brand 3A>, <competitor brand 3B>, <competitor brand 3D>, <competitor brand 4A>,
+  <competitor brand 4B>, <competitor brand 4C>, <competitor brand 5A>, <competitor brand 5B> - the
+  competitor brands tracked per category in Versus the Competition.
+- <loyalty program>, <loyalty program target list> - the <category 2> retailer loyalty program and
+  the exported workbook of its target stores and on-shelf counts.
+- <CRM> - the field CRM holding planned visit records, with its analytics dashboard, visit report
+  widget and email subscriptions.
+- <data warehouse> - the Power BI semantic model with 13-week shipments and scan data by store.
+- <planning workbook> - the monthly planner (region, section, market, territory, <store id>, store
+  name and activity columns).
+- <distribution gap export> - the dashboard export of each store's distribution and signage
+  measures below goal.
+- <market cycle workbook> - the section-level cycle workbook emailed each cycle; found by name.
+- <monthly POS kit> - the monthly kit email of cycle activities, due dates and headquarters
+  wording.
+- <price support program> - the retail price support program whose election column the planner
+  carries.
+- <sign type 1> - the signage program with a state-by-state guide; <sign type 4> - the
+  <business unit 1> flip-style price sign scored against set size and agreed planogram.
+- <volume unit> - the planner's cross-category weekly volume measure; <priority store flag> - the
+  planner flag for a headquarters-targeted high-upside store; <strength> - a product strength
+  keyword in planner activity headers.
+- <author> - the method's author, named in workbook contact rows and the guide footer.
+- <user's manager>, <territory role>, <market support role>, <support role> - the rep's manager,
+  the rep's title, the per-store merchandising support role, and the section-level support role
+  that emails the <market cycle workbook>.
+- <market>, <territory id>, <store id>, <store ids> - the rep's market and territory, and the
+  store number that keys every file.
+- <jurisdiction> - a state with its own legal or signage rule; <chain A> - a chain named in one
+  example manager quote; <shared folder link> - the skill folder link pasted on day one; <date> -
+  a company-history date; <n> - a store count for a named geography.
+- <partner product line> - the non-core product line the sales org also sells, which appears as its
+  own activity originator with the lowest business unit weight
+- <total volume column> - the planner column holding each store's total cross-category equivalent
+  units per week over the latest 13 weeks
+- <store dimension> - the data warehouse's store table, carrying the territory code and the business
+  development flag that filter every query
+- <sign type 4> - the business unit 1 state value-price flip sign
+- <sign type 5> - the business unit 1 loyalty flip sign for the core brand 1A line
+- <price family A> - the first tracked brand 1A price family (its own flip sign; pass-through
+  tracked)
+- <price family B> - the second tracked brand 1A price family (pass-through; the competitor-threat
+  rule)
+- <price family C> - the third tracked brand 1A price family (pass-through)
+- <required facings> - the contiguous brand 3A facings the business unit 3 base contract requires
+- <strength> - the strength of the brand 4A premium line expansion activity this cycle
+- <flavor> - the flavor segment in which competitor brand 1A is the threat
+- <cycle label> - the cycle's display label, month and year, as configured
+- <territory id>, <market id> - six-digit and four-digit codes as the configuration template expects
+
+What the User Says and Gets
+---------------------------
+
+Two short conversations, one day apart; then a brief lands in the inbox every selling morning and
+the cycle rebuilds itself every Saturday. Nothing to install, nothing to upload.
+
+Day one: in a new Cowork session the user pastes the <shared folder link> and says "I'd like to
+enable daily briefings". Copilot walks them through the <CRM> home page (the visit report widget's
+fields and filters), a daily Monday-to-Friday email subscription named "Daily Schedule" at the
+time they choose (5:00 AM is typical), and the OneDrive backup of Desktop and Documents, where
+they already save the planner, the <distribution gap export> and the
+<loyalty program target list>.
+
+Day two (or later the same day, once the subscription is saved): in the same session the user
+says "okay, the email is all set up for 5:00 AM". Copilot finds the planner and cycle files,
+builds the Top Store ranking and per-store content, and schedules the runs around that time. The
+first brief arrives the next selling morning about 30 minutes after the <CRM> email, built from
+it.
+
+Other ways to ask: "what is my plan today" (one-off brief, nothing scheduled); "refresh the cycle"
+or "new planner dropped, rebuild" (rebuild now, not Saturday); "build my route-day guide for the
+cycle" (the full Word guide, one page break per sales day).
+
+What comes back: one phone-friendly email per sales day with, per stop in start-time order, the
+store header and <store id>, Top Store rank, distribution gaps with the exact fix,
+<loyalty program> targeting, the 13-week business table, Versus the Competition with units per week and
+what to do today, and a Do This list, plus the day's calendar. Monday to Friday only; Saturday is
+the quiet rebuild; nothing on Sunday. Time: ten minutes on day one, five on day two; the daily
+email is automatic. For a permanent install the user copies the skill folder into the OneDrive
+folder Documents/Cowork/skills and then just says "I'd like to enable daily briefings".
+
+For Copilot pointed at the folder: load SKILL.md. Any set-up phrasing is Workflow A1 (give the
+<CRM> and OneDrive walkthrough and stop); "the email is all set up for" plus a time is Workflow
+A2 (install, discover, build, schedule around that time, say the first brief arrives the next
+selling morning). No step is ever put on <user's manager>.
+
+Skill Instructions
+------------------
+
+Version <date>, built by <author> (<territory role>, <market>) with Copilot Cowork. ASCII only,
+Title Case headings, concise and scannable. The skill holds no store data; everything a run
+produces stays in the rep's own session, OneDrive and inbox.
+
+What It Does:
+
+Two loops in one scheduled task. Legend: when; what happens; cost.
+
+- Daily brief: Monday to Friday, 5:15 AM local; read the <CRM> "Daily Schedule" email, keep
+  today's planned stops in start-time order, assemble the brief from prebuilt per-store content,
+  add the day's calendar, email it; 3-4 tool calls, about one minute, nothing recomputed.
+- Cycle refresh: Saturday, 5:15 AM local; find the newest cycle files in OneDrive and the inbox by
+  their columns; new planner: rerun the Top Store ranking and plan workbook and rebuild the
+  route-day guide; always: refresh the 13-week data from <data warehouse> and rebuild the
+  per-store content; validate, swap, copy to OneDrive; 35 Power BI queries plus local builds,
+  5-15 minutes.
+
+The brief is one sales day only. The full-cycle guide (Word) is built on refresh, lives in
+OneDrive and is never emailed.
+
+Who It Is For:
+
+A <territory role> with one territory of planned <CRM> visits. The assistant resolves who is
+asking as the Hub section describes; the only difference here is that the scope is always the
+rep's own territory. Each rep runs their own copy in their own Cowork task (their inbox, OneDrive
+and Power BI row-level security). Nothing is ever put on <user's manager> or a teammate.
+
+One-Time Setup Per Rep:
+
+1. Day one, the rep says "I'd like to enable daily briefings". Copilot gives the <CRM>
+   subscription walkthrough and the OneDrive backup check (Workflow A1) and asks them to return
+   once the subscription is saved.
+2. The rep returns with "Okay, the email is all set up for 5:00 AM". Copilot activates the
+   autopilot (Workflow A2): installs the scripts, finds the cycle files, builds the ranking and the
+   per-store content, schedules the runs around that time. The first brief arrives the next
+   selling morning from the first real <CRM> email; nothing is sent on day one.
+
+Workflow for Copilot:
+
+Four workflows: A1 enable, A2 activate, B cycle refresh, C daily brief.
+
+A1. Enable ("I'd like to enable daily briefings", "set up daily briefings"):
+
+Nothing is installed, built or scheduled yet. The assistant gives this walkthrough in its own
+words, in this order, as a numbered list the rep follows on a laptop, then stops and waits.
+
+1. The rep opens <CRM>, goes to the home page, scrolls to the <CRM> analytics dashboard and finds
+   the visit report widget's table.
+2. The rep sets the fields: account number, account name, territory, visit record type, visitor
+   name, visit status, planned/completed date. If the builder offers a planned start time, the
+   rep adds it; it gives the brief the stop order straight from <CRM>.
+3. The rep sets the filters: visitor name is the rep, visit status is Planned, sales cycle is
+   Active. No date filter: the email must carry every remaining planned visit in the cycle, not
+   one day.
+4. The rep clicks the widget's share arrow, chooses Subscribe, daily, Monday through Friday, at a
+   time before they leave for the field (5:00 AM is typical), names it "Daily Schedule" and saves.
+   It arrives as the <CRM> analytics subscriptions email with Daily Schedule.csv attached.
+5. OneDrive check: OneDrive icon, Settings, Sync and backup, Manage backup, Desktop and Documents
+   on. The rep saves the planner, the <distribution gap export> and the
+   <loyalty program target list> to the Desktop as they land; the browser's download folder should be the Desktop.
+   Nothing is ever uploaded to Copilot.
+6. The assistant closes with: when the subscription is saved, come back and say "okay, the email
+   is all set up for 5:00 AM" (or the chosen time); the first brief arrives the next selling
+   morning about 30 minutes after it.
+
+If the inbox already holds the <CRM> analytics subscriptions email with a Daily Schedule.csv
+attachment, the assistant says so, skips steps 1-4 and asks only for the time it is set for.
+
+A2. Activate ("okay, the email is all set up for 5:00 AM"):
+
+The time T comes from the rep's sentence (default 5:00 AM). Run time is T plus 15 minutes,
+wait-until is T plus 28, expected delivery about T plus 30. Then, in order, the assistant does
+the following.
+
+1. Resolves the user (territory, market, role, email) from the profile and the planner; a
+   <territory role>'s scope is their own territory (the Hub section).
+2. Installs: copies the local build scripts (config loader, ranking builder, workbook builder,
+   verifier, guide builder, per-store content dumper, Word guide builder and checker, cycle
+   refresh, activity wording) into the session's working folder and the three tool-using scripts
+   (daily brief, cycle discovery, <data warehouse> pull) into the script-runner folder; creates
+   the cycle configuration from the bundled template with the user's scope and cycle window
+   (reference part 3 explains every key); writes the workspace notes file from reference part 4
+   with the rep's times filled in.
+3. Runs the Cycle Refresh (B) along its new-planner path. If discovery finds no planner, tells the
+   rep where it looked and that the autopilot starts the Saturday after the planner lands on the
+   Desktop; still creates the schedule.
+4. Grants before the schedule. A scheduled run can use only what the task was already allowed,
+   and the schedule card can pre-approve the email send alone (scoped to the rep's own address).
+   The Saturday refresh also reads Power BI, OneDrive and the inbox and writes cycle files back to
+   OneDrive, so those permission cards are raised now, with the rep present, by the refresh in
+   step 3 and the dry run in step 5, with the instruction "Choose Always Allow on each card, not
+   Allow; that is what lets the morning runs go out without you." Then the scheduled prompt is
+   created (reference part 4): weekly, Monday to Saturday, at the run time, inline mode, send
+   permission scoped to the user's own address only. The schedule card is approved at once (a
+   timed-out card saves nothing) and the scheduled prompts are listed afterward to confirm.
+5. Dry-runs the daily brief for the next selling day and checks that the preview renders; sends
+   nothing. The first real brief goes out on the next weekday run from the first <CRM> email.
+6. Tells the rep what arrives, when (T plus about 30 minutes, Monday to Friday), that Saturday is
+   the quiet rebuild, and the three things that can need attention (reference part 6).
+
+Briefs are for selling days only. There are never planned visits on Saturday or Sunday: Saturday
+runs the refresh and sends nothing unless a step needs attention; Sunday has no run.
+
+B. Cycle Refresh (Every Saturday, or "refresh the cycle", "new planner dropped"):
+
+1. The assistant runs the cycle discovery script through the script runner (not a dry run). It
+   scans the OneDrive Desktop, Documents, Downloads and root folders two levels deep plus inbox
+   attachments since the last refresh, recognizes files by their column signatures and never by
+   name (reference part 2), keeps the newest of each kind (planner, <distribution gap export>,
+   <loyalty program target list>, contract audit, <market cycle workbook>), stages them in the
+   session's cycle input folder and updates the configuration. Any other spreadsheet keyed by
+   store number (a one-off program export, a new initiative tracker, a program target list) is
+   staged as an extra input, and every store's own row from it appears in the brief under Other
+   Cycle Data with no code change. New presentations, PDFs and Word files in the same places and
+   the inbox are listed as documents for step 2. The assistant reads the result's new-planner
+   flag, Other Cycle Data labels and document list.
+2. If the planner is new, the assistant sets the cycle's label, month, year, start, end and
+   next-cycle end from the planner's month and the <monthly POS kit> email (reference part 3);
+   sets run date and built date to today; rebuilds the calendar notes from the user's calendar
+   for the cycle window (no-selling days, field rides, calls that overlap stops); clears the
+   completed-before list; refreshes the kit deadlines and <user's manager>'s focus list from the
+   kit email and the manager's cycle emails (discovery has already cleared the roll price message
+   and completed-before); and clears the live plan file so the plan rebuilds from the next <CRM>
+   email. Then, new planner or not, it opens each listed document (the kit, a program
+   announcement, the manager's deck, a <jurisdiction> guide) and folds anything that directs this
+   cycle's work into the cycle notes: a kit deadline into kit deadlines, headquarters wording into
+   headquarters quotes, the manager's direction into the focus list, a state rule into the
+   state-guide notes. It quotes, never paraphrases, and skips a document with no store-level
+   direction, saying so in the log.
+3. The assistant runs the <data warehouse> pull script through the script runner (no arguments;
+   territory from the configuration; it finds the model by name). About one minute.
+4. The assistant runs the cycle refresh script as a Python process with the new-planner flag
+   (omitted when the planner is unchanged). It runs the local builds, validates the new per-store
+   content (valid JSON, store count, required fields, ASCII), swaps it in atomically, keeps the
+   previous content as the previous-content file and writes the refresh report. A non-zero exit
+   means nothing was replaced.
+5. Publish: the assistant copies the configuration, the per-store content, the captured plan (if
+   captured) and the live plan to the user's OneDrive folder daily-store-brief, overwriting. New
+   planner: it also copies the plan workbook and the guide document to the session's output
+   folder and the user folder.
+6. If any step fails, the assistant leaves the previous content in place and emails the user a
+   two-line "Daily Store Brief needs attention" note naming the step. It never emails a partial
+   rebuild.
+
+C. Daily Brief (Every Weekday):
+
+The assistant runs the daily brief script through the script runner with the wait-until time
+(T plus 28). The script does the following.
+
+- Restores the configuration, per-store content, captured plan and live plan from OneDrive if the
+  workspace is fresh.
+- Finds today's "Daily Schedule" email (polling every 3 minutes until the wait-until time), reads
+  every planned visit row (HTML table, text, or CSV/XLSX attachment), saves the remaining plan to
+  the live plan file and OneDrive, keeps the rows dated today in start-time order, and notes
+  stops added or dropped versus the previous plan and how many visits remain in the cycle.
+- Falls back, in order, to the plan saved from the previous email, then the plan captured at
+  cycle start, and says which at the top of the email.
+- Builds the HTML from the per-store content (every ranked store in the territory, so a store
+  added mid-cycle still has content; a brand-new store gets a header plus a note), adds the day's
+  calendar, enforces ASCII and sends to the user only. The subject is "Daily Store Brief - " plus
+  the weekday and date, the stop count, and the first and last towns. A day with no planned
+  visits gets a two-line note.
+- Dry run: given a date and the dry-run switch, writes a preview HTML file in the working folder
+  and sends nothing; used after any content change.
+
+Content Standard (Per Stop):
+
+1. Header: stop number | start time | store name; address | <store id> | chain or Independent;
+   then Top Store rank of N, <volume unit> per week with volume rank, <priority store flag> when
+   set, the assigned <market support role>, best time, last call.
+2. Distribution gaps: only measures missing or under 100 percent, each with the exact fix (which
+   sign, which SKUs to put back, how many cans to goal); "None - every measure is at 100%." when
+   clean; "Not in the <distribution gap export>." when the store is absent.
+3. <loyalty program>: Targeted or Not targeted, and <our brand 2A> or <our brand 2B> store (from
+   the planner). Other Cycle Data follows when any other store-keyed export names the store: one
+   line per file, the file's name then its columns and values for this store (for example a
+   tracker's target flag, on-shelf count and header-placed flag). Identity columns are dropped;
+   values are shown as found, never interpreted.
+4. Business - Latest 13 Weeks: one row per category: units per week, change versus a year ago
+   with the territory's change in parentheses, the lead brand's share and point change with the
+   territory's share in parentheses, then two sentences of plain-language read.
+5. Versus the Competition: one line per category with a verdict word (WINNING, AT RISK, TRAILING,
+   LOSING, NOT IN THE GAME), then the company's brand with units per week, share, position versus
+   the territory and year-over-year change in units and percent; the nearest threat with units
+   per week, share and year-over-year change; the number two brand the same way; then "Do:" with
+   what the rep can do in this store today. Every share carries its units per week (rules in
+   reference part 5).
+6. Do This: a numbered list of at most six items, each tied to a line above.
+
+Writing rules: ASCII only, Title Case headings, no AI-hallmark words, short declarative lines,
+numbers before adjectives. Mobile layout: a single column, 15px body, 640px maximum width.
+
+Guardrails:
+
+- One email per sales day, to the user only. Never the full-cycle guide, never a 200-page email.
+- Fail loudly, degrade gracefully: a broken input never blocks the brief; it goes out from the
+  last good content with a one-line header saying what was used, and a refresh failure sends a
+  "needs attention" note instead of partial content.
+- No step is ever placed on <user's manager> or a teammate. No Power Platform connector, no admin
+  request.
+- Scope is the user's own planned stores. Business development prospects, other territories and
+  other reps' plans are never read.
+- Discovery downloads only xlsx, xlsm and csv files modified since the last refresh and under
+  60 MB, and only to classify them by their header rows; presentations, PDFs and Word files are
+  listed by name for the Saturday read, never downloaded by the script; nothing else in OneDrive
+  is opened or kept.
+- Scripts never log message bodies, attachments or whole payloads; counts and names only.
+- The scheduled prompt's send permission is scoped to the user's own address and never widened.
+- Every number in a brief traces to a source: the planner, the <distribution gap export>, the
+  <loyalty program target list>, the contract audit, <data warehouse>, the <CRM> email or the
+  calendar. A missing input shows as "Not in the <distribution gap export>" or "No
+  <loyalty program> list for this cycle", never a guessed value; a store with no prepared content gets a
+  header and a note, never invented lines.
+
+When Not to Use:
+
+- Only the ranked visit list or the plan workbook: Top Opportunity Stores.
+- A POS presence scorecard for a market or territory: POS Gap Scorecard.
+- Contracts scored from store photos: Contract Compliance Audit (<business unit 4> and
+  <business unit 3>).
+- Editing, charting or reformatting a workbook: the xlsx skill.
+- Completed calls, call history or <CRM> reporting on past visits: this skill reads planned
+  visits only.
+- Building or scheduling Power Automate flows or a Copilot Studio agent: the automation skill.
+
+Files:
+
+Three scripts run through the script runner because they use the session's tools: the daily brief
+script (arguments: date, dry run, wait-until, note override, alternate recipient), the cycle
+discovery script (since date, dry run, folder list, skip drive, skip inbox) and the
+<data warehouse> pull script (territory, model name, output path). The rest run as plain Python: the
+cycle refresh (new-planner and skip-Word flags), the ranking builder, workbook builder and
+verifier (the Top Store ranking and the nine-tab plan workbook, the Top Opportunity Stores
+scoring as implemented in <date>), the guide builder and per-store content dumper, and the Word
+guide builder (page break per sales day, linked contents) with its checker. The config loader and
+the cycle configuration template are read by every run. The Scripts section describes each
+script; the reference covers <CRM> setup, email format, configuration keys, scheduled prompt
+text, verdict logic and troubleshooting.
+
+Troubleshooting:
+
+- The brief says "using the plan saved from the previous <CRM> email" every day: the subscription
+  changed layout. A dry run of the daily script shows the "rows parsed" log line; the email may
+  have come as an image or a new table shape. The fix is the parser or a re-created subscription
+  with the A1 fields.
+- "No <CRM> schedule email found": the subscription is paused or renamed; the brief still went
+  out from the saved plan.
+- Discovery finds no planner: it is in Downloads or an unbacked folder; the rep moves it to the
+  Desktop. The log names every file it classified.
+- Stores show "Not in the <distribution gap export>": the export is stale or missing; the
+  Saturday run picks up a newer one once it lands on the Desktop.
+- Content looks a cycle old: the refresh report shows the failed step; a failed validation leaves
+  the previous content in place on purpose.
+
+References
+----------
+
+Reference: Pipeline Notes:
+
+Build notes for the cycle-driven Top Store and route-day guide chain. All scripts run from the
+session's workspace root and read their cycle settings from the cycle configuration through the
+config loader (an environment variable can point at another configuration path). Nothing is
+hardcoded to a month or a territory except the items under Still Hardcoded.
+
+Reference: Pipeline Notes - Still Hardcoded:
+
+- Author contact lines in the plan workbook (Method, Questions and Tuning rows) and the guide
+  footer name <author> on purpose: that is who to ask about the method.
+- The example configuration is a scrubbed past cycle; a new rep's configuration is copied from
+  the template, not the example.
+- Nothing else: recipient, territory, market, planner path and contact come from the
+  configuration's scope and planner input. A missing scope email or territory stops the daily
+  brief and the <data warehouse> pull with a plain error instead of guessing.
+
+Reference: Pipeline Notes - Full Rebuild:
+
+Preferred: the cycle refresh script with the new-planner flag (optionally skipping the Word
+build). The chain is the ranking builder (planner to ranking file plus a parse-and-score
+checkpoint), the workbook builder (ranking to plan workbook plus a build checkpoint), the guide
+builder (ranking, visits, planner and optional inputs to guide blocks and a guide preview) and
+the per-store content dumper (imports the guide builder, writes the per-store content file). The
+<data warehouse> 13-week file is a prerequisite of the guide builder and is not rebuilt here.
+
+Reference: Pipeline Notes - Scripts:
+
+The notes tabulate what each script reads, writes and takes from the configuration; the Scripts
+section carries that detail per script. Two points matter to the operator: the guide builder uses
+the live plan when its file exists and the captured plan otherwise, and the workbook and guide
+stamp the cycle label, dates, scope and the planner's name, source and modified time into their
+footers and method rows.
+
+Reference: Pipeline Notes - Scripts - Details:
+
+- Planner sheet and header detection (guide builder): the first sheet whose first five rows hold
+  a row with both a <store id> cell and a territory cell; that row is the header. The ranking
+  builder keeps its own string-cell-score detection.
+- Month-stamped planner columns (the <price support program> election, the <business unit 2>
+  contract and the <business unit 4> contract for the cycle month and the previous month) are
+  built from the cycle month. The <business unit 5> contract column carries its own stale month,
+  so it is resolved from the header: the month nearest to, and not after, the cycle month.
+- Kit due-date years: a bare month/day falls in the cycle-start year when its month is at or after
+  the cycle-start month, otherwise the following year.
+- The per-store content holds every ranked store in planner scope (<n> in the example), not only
+  the planned stops. Planned date and time come from the visit when the store is on the route,
+  else empty. The cycle label reads as label plus start and end in month/day form; the generated
+  stamp is the built date.
+
+Reference: Pipeline Notes - Optional Inputs:
+
+Empty in the configuration or missing on disk.
+
+- <distribution gap export> absent: the gap block is empty for every store, the presence flag is
+  false, the guide prints "Store is not in the <distribution gap export>." and no hang-sign,
+  put-back, <our brand 2D> or pass-through items are generated.
+- <loyalty program target list> absent: no store is targeted; the line reads "No
+  <loyalty program> list for this cycle."; the <business unit 2> sign fix falls back to the brand-equity
+  header or <sign type 4>.
+- Contract audit absent: no audit line, no <business unit 4> or <business unit 3> next steps;
+  planner contract flags still apply.
+- Other cycle data (the extra inputs list; empty means nothing shown): the guide builder loads
+  each file, finds the header row carrying a store number, and keeps every store's non-identity
+  columns as header-and-value pairs (numbers compact, dates month/day, text cut at 60 characters,
+  ASCII); one line per file naming the store lands in the guide and in the per-store content,
+  which the brief renders under Other Cycle Data. The file labels and the <data warehouse>
+  week-end date (best effort) ride at the top of the content for the brief's footer.
+- The check that the <distribution gap export> and <loyalty program> target sets agree runs only
+  when both files are present. The planner is mandatory; the ranking and guide builders stop with
+  a clear message without it.
+
+Reference: Pipeline Notes - Cycle Notes:
+
+The cycle notes block holds the cycle's content, formerly literals in the scripts. Legend: shape;
+used by.
+
+- Kit deadlines: entries with title, due (month/day), states (list or empty), type,
+  <market support role> flag (a bare string is a title only); ranking builder (activity matching,
+  close-date band, state drop against the planner's in-scope states), workbook builder
+  (Priorities deadline rows).
+- Headquarters quotes: entries with <business unit> and text (or plain strings), the kit's
+  page-one things-to-do bullets; ranking builder (matching, 0.75 band), workbook builder
+  (Priorities).
+- Manager focus: entries with id, sender, role, date, subject, text (matched verbatim), weight;
+  ranking builder (matching, source boost 2.0), workbook builder (Priorities, Method, Read Me).
+- Directed store ids: <store ids> (empty in the example), with optional directed-by, date and
+  note; ranking builder (exempt from the lifestyle escape, removed from Top 10, Next 25 and All
+  Other), workbook builder (Directed tab, Method funnel, Overrides).
+- <sign type 4> issue store ids and note: a <store id> list and the contract-flag sentence; guide
+  builder contract flags.
+- Completed before: entries with date and <store ids> (empty ids means every ranked store not on
+  the route; an empty list omits the section); guide builder "Completed Before This Guide"
+  section, contents entry and Totals sentence.
+- Roll price message: activity-match keyword (header keyword, alternatives separated by a bar),
+  do-this, versus and workbook sentences, or empty (all three lines omitted); guide builder
+  do-this and versus blocks, workbook builder Why column.
+
+Activity wording: three maps (short guide label, guide do-this, workbook short label) keyed by the
+normalized planner header (lowercase, collapsed spaces). An unmapped header gets a generic Title
+Case label (originator prefixes and trailing "see ..." tails stripped, about 60 characters) and
+one warning line; the refresh counts these in its step note. Activity rules are keyword based (a
+<strength> keyword, the <price support program> keyword, the roll-offer match;
+<market support role> columns by originator), never column-index based.
+
+Reference: Pipeline Notes - Cycle Refresh:
+
+Plain: guide and daily content only (new live plan, same planner). New-planner flag: adds the
+ranking, workbook and Word builds and the Word check. Skip-Word flag: omits the Word build. The
+content dumper writes a temporary file that must be valid JSON with at least 50 stores, each
+carrying name, address, rank, business rows, versus lines and to-do list, and nothing above ASCII
+0x7E; only then is it moved atomically over the live content, the previous file kept as the
+previous-content file. Any failure leaves the live file untouched, removes the temporary file and
+exits non-zero. The refresh report records every step with name, ok flag, seconds and note.
+
+Reference: Pipeline Notes - Known Cycle-Specific Items:
+
+Literal in the scripts, not representable in the configuration today.
+
+- Workbook builder Priorities tab: management-chain rows, lookback rules, state-guide rows, Method
+  sources and the Directed tab's no-list sentence come from the configuration and scope at run
+  time and name no person. Still literal: the "<sign type 1> state validation - <jurisdiction>"
+  title, the "<jurisdiction> <sign type 1> edition" limitation row, the "<jurisdiction>
+  <sign type 1> check" and "<jurisdiction> value-communication condition" phrases in Read Me, and the
+  "Frozen reference table" row.
+- Guide builder: title-case exceptions (<jurisdiction> road names), the "no price promotion in
+  <jurisdiction>" <category 5> rule, the <chain A> roll-savings context inside the example
+  manager quote (in the configuration now, but example text), and <author>'s contact line.
+- Activity wording: the three example wording maps (new activities fall back to generic labels
+  until mapped).
+- Ranking builder: scoring constants (<business unit> weights, verb ladder, stop and family token
+  lists) are method constants, not cycle values.
+
+Reference: Pipeline Notes - Identity Check:
+
+Pre-refactor outputs (per-store content, ranking, guide blocks, plan workbook) are kept as
+backups. After a rebuild every store in a backup must deep-equal the new record; the generated
+stamp, cycle label, territory, business header and calendar notes must be identical; the ranking
+file must be byte-identical. Only guide block 4 (the Sources paragraph) legitimately differs; the
+six store tabs of the workbook are cell-identical, while the Priorities, Method and Read Me
+narrative now comes from the cycle notes and the ranking and reads differently. The refresh with
+the new-planner and skip-Word flags runs the whole chain.
+
+Reference: Cycle Configuration Example:
+
+A scrubbed configuration (JSON) for one past cycle showing the shape every run reads; a new rep's
+configuration is copied from the template, never from this example. Its blocks, in order, are the
+following.
+
+- Schema: a layout version number.
+- Cycle: label (month and year as text), month, year, start and end dates (a four-week
+  Saturday-to-Friday window), the following cycle's end, the ranking run date and the content
+  built date.
+- Scope: territory number, market number, the rep's display name, role (<territory role>) and
+  email; the example masks the rep and the territory.
+- Inputs: one entry each for the planner, <distribution gap export>,
+  <loyalty program target list>, contract audit and <market cycle workbook>, holding the staged path in the session's
+  cycle input folder, the original file name, a plain-words source (which email or Desktop export
+  it came from, and that discovery found it) and the modified timestamp; a missing input is empty
+  (the <market cycle workbook> in the example). Discovery writes this block by recognizing
+  columns, never names.
+- Visits: the paths of the captured plan (first <CRM> email of the cycle) and the live plan
+  (latest <CRM> email).
+- Calendar notes: date to one-line note shown at the top of that day; the example holds an
+  administrative reminder, a team call after the last stop, a field ride with <user's manager>
+  making the day's stops joint calls, a call overlapping a stop (take it from the lot or move the
+  stop) and a no-visit day for a team event.
+- Outputs: the plan workbook and guide document names (both begin "Territory <territory id>" and
+  carry the cycle label) and the per-store content path.
+- Cycle notes: kit deadlines (nine entries: kit activity title, due month/day, states or empty
+  when national, type such as price validation, merchandising or education, and a
+  <market support role> flag); headquarters quotes (about twenty entries pairing a <business unit> or the sales
+  organization with the kit's verbatim things-to-do wording); manager focus (four entries from
+  one agenda email of <user's manager>: id, sender, role, date, subject, quoted text, weight 1.0);
+  directed store ids (empty); <sign type 4> issue store ids (empty) with a note holding an example
+  of the sentence written when a store lacks the set size and agreed planogram to be scored;
+  completed before (two dates, each with an empty store list); roll price message (activity-match
+  keyword, do-this, versus and workbook sentences, all about communicating a multi-can roll offer
+  as a savings message with a cap on price points under a <jurisdiction> rule and the manager's
+  direction).
+- Last refresh: a timestamp with time zone offset.
+
+Reference: Daily Store Brief Reference:
+
+Seven parts, cited from the instructions as "reference part N".
+
+Reference: Daily Store Brief Reference - 1. <CRM> "Daily Schedule" Subscription:
+
+Where: <CRM>, the <CRM> analytics dashboard home, the visit report widget. The columns are the
+A1 fields in that order, with planned start time last; the account number is the <store id>.
+Planned start time carries date and time; the reader accepts month/day/year with a 12-hour time,
+the same with a comma, an ISO date-time, and a date-only cell (then the stop order falls back to
+the saved plan). Filters as in A1, no date filter, sorted by planned start time ascending.
+
+What actually arrives (verified <date>): the <CRM> analytics subscriptions email, the sender
+shown as the rep's own name (external, the <CRM> vendor's domain), a body naming the widget
+subscription and the Daily Schedule and pointing to the attached Daily Schedule.csv, and a CSV
+with the A1 fields and a planned/completed date (date only, month/day/year, UTF-8 byte order
+mark). The reader matches that subject when the preview mentions Daily Schedule, and also
+subjects containing "Daily Schedule", the visit report widget's name or "Planned Store Visits".
+It reads the CSV by column names (any file with an account number column), else an HTML table,
+plain text lines, or an XLSX attachment. With dates only, the stop order inside a day comes from
+the saved plan's start times; if the builder offers a planned start time field, the rep adds it
+so the order comes from <CRM>.
+
+Why the whole cycle: one email a day carrying the full remaining plan lets the daily run clip
+today, refresh the saved plan, catch mid-cycle changes and survive a missed email; the first email
+of a new cycle hands the refresh the full plan with no screenshots.
+
+Planned visits live only in <CRM> visit records (store visit record type, status Planned). They
+are not in Power BI (the <CRM> call fact table holds completed calls only), not in Outlook, and
+the Power Platform <CRM> connector is blocked at <company>'s single sign-on step. The subscription
+email is the only unattended feed.
+
+Reference: Daily Store Brief Reference - 2. OneDrive and File Discovery:
+
+Known Folder Backup covers Desktop, Documents and Pictures, never Downloads; browser downloads
+must land on the Desktop (or be moved there) to be found.
+
+Discovery lists OneDrive root files plus the Desktop, Documents and Downloads folders (two levels
+of subfolders modified since the last refresh, skipping year- and date-named folders), and inbox
+messages with attachments whose subject mentions planner, planning, the <market cycle workbook>'s
+name, the <loyalty program>'s words, the <distribution gap export>'s acronym, export, audit, store
+list or visit. File names are never the test. It downloads only xlsx, xlsm and csv files modified
+since the last refresh and under 60 MB, reads the first six rows of the first six sheets, and
+classifies each by its header signature. Legend: the signature that marks a file as that kind.
+
+- Planner: a header row with <store id>, territory, store name and one of region, section,
+  market.
+- <distribution gap export>: a row with <store id> and store name plus any header containing
+  sign, <business unit> visibility or missing signage.
+- <loyalty program target list>: a row with <store id> and store name plus a <loyalty program>
+  target-store header or <business unit 2> or <our brand 2D> on-shelf headers.
+- Contract audit: a sheet named Store List with <store id> and a <business unit 4>, contract,
+  <our brand 3A> or linear-feet header.
+- <market cycle workbook>: the file or sheet name contains the workbook's name.
+- Store data: any other sheet whose header carries a store number (<store id> under any of its
+  labels, or account number) and at least two more columns.
+- Document: a pptx, pdf or docx in the scanned folders or an inbox attachment (listed, not
+  downloaded).
+
+The skill's own outputs (plan workbook, route-day guide, Daily Store Brief) are ignored. The
+newest file of each known kind wins; a file can be two kinds (a full <distribution gap export> is
+also the <loyalty program> list). Winners are staged in the cycle input folder by kind and
+recorded in the configuration's inputs with name, source and modified time. Store data keeps every
+distinct file (newest copy of each), staged in an extra subfolder and listed as extra inputs; the
+builders show each store's own row from every such file under Other Cycle Data, so a one-cycle
+program (a <loyalty program> rollout tracker is the model case) reaches the rep the Saturday its
+export lands. Documents are listed (name, where, modified) for the Saturday step to open. A new
+planner also clears the roll price message and completed-before. Email attachments are read
+through the mail attachment resource's inline content; over about 3.5 MB the file must be on the
+Desktop instead; the raw attachment download path is never used.
+
+Sources seen in the example market and cycle: the planner arrives in the monthly planner email
+from <user's manager> and is also saved to the Desktop; the <distribution gap export> and
+<loyalty program target list> are dashboard exports saved to the Desktop (the target list also came from a
+teammate in the <loyalty program> target email); the <market cycle workbook> arrives by email
+from the section's <support role> each cycle; the contract audit is the Contract Compliance Audit
+skill's workbook.
+
+Reference: Daily Store Brief Reference - 3. Cycle Configuration Keys:
+
+The blocks are those of the Cycle Configuration Example. Rules the operator applies: the cycle
+window (start to end) is the four-week Saturday-to-Friday cycle from the kit email, run date is
+the day the ranking was run and built the day the content was built; a <territory role>'s scope
+is one territory; discovery writes the inputs, and the gap export, the target list and the
+contract audit are optional, with content degrading per section ("Not in the
+<distribution gap export>"; "No <loyalty program> list for this cycle"; no contract flags); the captured plan comes
+from the first <CRM> email of the cycle or screenshots and the live plan from the latest email,
+and the guide uses live when present; calendar notes are rebuilt from the user's calendar at each
+new cycle; completed before and the <sign type 4> issue list are cleared at a new cycle unless
+they still apply; last refresh and last discovery are timestamps the Saturday run maintains.
+Cycle window rule of thumb when the kit email is not at hand: <sales org> cycles run four weeks,
+Saturday through Friday, so the next window follows from the previous end date.
+
+Reference: Daily Store Brief Reference - 4. Scheduled Prompt (One Per Rep):
+
+Grants first, as in A2 step 4: the schedule card pre-approves email recipients (and Teams
+targets) only; every other tool the weekday brief and the Saturday refresh touch (OneDrive reads
+and write-backs, Power BI queries, inbox reads) gets its standing grant when the rep answers that
+tool's approval card with Always Allow during activation; the grant lives with the task and ends
+with it. A rep whose task was deleted or recreated repeats this; nothing carries over.
+
+Times come from the subscription time T in "the email is all set up for T": run at T plus 15
+minutes, wait for the email until T plus 28, delivery about T plus 30. For T = 5:00 AM: run hour
+5, run minute 15, wait until 5:28.
+
+Name: Daily Store Brief. Weekly, interval 1, Monday to Saturday, hours and minutes from T plus 15,
+inline execution mode, one requested standing permission: the email send tool, scoped so the
+recipient can only be the rep's own address. Never Sunday: no planned visits on weekends, and
+Saturday is the refresh, not a brief. The description is plain language with no tool names and
+restates Workflow C for weekdays (follow the daily brief procedure in the task's workspace notes;
+wait for the Daily Schedule email until T plus 28, then fall back to the saved plan and say so at
+the top; keep only today's visits in start-time order; one phone-friendly email to the rep's own
+address with the per-stop content standard plus today's calendar; one sales day only, never the
+full-cycle guide; a two-line note on a day with no visits; no other reports rebuilt on a weekday)
+and Workflow B for Saturday (run the cycle refresh procedure in the same notes instead of a brief;
+validate before swapping; copy the cycle files to OneDrive; a two-line note only if a step needs
+attention).
+
+The workspace notes file carries both procedures with the rep's times: weekday, run the daily
+brief script with wait-until T plus 28; Saturday, cycle discovery, edit the configuration if the
+planner is new, <data warehouse> pull, cycle refresh, copy the cycle files to the user folder, a
+two-line note only on failure.
+
+Reference: Daily Store Brief Reference - 5. Versus the Competition Rules:
+
+Per category (<category 1>, <category 2>, <category 3>, <category 4>, <category 5>), using 13
+weeks of shipment data with retail scan data as the check, and the same 13 weeks a year ago for
+year over year.
+
+- The company's brand per category: <our brand 1A>; <our brand 2A> plus <our brand 2B>;
+  <our brand 3A>; <our brand 4A>; <our brand 5A>. Competitors tracked: <competitor brand 1A>,
+  <competitor brand 1B>, <competitor brand 1K>, <competitor brand 1I>, <competitor brand 1L>;
+  <competitor brand 2A>, <competitor brand 2C>, <competitor brand 2G>; <competitor brand 3A>,
+  <competitor brand 3B>, <competitor brand 3D>; <competitor brand 4A>, <competitor brand 4B>,
+  <competitor brand 4C>; <competitor brand 5B>, <competitor brand 5A>.
+- We lead when our share is at or above the top competitor's share in the store.
+- WINNING: we lead, our share is within 2 points of or above the territory's, and we are not
+  slipping 1.5 points or more year over year. AT RISK: we lead but are slipping or below the
+  territory. TRAILING: a competitor leads, we are at or above the territory's share and holding.
+  LOSING: a competitor leads and we are below the territory or slipping. NOT IN THE GAME: zero
+  units.
+- Every share carries its units per week. The nearest threat and the number two brand get units
+  per week, share, and year-over-year change in units and percent. "Do:" names one or two actions
+  the rep can take in the store today, tied to distribution gaps, assortment, pass-through
+  pricing or POS.
+
+Reference: Daily Store Brief Reference - 6. What Can Need Attention:
+
+1. <CRM> changes the email layout (rows not parsed): the brief still goes out from the saved plan
+   and says so; the reader is then fixed.
+2. A planner column or sheet changes: discovery still finds it by <store id>, territory and store
+   name; activity wording falls back to the header text and the refresh log lists the headers
+   that fell back.
+3. A Power BI model is renamed or moved: the pull script finds <data warehouse> by name; if the
+   name changes, the model is passed explicitly and the script updated.
+
+Reference: Daily Store Brief Reference - 7. Durability:
+
+The Saturday run copies the configuration, the per-store content, the captured plan and the live
+plan to the user's OneDrive folder daily-store-brief (under Documents/Cowork). The daily script
+restores any missing file from there before it runs, so a fresh workspace still sends the brief.
+
+Scripts
+-------
+
+Script: Activity wording table  (source role: short wording for planner activity headers, keyed by
+header text)
+Purpose: Gives the route-day guide and the plan workbook a short, readable phrase for every
+  activity column in the <planning workbook>, looked up by the header's text (lowercased, spaces
+  collapsed) rather than by column position, so a reordered planner does not break the wording.
+Inputs: the raw activity header text passed in by the guide builder or the workbook builder; three
+  hand-maintained maps held inside the file: a guide short label, a guide "do this" sentence, and a
+  workbook "why" label, one entry per known activity of the current cycle.
+Outputs: the mapped phrase, or a generated fallback label; one log line per unmapped header on the
+  error stream so a new cycle's unfamiliar activities are visible in the refresh log.
+Logic:
+  1. The caller asks for a phrase by header and map kind (guide short, guide do, workbook why).
+  2. The header is normalized and looked up; a hit returns the maintained phrase. Maintained
+     phrases carry the activity's origin and timing in parentheses, for example "(kit, due
+     <m/d>)", "(kit Things to Do)", "(no close date published)", "(<market support role> work,
+     not this cycle)", and the workbook variant adds the close weight it earned, such as "(Q4
+     token, 0.20 - not this cycle)" or "(no published due date, 0.75)".
+  3. A miss builds a generic label: the originator prefix in parentheses is dropped (for
+     example "(<market support role> only):" or "(<territory role> needed):"), trailing "see ...
+     for details" tails and parenthetical asides are removed, the text is cut at about 60
+     characters on a word boundary with "..." appended, and the words are title-cased. A keep
+     list preserves known acronyms, brand spellings, state codes and roman numerals; small
+     words stay lowercase except in first position; hyphenated and numeric words are left
+     alone.
+  4. Each fallback is logged once per header per map kind and cached for the rest of the run.
+Checks and failure handling: a missing mapping never fails the build; the fallback label is used
+  and logged. The maintainer is expected to read the "no mapping" lines after a refresh and add
+  entries for the new cycle's activities.
+
+Script: Top Store ranking data build  (source role: parse the planner, scope it to the territory,
+score and rank every store, write the ranking data set and a checkpoint)
+Purpose: Turns the <planning workbook> into the ranked store data set that the plan workbook, the
+  route-day guide and the per-store brief content all read. It carries the Top Opportunity Stores
+  scoring (version 2.0) inside the cycle autopilot so the Saturday refresh can rerun it without
+  the user present.
+Inputs: the cycle configuration through the configuration loader (planner path, <territory id>,
+  run date, cycle start, cycle end, next cycle end, cycle month, cycle notes); the
+  <planning workbook> itself, first sheet only; from the cycle notes: the <monthly POS kit> deadline rows
+  (title, due date, restricting states, type), the kit's "things to do" bullets,
+  <user's manager>'s focus phrases (sender, date, text, level weight) and the manager-directed
+  <store ids>.
+Outputs: the ranking data set (JSON) in the session's working folder: scope counts, the activity
+  inventory, every ranked store with its score components and planner attributes, the Top 10,
+  Next 25 and all-other lists, assortment target rows, coverage gap rows, benchmarks and a column
+  concept map; a checkpoint file recording stage, inputs, outputs and invariants; a console
+  summary (header row chosen, counts, medians, scored activities, the top 40 and bottom 5 stores).
+Logic:
+  1. Header detection: the first 15 rows of the first sheet are scanned and the row with the
+     most non-empty text cells becomes the header; the runner-up is recorded. Every header and
+     value is reduced to ASCII; null-like values ("null", "n/a", "-") become blanks; dates are
+     normalized.
+  2. Records are rows with a <store id>; duplicate ids are counted file-wide and in scope but
+     never dropped.
+  3. Activity block: the activity columns run from the first header carrying an originator
+     prefix (a "<market support role> only" prefix, a "<territory role> needed" prefix, a market
+     or section activity code, or a local-activity tag) through the column before the
+     right-most "grand total" header. A numeric count row above the header would be the
+     preferred anchor; when the row above is a banner, the fallback and the banner's own
+     "Activities" label are written into an anchor note for the audit trail.
+  4. Scope: a store is in scope when its territory code, zero-padded to six digits, equals the
+     configured <territory id>. Temporarily closed stores are set aside and listed. The step-4
+     median is the median total equivalent volume (<total volume column>, units per week over
+     the latest 13 weeks) of the open stores; negative or missing volume counts as zero for
+     ranking but the raw value is kept.
+  5. Lifestyle-flagged stores are removed unless the store is manager-directed or its volume is
+     at or above the step-4 median (the escalation list). What remains is the ranked population
+     N; its median is the step-7 median; zero or missing volumes are listed separately.
+  6. Volume percentile = the store's average ascending rank (ties share the average) divided by
+     N; scope rank counts down from the largest volume.
+  7. Activity inventory, one entry per activity column: flag counts in the file, in scope and
+     in N; a work type from a verb ladder with weights sell 1.25, merchandise 1.00, educate
+     0.75, validate 0.50, admin 0.25, standing target lists 0.00, unclassified 1.00 ("execute"
+     alongside only a validate or admin verb promotes to merchandise; "execute" alone is
+     merchandise; verbless gap or opportunity nouns resolve to sell, or to merchandise when a
+     shelf noun is also present); the <business unit> the header names, with weights
+     <business unit 1> 1.00, <business unit 4> 0.95, <business unit 2> 0.70, <business unit 5> 0.45,
+     <business unit 3> 0.40, <partner product line> 0.30; the originator (<market support role>
+     only, <territory role> needed, local when a geography code in the header is a prefix of
+     the <territory id>, otherwise national or headquarters).
+  8. Kit and supervisor matching: header and phrase are tokenized (stop words and brand family
+     words set aside, words stemmed, known initiative phrases collapsed into single tokens). A
+     match needs at least two shared tokens of which one is not a brand family word, or one
+     shared initiative token or phrase. The best kit match is chosen by (non-family shared,
+     total shared); a dated kit row beats an undated bullet on a tie. A kit row restricted to
+     named states is dropped when none of those states appears among the in-scope stores.
+  9. Close weight ladder. Rule 1: a kit match with a due date bands by date (on or before cycle
+     end 1.00; within the next cycle 0.50; later 0.20; a bare month/day takes the cycle-start
+     year for months at or after the start month, else the following year); a kit bullet with
+     no published due date is 0.75; a supervisor-named or local activity is 1.00. Rule 2: with
+     no such match, a quarter or month token in the header bands the same way, and a token that
+     ended before cycle start is marked expired at 0.20. Rule 3: no derivable close date
+     excludes the activity from scoring.
+  10. An activity scores when it has a kit match that was not state-dropped, a supervisor match
+     or a local tag. Source boost: kit plus supervisor 2.0 times the highest matching
+     supervisor level weight; supervisor only 1.5 times that weight; kit only 1.5. Further
+     multipliers of 1.25 each: originator "<territory role> needed"; narrow (fewer than 10
+     percent of N carry the flag); local. A local activity naming no business unit takes the
+     lowest business unit weight. Per-flag contribution = business unit weight x close x source
+     boost x work weight x the three multipliers.
+  11. Per store: priority = the sum of contributions of its flagged scoring activities;
+     must-close = the count of flagged activities whose close weight is 1.00. Gap terms, 0.5
+     each: assortment satisfaction below the N median on any of the three tracked business unit
+     assortment columns; a missing contract (any contract column with at least one fill in N:
+     <digital trade program>, <business unit 1>, <business unit 2> for the cycle month,
+     <business unit 3>, <business unit 4> for the cycle month, and the newest-month
+     <business unit 5> column) or a distribution gap (<our brand 4A> premium line absent while any of
+     three tracked <category 4> competitor brands is present over the latest 52 weeks); a
+     pass-through value reading "no pass" or "partial"; the Q flag (a store in the top five
+     <volume index> deciles whose performance identifier is the biggest-upside bucket). One
+     bucket term by performance identifier: biggest upside 0.50, winners 0.25, outperformers
+     0.15, low priority 0. Gap is capped at 2.5.
+  12. Score = (1 + priority + gap + 1.2 x min(must-close, 5)) x percentile to the power 1.5.
+     The score is halved when the store's only flagged activities are <market support role>
+     assigned, or it has an assigned <market support role> person and no other activity. Focus
+     business unit = the most common business unit among the store's flagged activities, else
+     the business unit whose own-volume column puts the store at its highest percentile,
+     labeled "volume read".
+  13. Ranking order: stores with volume before zero-volume stores, then score descending, volume
+     descending, <store id> ascending. Manager-directed stores are removed from the eligible
+     list, which then splits into Top 10, Next 25 and all others (up to 500).
+  14. Assortment targets for <business unit 4>: among the top third of N by volume, the peer
+     norm is the median SKU count (latest 26 weeks) of stores stocking at least one SKU; a
+     store qualifies when its gap to the norm is 2 SKUs or more. Play "Add SKUs" when it stocks
+     less than half the norm or its units per SKU are at least 75 percent of the population
+     median; otherwise "Drive velocity" (range present, moving slowly: merchandising and
+     education, not a sell-in). Upside = gap x units per SKU for Add SKUs, SKU count x the
+     velocity shortfall for Drive velocity; sorted by upside, volume, id; capped at 500 rows.
+  15. Coverage gaps: days since last call per store; threshold = the larger of 60 days and twice
+     the median. Flags: coverage over threshold (2.0), distribution absence (2.0), an
+     independent missing a contract (2.0, plus 0.5 when the <digital trade program> contract is
+     among the missing). A store flagged only for contract and below the step-7 median is
+     skipped. Coverage score = total x (0.5 + 0.5 x percentile); High at 2.0 or more, Medium at
+     1.0, otherwise Low; sorted by score, volume, id; capped at 500. Counts of stores
+     approaching (150 to 179 days), overdue (180 or more), never called and future-dated are
+     kept.
+  16. Benchmarks: contract penetration among independents, territory versus the market's open
+     non-lifestyle rows; share of independents "not aligned" to the <price support program>;
+     <digital trade program> adoption by volume quintile of the market's independents.
+  17. Column concept map: every header is assigned to a concept (identity, geography, status,
+     volume, coverage, contracts, assortment, own-business-unit and category volume,
+     distribution presence, pass-through, decile, performance identifier, headquarters priority
+     flags, pricing); unresolved headers and columns empty in scope are listed for the method
+     notes.
+Checks and failure handling: stops at once when the configured planner path does not exist. Any
+  missing expected header stops the run with the header name. Prints the header-row choice and
+  runner-up, the anchor note, record and scope counts, both medians, the zero-volume list and
+  the scored activity table so a reviewer can audit the run. The checkpoint's invariants
+  (records, in scope, closed, lifestyle removed, N, eligible, list sizes) are what the verifier
+  re-checks.
+
+Script: Word guide package builder  (source role: single-pass, deterministic build of the route-day
+guide .docx from the guide block file, no template)
+Purpose: Renders the route-day guide's prepared block list into a complete Word package written
+  directly as Word's own XML markup, so the guide looks the same on every refresh: one font, ASCII
+  only, hyphen bullets, numbered lists that each restart at 1, a page break per sales day and a
+  linked table of contents. Content text is rendered verbatim; nothing is added, dropped or
+  reworded here.
+Inputs: the guide block file (JSON) in the same folder as the script; the cycle configuration for
+  the <territory id>, the cycle label, the user's name (document creator) and the configured
+  output name of the guide; an optional output path on the command line that overrides the
+  configured name.
+Outputs: the .docx package (document body, styles, numbering, settings, font table, footer, core
+  and extended properties, content types and relationships); a JSON summary on the console: output
+  path, block count, counts by block type (page breaks, headings at three levels, paragraphs,
+  section labels, bullet and numbered items, numbered lists, tables, contents entries, back links),
+  bookmark names, hyperlink count, missing anchors and the range of numbered-list ids.
+Logic:
+  1. Page geometry is US Letter portrait with 0.7 inch margins; the text width that results is
+     the width every table is scaled to. Cell padding is 4.5 points left and right and 2 points
+     top and bottom.
+  2. Text measurement uses a metric-compatible sans font so column minimums can be computed:
+     a column is never narrower than its longest word (or its whole header when the header is
+     10 characters or fewer, or a whole cell value of 12 characters or fewer), plus padding and
+     a 4 percent allowance. Relative column weights from the block are scaled to the text
+     width; any column lifted to its minimum takes the deficit proportionally from columns with
+     slack; widths always sum exactly to the text width.
+  3. Block types are rendered in order: a page break (deferred and emitted as Word's native
+     hard break in its own one-point paragraph just before the next block); a level 1 heading
+     (the title when its bookmark is "top", otherwise a day heading or the "not on route"
+     heading, each followed by a right-aligned "Back to Table of Contents" link); a level 2
+     heading (bookmarked as the contents anchor when its text is "Table of Contents"); a level
+     3 heading; a section label (small caps, extra space before when a table follows); a
+     paragraph with an optional named style (subtitle, day line, note, profile, small, with
+     breathing room when it follows a table); bullets; a numbered list; a table; the contents
+     entries as internal hyperlinks.
+  4. Styles: body 10 point; Heading 1 16 point in the primary color with a rule beneath;
+     Heading 2 12 point in the secondary color with a hairline rule above (the stop card
+     separator) and 14 points before; Heading 3 10.5 point grey; section label 9 point bold
+     small caps; list items 9.5 point; contents links and back links as named paragraph styles;
+     a footer style with a right tab at the text width. Headings keep with next and keep lines
+     together.
+  5. Tables: a fixed layout; header row shaded in the primary color with white bold 8.5 point
+     text, repeated on every page the table spans and never split; body rows 8.5 point with
+     light zebra shading on alternate rows; every row but the last keeps with the next so a
+     table moves as a whole; cells align right when the column's filled cells vote mostly
+     numeric (numbers, signed changes, percentages, "n/a" and "flat" count as numeric), with
+     each body cell following its own value when it is non-empty.
+  6. Numbering: one abstract bullet definition using a plain hyphen and one abstract decimal
+     definition; each numbered list gets its own numbering instance with a start override so it
+     restarts at 1.
+  7. Footer: "Territory <territory id> | <cycle label> cycle | Confidential - Internal Use
+     Only" at left, "Page N of M" fields at right. Core properties carry the guide title and
+     the user as creator, with the build timestamp.
+  8. All parts are assembled in memory and written to a compressed zip package.
+Checks and failure handling: the block file is opened as strict ASCII and the build stops on an
+  unknown block type. Before writing, every part is re-encoded as ASCII (non-ASCII aborts the
+  build) and scanned for forbidden symbol fonts. After writing, the summary lists any hyperlink
+  anchor without a matching bookmark so a broken contents link is caught before the checker
+  runs.
+
+Script: Route-day guide content builder  (source role: assemble every store's guide content for the
+cycle and territory into ordered render blocks; the per-store brief content is cut from the same
+records)
+Purpose: Produces the full text of the route-day guide: front matter, a route-at-a-glance table, a
+  linked contents list, then one page per selling day with a card per planned stop (header,
+  Distribution Gaps, <loyalty program>, Other Cycle Data, 13-week business update, Versus the
+  Competition, Do This). It also builds the same card for every ranked store that is not on the
+  route, so the daily brief has content for a stop added mid-cycle.
+Inputs: the cycle configuration (cycle start, end, built date, month, <territory id>, user name,
+  role and <market id>, calendar notes by date, and cycle notes: store ids flagged for a flip-sign
+  scoring issue with the note to show, an optional roll-price message with its activity match,
+  do-this, versus and workbook wordings, and "completed before" dates with optional store ids);
+  the visits file (the live plan saved from the latest "Daily Schedule" email when present,
+  otherwise the plan captured at cycle start); the ranking data set; the <data warehouse> pull
+  (JSON); the <planning workbook>; optional and each may be absent: the <distribution gap export>,
+  the <loyalty program target list>, the contract audit workbook, and any number of extra
+  store-keyed spreadsheets staged by discovery; the activity wording table.
+Outputs: the guide block file (JSON, ordered blocks with type, text, items, table header, rows and
+  relative widths, bookmarks and contents entries); a markdown preview of the same blocks for QA;
+  console counts of blocks, non-ASCII blocks and stops; in memory, the planned-stop records and
+  the all-store records that the daily content dumper serializes.
+Logic:
+  1. Planner: the first sheet whose first five rows hold a row containing both the <store id>
+     header and the territory header is the planner sheet; rows for the configured territory
+     are kept by store id. Contract columns stamped with a month resolve as in the data build;
+     the <business unit 5> contract column is the nearest month at or before the cycle month
+     because it carries its own stale stamp.
+  2. Optional inputs. The <distribution gap export>: its export sheet, keyed by the store id in
+     the second column. The <loyalty program target list>: its export sheet, rows for this
+     territory only, a store is targeted when the target flag equals 1; when the gap export
+     also carries the target flag the two lists must name the same stores or the build stops.
+     The contract audit workbook: its store list tab with the header on row 2, keyed by store
+     id. Other store-keyed files: CSV or the first six sheets of a workbook; the header row is
+     the first of the first ten rows carrying a store-number-like header (several accepted
+     spellings); identity columns (name, address, city, state, zip, territory, market, region,
+     section, chain, account, county, coordinates, phone) are dropped; values are shown as
+     found (booleans as Yes/No, whole numbers with separators, decimals to two places, dates as
+     m/d, text cut at 60 characters), at most 12 per store; the label is the file name cut to
+     40 characters, plus the sheet name when a workbook has several; a file that names no store
+     in this territory is dropped and logged; an unreadable file is skipped and logged.
+  3. <data warehouse> data: per store and category, and per store and brand family, the latest
+     13-week shipment total, the same 13 weeks a year ago and the scan equivalents; the same
+     totals for the whole territory. Five categories are tracked with their unit word and our
+     brand family: <category 1> (packs, <our brand 1A>), <category 2> (cans, <our brand 2A> plus
+     <our brand 2B>), <category 3> (sticks, <our brand 3A>), <category 4> (cans,
+     <our brand 4A>), <category 5> (units, <our brand 5A>). Per category a short list of tracked competitor
+     brand families is held, including the discount brands used for the discount-share reads.
+     Share = our brand families' total over the category total.
+  4. Business block, one row per category: store units per week (13-week total divided by 13),
+     change versus a year ago, the territory's change, our brand, our share with its point
+     change in parentheses, the territory share; a category the store did not ship shows 0 and
+     n/a with the territory figures. Narrative of at most two sentences: the <category 1>
+     sentence (units per week, change, ahead of, behind or in line with the territory at a 1
+     point tolerance; our brand's share, gaining, losing or holding at 0.5 points, above, below
+     or in line with the territory at 0.5 points), then the fastest-growing and softest
+     categories among those at 5 or more units per week when two or more qualify and differ.
+  5. Distribution gap block: returns "no export this cycle", "store absent", or the lines. Missing
+     signage is a comma-separated list of sign labels with the scored percentage; each label maps to
+     an exact fix: the <business unit 1> sign (a <sign type 4> flip or header per store type); the
+     <our brand 1C> flip or the <sign type 4> flip depending on the store's <our brand 1C> election
+     (opt-out means <sign type 4>); the <sign type 5> flip (the loyalty flip for the core
+     <our brand 1A> line); the <price family A> flip; the <business unit 2> header or flip (the
+     <loyalty program> version when the store is a target, otherwise the equity version, with the store's
+     <category 2> cluster primary brand appended); the <our brand 3A> sign
+     (<promotional price program> or any current POS); the <our brand 4A> premium line <strength> POS or value price
+     scroll, with the store's <business unit 4> contract tier and the number of current signs that
+     tier needs (2 for one tier, 3 for the rest); <business unit 5> POS for the store's contract
+     level; the <sign type 3> sign for an age-verification-technology store, otherwise the
+     <sign type 2> sign. Further lines when under target: <business unit 4> volume as a percent of the
+     second-half target with shipped, target and to-go cans; <business unit 4> velocity below the
+     1.00 line; <our brand 4A> SKUs targeted for the store but under 100 percent on shelf, with the
+     overall on-shelf percent; <business unit 2> on-shelf under 100 percent for target stores, plus
+     <our brand 2D> SKUs to add from five tracked SKUs; <our brand 1A> pass-through under 100
+     percent naming the failing price families (<price family A>, <price family B>,
+     <price family C>); <our brand 3A> pass-through under 100 percent naming the failing packings (two tip styles
+     by two <promotional price program> offers); loyalty-ID transactions as a percent of the
+     second-half target with to-go count; an age-verification violation rate, with the retraining
+     fix.
+  6. Contracts block: a contracts-of-record line (<business unit 1> | <business unit 2> |
+     <business unit 3> | <business unit 4>, with "was X in <previous month>" when the tier
+     changed | <business unit 5> | <digital trade program> tier); a <price support program> line
+     (this month's election, the recommendation, the alignment, and the <our brand 1C> election
+     when present); an elections line listing any <allowance type A> and multi-unit offer
+     elections by business unit; a flag when an independent has no contract on file for a
+     business unit; when the store is in the contract audit, a line with the <photo platform>
+     photo date, the <business unit 4> assigned tier, observed tier and verdict, the
+     <business unit 3> assigned level and verdict, and each next step cut to its first two sentences; the
+     flip-sign note for stores flagged in the cycle notes.
+  7. <loyalty program> block: the store type from the planner's <category 2> cluster column
+     (<our brand 2A> store, <our brand 2B> store, discount-primary store with <our brand 2A>
+     secondary, or no cluster assigned); "No <loyalty program> list for this cycle." when the
+     list is absent, otherwise "Targeted - <type>." or "Not targeted - <type>.".
+  8. Versus block, one line per category at 2 or more units per week: our units per week, share
+     of the store's category, above, below or in line with the territory at 2 points, and the
+     YoY change (flat under 0.5 units per week, "new this year" when the year-ago is zero, else
+     up or down in units per week and percent). Tracked competitors at 2 percent share or more
+     are sorted by share. Verdict: NOT IN THE GAME when our share is zero; otherwise, with "we
+     lead" meaning no competitor or our share at or above the leader's, "slipping" meaning our
+     share is down 1.5 points or more, and "held" meaning within 2 points below the territory:
+     WINNING when we lead, held and not slipping; AT RISK when we lead otherwise; TRAILING when a
+     competitor leads but we are held and not slipping; LOSING otherwise. The second part names
+     the leader and the next competitor ("Leader: ... Then ...") when a competitor leads, the
+     nearest threat when we lead, or "No tracked competitor over 2%". "Do:" takes up to three
+     actions from the category's rule set:
+     - <category 4>: sell premium line distribution when our line is absent and competitors are
+       present; set the <strength> expansion when the store carries that activity; the roll
+       price "versus" wording when flagged; refill the on-shelf gaps; the assortment play (add N
+       SKUs to reach the peer norm, or drive velocity on the SKUs already here); fill the
+       assortment when below the territory median; run the premium line clerk education when
+       the store is a Q store or in the biggest-upside bucket; default: ask for the shelf
+       position next to the leader and keep the value scroll up, or protect the top position.
+     - <category 1>: sell the recommended <price support program> election when not aligned;
+       fix pass-through on the failing price families; fill the assortment; when the discount
+       brands take 15 percent or more, keep <price family C> and <price family A> priced through
+       and signed; when <competitor brand 1A> leads with 10 percent or more, the <flavor> threat
+       line (<price family B> priced through, <sign type 4> flip up); when our share is down
+       1.5 points, ask the owner what changed; default: check pricing against the leader, or
+       hold.
+     - <category 3>: sell pass-through on the failing packings, else sell the
+       <promotional price program> pass-through the planner flags; an independent with no <business unit 3>
+       contract opens the base program (<required facings> contiguous facings); when a
+       competitor leads, add facings beside it and hang the sign; share down 3 points with
+       nothing else, check facings and signs; default: keep the run contiguous and signed.
+     - <category 2>: a <loyalty program> target executes the header or flip and confirms shelf
+       presence; add missing <our brand 2D> SKUs; fill the assortment; when discount brands take
+       15 percent or more, <our brand 2D> is the answer; default: confirm the cluster set, or
+       hold the assigned set and header.
+     - <category 5>: an independent with no contract opens one and places POS; otherwise, when
+       below the territory, sell distribution and place POS at the contracted level (with "no
+       price promotion" appended for a <jurisdiction> that forbids it); default: keep the brand
+       at eye level with current POS.
+     After the categories: a coverage line from the store's coverage or distribution flags, and
+     a <market support role> line (the person covers the only open work, score halved; or is
+     also assigned here).
+  9. Do This: the do-wording of every must-close activity; the roll price do-this when flagged; up
+     to three more flagged activities that are not <market support role> work; from the distribution
+     gap block: "Hang:" with the sign fixes, "Put back on shelf:", "Add <our brand 2D>:", sell
+     <our brand 3A> pass-through on the failing packings, fix <our brand 1A> pass-through when under 90
+     percent, coach the clerks on the loyalty ID when under half the target; execute
+     <loyalty program> POS when targeted; sell the planner's pass-through flag; the assortment target line
+     (SKUs versus peer norm and upside); from the business notes: <category 1> share down 1.5 points
+     (review price position), <category 1> volume trailing the territory by 10 points (ask what
+     changed), <category 2> share down 3 points (check the set and distribution), <category 3> share
+     down 3 points (check facings and pass-through); sell the recommended <price support program>
+     election when not aligned and the activity is flagged. Items are de-duplicated on their first
+     50 characters and capped at seven.
+  10. Assembly: visits are grouped by date in file order; the day's towns are listed in stop
+     order; each planned stop gets a store record whose identity comes from the <CRM> visit,
+     while every other ranked store in planner scope gets a record from the planner (planned
+     stores reuse theirs without stop number and time). Store and street names are title-cased
+     with a keep list for acronyms and route designations.
+  11. Front matter: the title heading "Territory <territory id>: Store Business Updates by Route
+     Day"; a subtitle (cycle label and dates, planned calls over selling days, first to last
+     visit date, prepared for the user, role and market, built date); "How to Use This Guide";
+     a sources paragraph naming each input with its file name, where it was found and its
+     modified date, the Top Store report date, the <data warehouse> model, the <monthly POS kit>
+     and the <sign type 1> state guide for the states in scope; "Reading the business update";
+     the verdict definitions; how Distribution Gaps are read; the formatting standards.
+  12. Route at a Glance: one row per day (day, up to four towns, calls, Top 35 count,
+     <loyalty program> targets, stores missing POS, stores with distribution gaps, calendar note yes or
+     blank) and a totals line, with either the count of ranked stores not on the route or, when the
+     cycle notes carry "completed before" dates, how many ranked stores were completed on those
+     dates before the guide window. Table of Contents: one link per day (weekday, month and day, up
+     to three towns "and More", call count) plus the completed-before section when present.
+  13. Day sections: a page break; the day heading with its bookmark; a day line (first to last stop
+     time, Top 35 stores, <loyalty program> targets, stores missing POS, stores with distribution
+     gaps); the calendar note when the date has one; then per stop: "Stop n | time | name"; the
+     profile lines (address, city, state, zip | <store id> | chain or Independent; Top Store rank of
+     N with score | volume rank and units per week | Q store | <market support role> person | best
+     time | last call); Distribution Gaps (the lines, or "None - every distribution gap measure is
+     at 100%." or "Store is not in the <distribution gap export>."); <loyalty program>; Other Cycle
+     Data when any file names the store; the business table (category, store units per week, change,
+     territory change, our brand, share with change, territory share) with the narrative; Versus the
+     Competition (or "No shipments in the latest 13 weeks."); Do This (or the maintain-the-set
+     default).
+  14. Completed Before This Guide: only when configured; a page break and a table of rank, store
+     id, store, city, chain and volume for those stores. A closing line names the guide's
+     <author> and <author email> as the contact for questions about the method.
+  15. The block file and the markdown preview are written; counts are printed.
+Checks and failure handling: stops when the planner is missing or no sheet carries the id and
+  territory headers; stops when the gap export and the target list disagree on the target stores;
+  logs and skips unreadable or out-of-territory extra files; every string passes through the
+  ASCII reduction and the build reports how many blocks still carry a non-ASCII character
+  (expected zero). Missing optional inputs degrade to the fixed sentences, never to guessed
+  values.
+
+Script: Plan workbook builder  (source role: stage 9, the nine-tab store visit plan workbook built
+from the ranking data set, largest store tab first)
+Purpose: Writes the Excel plan workbook that the Top Opportunity Stores method delivers: the
+  Directed, Top 10, Next 25 and All Other Stores visit lists, the Assortment Targets and Coverage
+  Gaps lists, and three narrative panels (Read Me, Priorities, Method) that quote the direction
+  used and lay out the audit trail, every number drawn from the ranking data set and never typed
+  in.
+Inputs: the ranking data set; the cycle configuration (run date, <territory id>, <market id>,
+  cycle label, month and year, window, the planner's name, source and modified date, the
+  configured workbook name, and cycle notes: supervisor focus items with sender, role, date,
+  subject, text and weight, kit deadlines, headquarters quotes, state guide notes, the roll-price
+  message, the directed store ids with who directed them, when and why); the activity wording
+  table (workbook variant); the verifier module, run on the store tabs mid-build.
+Outputs: the plan workbook in the session's working folder; a stage checkpoint with the tabs
+  built, their row counts and the verifier's formatting matrix; console lines listing the tabs
+  built, the per-tab pass results and any store-tab failures.
+Logic:
+  1. Tab order: Read Me, Priorities, Directed, Top 10, Next 25, All Other Stores, Assortment
+     Targets, Coverage Gaps, Method. Build order: the largest store tab first (All Other Stores,
+     Next 25, Coverage Gaps, Top 10, Assortment Targets, Directed), each tab's data and
+     formatting finished before the next; the file is saved, the verifier checks the store tabs
+     and its matrix feeds the Method panel; then Priorities, Method and Read Me are written and
+     the file is saved again.
+  2. Store tab format: a bold white header on the primary fill, thin borders, top-aligned
+     wrapped text, right alignment and number formats for numeric columns, the <store id> and
+     zip as text so leading zeros survive, fixed column widths, row heights computed from text
+     length, panes frozen below the header and to the right of the State column, and a
+     filterable Excel table with row stripes named for the tab. Coverage Gaps shades the
+     days-since cell amber at 150 to 179 days and red at 180 or more.
+  3. Visit list columns: Rank, <store id>, Store, Address, City, State, Zip, Chain, Volume,
+     Scope rank, Volume percentile, Score, Must close, Q, <business unit> focus, Why. The Why
+     text is assembled in order: the volume sentence (volume rank of N, units per week, ordinal
+     percentile); "Closes this cycle:" with the short wording of each must-close activity; "Also
+     open:" with the rest; "Gaps:" with the Q-store or performance identifier description, each
+     assortment measure below the territory median, missing contracts (with a chain-account
+     note when the store is not independent), the premium line absent while competitors are
+     present, and the planner's pass-through flag; the <market support role> note (only that
+     person's work is open here, score halved; or also assigned here, the work above is yours);
+     the roll-price workbook wording when flagged; "No planner activity is flagged here; ranked
+     on volume and gaps." when nothing is flagged; the best time to visit.
+  4. Coverage Gaps columns add Priority, Flags, Last call, Days since, our assortment percent, a
+     competitor assortment percent (left blank because the planner carries no such column),
+     category units, missing contracts and <price support program> alignment (independents
+     only), and What to do: per flag, the coverage sentence (days against the territory median
+     and threshold, with the caution that the last call date can lag real visits by up to two
+     weeks and is a prompt, not a ranking input), the distribution sentence (open with what the
+     competitor already has, sell distribution, the category's units per week here), the
+     contract sentence (size the program against the store's volume versus the territory
+     median; alignment shown for reference only); then "Also on <list> (rank n) - combine the
+     trips." and, at 180 days or more, "Six months or more without a recorded call".
+  5. Assortment Targets columns add category units per week, SKUs, peer norm, SKU gap,
+     assortment percent, units per SKU, estimated upside, Play and What to do, whose text
+     explains the play (SKUs carried against the top-third peer norm, units per SKU against the
+     territory median, the upside) and notes that units per week are 13-week while the SKU count
+     is 26-week, so units per SKU is directional, then the combine-trips line.
+  6. Directed tab: the directed stores in rank order with who directed them, the date, the
+     instruction and the Why text; a trailing row lists directed ids that are closed, out of
+     scope or absent from the planner. With no directed stores the tab holds its header and one
+     explanatory row (no store list arrived from any manager in the chain in the 30-day or
+     60-day sweep; the lists are pure merit rankings).
+  7. Panels are two-column sheets: a title bar, a subtitle bar, then sections with a heading bar
+     and label-and-text rows, heights computed from text length. Priorities sections: the
+     manager's priorities (grouped by sender, role, date and subject; the quoted words; which
+     activity columns each matched and at how many ranked stores, or that it stayed a
+     family-level mention, recorded not scored); the management chain walked (levels 1 to 4
+     with weights 1.00, 0.70, 0.50, 0.30; 30-day and 60-day sweeps); the prior-cycle lookback
+     rules (in-window direction applies; in-window direction without a continuation signal
+     stops the lookback for that manager; an empty 30-day window falls back to the 60-day pass,
+     else nothing carries forward); headquarters priorities from the <monthly POS kit> (kit name
+     and window, the page-1 bullets by business unit, each deadline row with due date, type,
+     <market support role> eligibility and states, and how it was treated: dropped for state
+     scope, treated with its close weight and the planner columns it matched, or no planner
+     column); state guide validation (states in scope, how prohibitions, conditions and
+     other-state-only items are applied, plus any recorded notes); alignment (activities named
+     by both the manager and the kit carry source boost 2.0; where they differ; the must-close
+     activities and how many of the Top 10 carry one).
+  8. Method sections, numbered 1 to 19: sources checked (the sender-only mailbox sweep over two
+     windows and every folder, the attachment enumeration gate, the keyword search supplement,
+     the kit folder and state guides on <company>'s SharePoint, the directory lookups, the
+     planner's provenance); identity and scope (a title with no geography word resolves to the
+     10 plus 25 plus up-to-500 list shape, a manager-tier title to 20 plus 50 plus a 500-store
+     reference tab; the scope ladder; the target cycle and window; the steer); file parsing
+     (sheet and header row choice, the anchor note, the concept-to-column map, unresolved,
+     unmapped and empty columns, type coercion, the chain definition); the population funnel;
+     the volume metric; the activity inventory (totals by originator and business unit, foreign
+     and local tags, the absent count row, then one row per flagged activity with every weight
+     and rule); local activity detection; work-type weighting; close-date derivation; priority
+     matching (the normalization and matching rules, counts, family-level mentions, the
+     headquarters priority flags recorded but not scored); state validation; the scoring
+     formula and the <market support role> down-weight; a worked example for the rank 1 store;
+     the assortment and coverage methods; overrides applied; the formatting gate matrix (13
+     elements by 6 store tabs, from the verifier); known limitations; and a contact row.
+  9. Read Me sections: how the list was built (steer mode, qualifiers, volume basis, the
+     population funnel, the ranking formula in words, the manager and headquarters direction,
+     <market support role> coverage, the coverage alert, scope rank), what is in the workbook
+     (one row per tab), reading the columns, working the tabs (sort by city for a route, by
+     must close for the real work, by chain to prepare a call) and a tuning note that every
+     threshold is computed from the user's own stores.
+Checks and failure handling: the verifier runs on the saved store tabs before the panels are
+  written; its pass, fail and not-applicable results go into the Method tab's formatting gate
+  rows and the checkpoint, and failures are printed. Several Method and Read Me rows carry
+  wording fixed when the workbook was first built (counts of null cells, duplicate ids, the
+  reference planner, the banner row's section labels); a rebuild for another company must
+  regenerate those from the data set rather than keep the text.
+
+Script: Word guide checker  (source role: independent re-open check of the built .docx against the
+guide block file)
+Purpose: Proves the built guide is what the block file said, by opening the package with a
+  different code path than the builder and comparing every content unit in order; it also checks
+  the formatting rules the builder promises (ASCII only, one font, repeating table headers,
+  restarting numbered lists, working internal links).
+Inputs: the .docx path on the command line; the guide block file in the session's working folder.
+Outputs: a JSON report on the console with every measure below; no file is written.
+Logic:
+  1. Package scan: every part is decoded and counted for non-ASCII or control characters; any
+     mention of a symbol font or of a non-approved text font is listed.
+  2. Document facts: total characters of visible text and how many are non-ASCII; the footer's
+     text and its field codes; the core title and creator; the count of hard page breaks.
+  3. Headings: counts of level 1, 2 and 3 headings among body-level paragraphs, how many level
+     2 headings begin with "Stop ", and the count of section labels.
+  4. Links: bookmark count and names, whether bookmark ids are unique, bookmark end count,
+     hyperlink count, anchors with no bookmark, and the count of "Back to Table of Contents"
+     back links.
+  5. Tables: count, and how many carry a repeating header row.
+  6. Numbering: the abstract definitions (format, level text, start, indent, fonts); which
+     numbering instances are used; the number of numbered lists and how many restart at 1;
+     instances used but undefined; bullet instances used; bullet and numbered item counts.
+  7. Full content comparison: the block file is flattened into an expected sequence of units
+     (headings, labels, paragraphs, each bullet and numbered item, each table as its rows of
+     cell text, each contents entry, each page break, plus the back link that follows every day
+     heading); the document body is walked in order into the same unit shapes; the report says
+     whether the two sequences are identical and, if not, the index and text of the first
+     difference.
+  8. Alignment spot check: every non-empty body cell is classified numeric or text (numbers,
+     signed changes, percentages, "n/a", "flat") and its justification is read; counts of
+     right-aligned numeric and left-aligned text cells are reported and every mismatch is
+     listed.
+Checks and failure handling: the script only reports; the refresh step reads "content identical"
+  and the non-ASCII and missing-anchor counts to decide whether the guide is good. A paragraph
+  style outside the known set, or an unknown body element, appears in the sequence with a "?"
+  prefix so it surfaces as a difference.
+
+Configuration Template: cycle  (source role: the per-cycle configuration file every pipeline
+script reads; copied and filled at activation, updated by discovery and the refresh)
+Purpose: Holds everything one rep's cycle needs in one JSON document so the builders carry no
+  hard-coded scope, dates, file paths or direction.
+Inputs: filled by the assistant at activation (scope and cycle window), by discovery (input files
+  and documents), by the Saturday refresh (dates, notes, last refresh) and by hand for the cycle
+  notes.
+Outputs: read by the configuration loader and so by every builder, the discovery script, the
+  warehouse pull, the refresh and the daily brief.
+Logic:
+  1. A schema version number.
+  2. Cycle: the display label (month and year), the month name, the year, the cycle start (a
+     Saturday), the cycle end (a Friday), the end of the following cycle (for the 0.50 close
+     band), the run date of the ranking and the date the content was built.
+  3. Scope: the six-digit <territory id>, the four-digit <market id>, the user's name, role and
+     email address.
+  4. Inputs: the planner entry (staged path, file name as found, where discovery found it,
+     modified timestamp); the same shape or null for the <distribution gap export>, the
+     <loyalty program target list>, the contract audit workbook and the
+     <market planning workbook>; a list of extra store-keyed files; a list of documents (presentations, PDFs,
+     Word files) found for the Saturday read.
+  5. Visits: the path of the plan captured at cycle start and the path of the live plan saved
+     from the latest "Daily Schedule" email.
+  6. Calendar notes: a map from date to a one-line note (no-selling days, field rides,
+     overlapping calls).
+  7. Outputs: the plan workbook name, the guide document name and the per-store content path,
+     each a naming pattern carrying the territory, month and year.
+  8. Cycle notes: the kit deadline rows; the headquarters quotes; the supervisor focus items;
+     the manager-directed store ids; the store ids and note for the flip-sign scoring issue; the
+     "completed before" dates; the roll-price message (or null, which omits those lines).
+  9. The timestamp of the last refresh, null until the first.
+Checks and failure handling: the loader treats an input as absent when its entry is null, has no
+  path, or the path does not exist on disk, so a missing optional file never stops a build.
+
+Script: Configuration loader  (source role: the shared reader of the cycle configuration, imported
+by every pipeline script)
+Purpose: Gives every script one way to read the cycle configuration, resolve input paths and
+  expose the territory, calendar notes and output names.
+Inputs: the configuration file path from an environment variable, defaulting to the working
+  folder's cycle file.
+Outputs: in memory: the whole configuration, the cycle, scope and inputs sections, the territory,
+  the resolved paths (or none) of the planner, gap export, loyalty target list and contract audit,
+  the calendar notes map and the outputs map.
+Logic:
+  1. Load the JSON file.
+  2. For each input kind, return its path only when the entry exists, carries a path and the
+     file is present on disk; otherwise none.
+Checks and failure handling: a missing configuration file stops the importing script at once; a
+  missing optional input resolves to none and each builder decides how to degrade.
+
+Script: Cycle file discovery  (source role: find the newest cycle input files in OneDrive and inbox
+attachments by their columns, stage the winners and update the cycle configuration)
+Purpose: Removes the need for the user to upload anything: each Saturday it finds the newest
+  <planning workbook>, <distribution gap export>, <loyalty program target list>, contract audit
+  workbook and <market cycle workbook> wherever they landed, recognises them by their header
+  columns rather than their names, and stages the newest of each kind for the builds.
+Inputs: arguments: a "since" date (default: the last refresh minus 2 days, else 35 days ago), a
+  dry-run flag (default true: report only), the OneDrive folders to scan (default Desktop,
+  Documents, Downloads; the root is always scanned), a download cap (40) and a size cap (60 MB),
+  and flags to skip the drive or the inbox; the current cycle configuration for the territory,
+  the last refresh time and the planner it was built on; the user's OneDrive through the file
+  tools; the user's mailbox through the mail tools.
+Outputs: in a live run, the winners copied into the session's cycle input folder under their kind
+  name, extra store-keyed files into a sub-folder, and the configuration updated (input entries
+  with path, name, source and modified time; the extra list; the documents list; a last-discovery
+  timestamp); in every run, a result with the since date, download count, whether a new planner
+  was found, the other cycle data files, the documents noticed, the per-kind winners (name, where,
+  modified, source) and every candidate considered; a log line per file classified.
+Logic:
+  1. Classification by columns, reading only the first six rows of the first six sheets (or the
+     first six lines of a CSV): a planner sheet carries the store id, territory and store name
+     headers plus at least one of region, section or market; a gap export carries the store id
+     and the store-name header with sign, visibility or missing-signage columns; a loyalty
+     target list carries the store id and store-name header with the target and on-shelf
+     columns; a contract audit has a sheet named "Store List" with the store id and contract or
+     linear-feet columns; the <market cycle workbook> is recognised by its name. Any other
+     sheet with three or more header cells including a store-number-like header is "store
+     data" and rides along as other cycle data. Files whose names mark them as this skill's own
+     outputs (the plan workbook, the guide, the content file, the brief) are ignored.
+  2. OneDrive scan: each configured folder and the root are listed, descending two folder
+     levels into sub-folders modified since the since date (year-only or date-named folders are
+     skipped). A file is considered when it was modified since the since date; temporary lock
+     files and own outputs are skipped; presentations, PDFs and Word files are only recorded in
+     the documents list, never downloaded; spreadsheets over the size cap or beyond the
+     download cap are skipped with a log line; the rest are downloaded and classified.
+  3. Inbox scan: messages received since the since date (up to 400) with attachments and a
+     subject mentioning planner, planning, the list, reserve, export, audit, store list or visit
+     are opened; document attachments are listed; spreadsheet attachments are read from the
+     saved copy or the message content when available, otherwise fetched (attachments over 3.5
+     MB are skipped with advice to save them to OneDrive); each is classified, and a hit
+     records the sender, subject and received date as its source.
+  4. Winners: for each kind the newest modified candidate wins; for store data every distinct
+     file name keeps its newest copy. A new planner is declared when the winning planner's name
+     differs from the configured one or it is newer.
+  5. Live run: winners are copied to the cycle input folder as "<kind>.<extension>", extras to
+     the extra sub-folder (merged with those already configured by name), the newest 40
+     documents are listed, and when a new planner was found the previous cycle's roll-price
+     message and completed-before list are cleared so they do not carry forward; the
+     configuration is saved with a last-discovery timestamp.
+Checks and failure handling: a folder that does not exist is logged and skipped; a listing,
+  download or mail failure is logged and skipped rather than stopping the run; only counts, names
+  and classifications are logged, never contents; a dry run changes nothing. A development
+  argument exists to show how one email attachment comes back through the tools (shapes only).
+
+Script: Cycle refresh runner  (source role: run the local cycle pipeline in order with validation
+and a safe swap of the per-store content file)
+Purpose: Gives the Saturday refresh one command that rebuilds everything local in the right order,
+  validates the new per-store content before it goes live, and never leaves the daily brief with a
+  half-built file.
+Inputs: two flags: "new planner" (rebuild the ranking and the plan workbook, and the guide
+  document unless "skip docx" is also set) and "skip docx"; the cycle configuration for the
+  content path, the guide name, the cycle label and the territory; the pipeline scripts in the
+  working folder.
+Outputs: the refreshed per-store content file with the previous version kept beside it as the
+  ".prev" copy; the plan workbook and guide document on a new-planner run; a refresh report (JSON)
+  with start and finish times, one entry per step (name, ok, seconds, note), the options, the
+  cycle, the territory and the output paths; a five-line console summary; a non-zero exit status
+  on any failure.
+Logic:
+  1. The working directory is forced to the workspace root so every relative path resolves the
+     same way whether run by hand or by the scheduled task.
+  2. The plan: with the new-planner flag, the data build then the workbook build; always, the
+     guide content build then the content dumper, the latter pointed at a temporary file.
+  3. Each script runs as a child process with a 30-minute timeout; the note records the last
+     three lines of output on success or the exit code and last six lines of error output on
+     failure; activity-wording fallback lines are counted into the note and echoed so the
+     maintainer sees new activities. The plan stops at the first failure.
+  4. Validation of the temporary content file: valid JSON; at least 50 stores; every store
+     carries a name, address, rank, business rows, versus lines and do-this list, with the name
+     non-empty, the rank an integer and the business rows non-empty (versus and do-this may be
+     empty lists); no character above 0x7E anywhere in the serialized JSON. The note records
+     stores, planned stores, cycle and generated date.
+  5. Swap: the live file is copied to the ".prev" name, then the temporary file is moved into
+     place in one atomic operation.
+  6. New-planner runs then build the guide document and read the builder's summary (a missing
+     anchor fails the step), then run the checker and require "content identical" to the block
+     file.
+  7. The report is written; the summary states OK or FAILED, steps run, ok and failed with the
+     elapsed time, whether the daily content was refreshed or is unchanged, whether the guide
+     was rebuilt, and the report path.
+Checks and failure handling: on any failure the live content file is never touched and the
+  temporary file is removed; the exit status tells the calling step to leave the previous content
+  in place and send the "needs attention" note rather than publishing a partial rebuild.
+
+Script: Daily brief sender  (source role: read today's "Daily Schedule" email from the <CRM>, keep
+today's planned stops in start-time order, assemble the phone-friendly HTML brief from the
+per-store content and email it to the user)
+Purpose: The weekday morning run. It recomputes nothing: it finds today's stops, pulls each
+  store's prepared card from the content file, adds the day's calendar and sends one email to the
+  user only.
+Inputs: arguments: an optional date (default today in the user's local time zone), an optional
+  recipient (default the cycle's configured user email; the run stops with no recipient), a
+  dry-run flag (default false), an optional "wait until" local time to keep polling for the
+  email, an optional note override and a force flag for weekends; the cycle configuration; the
+  per-store content file; the plan captured at cycle start; the live plan saved from the previous
+  email; the <planning workbook> for a store id lookup; the user's mailbox, calendar and OneDrive
+  through the platform tools.
+Outputs: the HTML brief as a preview file in the working folder and, unless dry run, the email
+  (HTML body, not saved to Sent Items); the live plan saved locally and copied to the user's
+  OneDrive folder for the skill; a result with date, stops (time, id, name), the source note,
+  subject, whether it was sent, HTML size and live plan row count.
+Logic:
+  1. Restore: when the workspace is fresh, the configuration, content, captured plan and live
+     plan are restored from the user's OneDrive folder for the skill (listed once, only when
+     something is missing; a month-stamped copy is the second choice for the content and plan).
+  2. Reference data: the captured plan's rows for today in start-time order and each store's
+     captured start time; the set of known store ids from the content and the plan; and, from
+     the planner's sheet with the id and territory headers, every store id in the territory with
+     name, city, address and zip, so a newly planned store is still recognised even with no
+     prepared content.
+  3. Find the email: messages received since local midnight are scanned; a match is a <CRM>
+     analytics subscription whose preview mentions "Daily Schedule", a subject mentioning daily
+     schedule, the <CRM> visit report widget or planned store visits, or a sender from the <CRM>
+     with a schedule or visit subject; the newest wins. When a wait-until time is set and
+     nothing is found, the script sleeps 3 minutes and looks again until that time.
+  4. Parse the rows: first from HTML table rows in the body (a six-digit id cell, date cells,
+     time cells, a status cell, a name cell that is not a date, id, status or visit type), then
+     from plain-text lines carrying a known id and a date; when the body yields nothing, from a
+     CSV or Excel attachment, by column names when the export carries an account number header
+     (account number, visit status, account name, the first date or start column), otherwise by
+     scanning each line for an id, a date and a time. The log records the subject and the row
+     count parsed.
+  5. Live plan: rows with a date whose status is not completed, abandoned or cancelled are
+     sorted by date then time, de-duplicated on date and id, given store fields from the
+     content, the planner or the email's own name, and a time from the email or the captured
+     plan; the list is saved locally and copied to OneDrive. The email carries remaining visits
+     only, so the saved list is the remaining plan.
+  6. Today's stops: the rows dated today, de-duplicated, with times from the email or the
+     captured plan, sorted by start time. The note states the source; when the email carries
+     dates only it says stop order came from the captured plan; stops added or dropped against
+     the previous plan (yesterday's live plan, else the captured plan) are named; the number of
+     visits remaining after today and the last date are given.
+  7. Fallback when no row is dated today: today's stops from the previous plan, in time order,
+     with a note saying which plan was used and why (email read but none dated today; email
+     found but no rows could be read; no email found by the current time). A note override
+     replaces the note.
+  8. Weekend guard: on Saturday or Sunday nothing is sent unless forced; the result records the
+     skip and the live plan row count.
+  9. Calendar: the day's non-all-day, non-cancelled events as "start-end subject" lines.
+  10. HTML: a single column, 15 pixel body, 640 pixel maximum width. A header band with "Daily Store
+     Brief - <weekday, month day>", the stop count or "No planned store visits", the territory and
+     up to five towns; the calendar line; the source note; a "Route:" line of time and store name
+     per stop. Per stop: a rule; "n | time | name"; address, city, zip | <store id> | chain; a tag
+     line (Top Store rank of N, units per week with volume rank, Q store, <market support role>
+     person, best time, last call); then the section labels, set in small capitals: Distribution
+     Gaps (lines, or the green "None - every distribution gap measure is at 100%." or the grey "Not
+     in the <distribution gap export>."); the <loyalty program> line; Other Cycle Data when present;
+     Business - Latest 13 Weeks as a compact table (rows with no units and no share are dropped);
+     Versus the Competition with the verdict word colored (winning green, at risk and trailing
+     amber, losing red, not in the game grey) and the "Do:" in the primary color; Do This as a
+     numbered list. A stop with no prepared content gets its header, address and id and a note that
+     it was added after the content was built, the Saturday refresh will add it, and a one-off brief
+     can be requested. A footer names the sources (the "Daily Schedule" email, the planner, the Top
+     Store report, the gap export, the loyalty export, any other cycle data files and the
+     <data warehouse> with the 13-week end date), defines YoY and gives the contact address.
+  11. Subject: "Daily Store Brief - <Day m/d> - <n> stops, <first town> to <last town>" or "no
+     planned visits".
+  12. Send to the single recipient, or in dry run write the preview only.
+Checks and failure handling: any non-ASCII character left in the HTML is replaced with a hyphen
+  and counted in the log; a failed restore, mailbox read, attachment fetch, plan save, OneDrive
+  copy or calendar read is logged and the brief still goes out from what is available; no message
+  body or attachment is ever logged, only counts and names. The captured-plan date quoted in two
+  notes is fixed in the script and must follow the cycle start when reused.
+
+Script: Per-store content dumper  (source role: serialize the guide builder's store records into
+the per-store content file the daily brief reads)
+Purpose: Separates the heavy Saturday build from the light weekday send: every ranked store's card
+  is written once as JSON so the morning run only looks stops up.
+Inputs: the guide content builder, imported and executed with its console output suppressed; the
+  cycle configuration for the cycle label, built date, territory, calendar notes and output path;
+  an environment variable naming a temporary output path, used by the refresh runner.
+Outputs: the per-store content file: generated date, cycle label with its date span, territory, the
+  business table header, the calendar notes, the <data warehouse> 13-week end date when known, the
+  labels of the other cycle data files, and one entry per ranked store in planner scope with name,
+  address, city, zip, chain or Independent, rank and N, score, volume rank, volume, Q flag,
+  <market support role> person, best time, last call, the distribution gap lines and whether the store was
+  in the export, the <loyalty program> line, the other cycle data lines, the business rows and
+  narrative, the versus lines, the do-this list, and the planned date and time when the store is on
+  the route (otherwise null); a console line with store and planned counts.
+Logic:
+  1. Run the guide builder and take its planned-stop records and all-store records.
+  2. Map each planned store to its date and time; write every store's fields in the shape above.
+  3. Write to the temporary path when one is given, else the configured content path.
+Checks and failure handling: any failure in the guide builder propagates and the file is not
+  written; the refresh runner validates the result before it goes live.
+
+Script: <data warehouse> 13-week pull  (source role: pull 13-week shipment and scan volumes by
+store, category and brand for a territory from the <data warehouse> Power BI model and save them
+as JSON)
+Purpose: Supplies the business update and the Versus the Competition section with the latest 13
+  weeks and the same 13 weeks a year ago, for every store in the territory and for the territory
+  as a whole.
+Inputs: arguments: the <territory id> (default from the cycle configuration; the run stops without
+  one), the model alias (default: discover the <data warehouse> by name, because session aliases
+  are not stable across days) and the output path; the Power BI query tool.
+Outputs: a JSON file with one row list per query (per-store category totals for five categories,
+  territory category totals, territory brand totals, per-store transaction counts, and per-store
+  totals for each tracked brand family) plus the end date of the 13-week window; a result with
+  the row count per list and the week-end date; a log line per query.
+Logic:
+  1. Discovery: search the semantic models for the <data warehouse> by exact name and take its
+     alias or id; fall back to reading the alias out of the tool's text; stop with a clear
+     message when nothing is found.
+  2. Every query filters the <store dimension> to the territory and excludes business
+     development prospects, and computes four measures: shipments over the calendar's
+     latest-13-weeks flag, the same through the year-ago week-end relationship, and scan units
+     the same two ways.
+  3. Per-store category queries for <category 1>, <category 3>, <category 4>, <category 2> and
+     <category 5> (the model's category group values); a territory-by-category query; a
+     territory-by-category-and-brand query ordered by current volume; a per-store transaction
+     query (category transaction count and identified-consumer transaction count over the
+     window).
+  4. One per-store query per tracked brand family: <category 1>: <our brand 1A>,
+     <our brand 1C>, <competitor brand 1A>, <our brand 1B>, <our brand 1D>, <competitor brand 1B>,
+     <competitor brand 1K>, <competitor brand 1I>, <competitor brand 1L>; <category 3>:
+     <our brand 3A>, <competitor brand 3A>, <competitor brand 3B>, <competitor brand 3D>;
+     <category 4>: <our brand 4A>, <competitor brand 4A>, <competitor brand 4B>, <competitor brand 4C>;
+     <category 2>: <our brand 2A>, <our brand 2B>, <competitor brand 2A>, <our brand 2C>,
+     <competitor brand 2C>, <competitor brand 2G>; <category 5>: <our brand 5A>,
+     <competitor brand 5B>, <competitor brand 5A>. Each is capped at 1,000 rows.
+  5. Result reading: a normal result carries a table with columns and rows; a large result comes
+     back as a preview string with the full CSV appended after the JSON, so the CSV block is
+     located by its header line and parsed, falling back to the preview rows with a warning.
+  6. The 13-week window's end date is read with a one-row query (either ISO or m/d/y form); a
+     failure leaves it null and the brief's footer says "latest 13 weeks".
+Checks and failure handling: stops without a territory or a discoverable model; logs row counts
+  per query and warns when only a preview could be parsed; about one minute per run.
+
+Script: Workbook contract gate  (source role: stage 10 verification of the built plan workbook
+through the workbook engine, never by value-only reads)
+Purpose: Proves the plan workbook meets its formatting and content contract before it is
+  published, and supplies the pass or fail matrix the Method tab prints.
+Inputs: the workbook path; optionally the planner path for a source spot check (the stand-alone
+  entry point uses a fixed planner path that must be updated per cycle).
+Outputs: a result with the list of checks (name, ok, note), the 13-element matrix per store tab
+  and the list of failures; the stand-alone entry prints the matrix per tab, each check as PASS or
+  FAIL and the failure count.
+Logic:
+  1. The nine tabs exist in the required order.
+  2. For each of the six store tabs, 13 elements: (1) header row 1 begins Rank (Priority on
+     Coverage Gaps) then the <store id>; (2) panes frozen below the header and right of the
+     State column; (3) exactly one Excel table covering the populated block; (4) the medium
+     table style with row stripes; (5) the header band in the primary fill, bold white 10 point
+     in the body font, row height at least 30; (6) an autofilter over the whole block; (7) thin
+     grid borders on every populated cell (every cell when 100 rows or fewer, otherwise the
+     header, the first 20, the last 20 and 49 evenly spaced rows); (8) body font and size,
+     top-aligned and wrapped on the same cells; (9) right alignment on numeric columns and left
+     elsewhere; (10) explicit column widths; (11) the narrative column last with a width of 100
+     to 124; (12) every row's height at least the height its longest cell needs; (13) on
+     Coverage Gaps, the days-since shading exactly amber at 150 to 179 and red at 180 or more
+     and no other fill (not applicable on the other tabs).
+  3. Per store tab also: the exact header sequence (rank or priority, the eight identity
+     columns, the tab's own columns); the id and zip stored as text with five-digit zips; the
+     identity and narrative cells populated on every row that carries an id.
+  4. Across the three merit tabs: ranks continuous from 1; no store id on two tabs; no directed
+     store on a merit tab.
+  5. Every sheet title, table name, cell value and the file name within printable ASCII, with
+     the count of cells scanned.
+  6. Panel checks on Read Me, Priorities and Method: every heading row (recognised by its fill)
+     in Title Case, allowing acronyms and small words; the title row in the primary fill, bold,
+     at least 16 point, at least 32 high and merged; section rows bold, at least 12 point, at
+     least 22 high and merged; every populated cell in the body font, top-aligned and wrapped;
+     row heights sufficient for the merged width.
+  7. Source spot check when a planner is given: three random stores from the merit tabs (fixed
+     seed) must match the planner's volume and city.
+Checks and failure handling: a failure never stops the build; the matrix and failure list are
+  returned to the workbook builder, printed, and written into the Method tab and the checkpoint
+  for the reviewer.

@@ -1,0 +1,434 @@
+----------------------------------------------------------------------------------------------------
+Part 1 of 11: Hub: Bundle Overview, Router and Scope Resolution
+----------------------------------------------------------------------------------------------------
+
+Hub: Bundle Overview, Router and Scope Resolution
+=================================================
+
+Purpose: The hub is the entry point of a bundle of eight Copilot Cowork skills built for every role
+in <company>'s field sales organization, <sales org>. It tells the assistant how to route a request
+to one skill, stage and read it, resolve who is asking from the login and what they own, and open
+every answer with a scope line; it tells a person how to invoke the bundle and what comes back.
+
+Triggers: The user attaches the skills bundle zip to a new Cowork session, or pastes the
+<shared folder link> on one line and the request on the next, or has installed the skill folders
+under the OneDrive folder Documents/Cowork/skills and simply asks. Phrasings route by meaning:
+"give me my top stores" (Top Opportunity Stores), "what are my contract opportunities" (Contract
+Compliance Audit), "which of my stores are missing signs" (POS Gap Scorecard), "help me with my 2H
+objectives" (Performance Write-Up Concierge), "rebuild my <business unit 3> label sheet" (Business
+Unit Label Sheets), "audit my <chain name> stores for pricing" (Pricing Audit), "seed the pricing
+agent for my market" (Pricing Opportunity Agent builder), "I'd like to enable daily briefings"
+(Daily Store Brief). The explicit form "Follow the START HERE file in the <skill folder> of the
+attached zip and <what you want>" always works.
+
+Inputs:
+- The skills bundle zip in the session's attachments, or the <shared folder link> resolved to the
+  shared folder in <author>'s OneDrive.
+- The user's request: whatever follows the link or the attachment, in the user's own words.
+- The signed-in user's profile, read from the people directory, for the user principal name.
+- The <shelf recognition model> in Power BI (report <report id>): its <user login table>,
+  <sales employee geography table>, <store hierarchy table> and <store profile table>.
+- The chosen skill's SKILL.md plus everything under its references/ and scripts/ folders.
+
+Outputs:
+- Exactly what the chosen skill's Output section describes, in the output pane, opening with one
+  line in the form "Scope: <scope>, <reason>"; for a request about routing itself, the routing
+  answer from the table with nothing run.
+- Nothing is emailed or posted to Teams unless the user asks.
+
+Parameters to Fill In:
+- <company>, <company domain> - the company and its sign-in domain; the alias is the part of the
+  user principal name before the @ sign.
+- <sales org> - the field sales organization the skills serve.
+- <author>, <author email> - who maintains the bundle, owns the photo bridge flow and the shared
+  folders, and receives defects and suggestions.
+- <shared folder link> - the shared OneDrive folder holding the skill folders and a zip of each.
+- <shelf recognition model>, <report id> - the Power BI model (and its report id) holding store
+  profiles, photos, recognized POS and the directory tables used for role resolution.
+- <user login table> - the directory table keyed by login alias, not clipped by row-level
+  security; its <login alias column>, <user role column>, <geography type column>,
+  <geography code column>, <market id column>, <section id column>, <region id column>,
+  <employee title column> and <employee title code column>.
+- <sales employee geography table> - the fallback directory keyed by domain user name, with title,
+  assignment type and sales geography code; <network domain> - the prefix before the alias there.
+- <store hierarchy table> - the row-level-secured table of stores under each geography, account
+  and <market support role> assignment, with level 0 to level 5 user name columns.
+- <store profile table> - the store master whose chain name column names an account person's
+  chains.
+- <field region ids>, <account region ids> - which region ids are field sales and which are the
+  account organization.
+- <territory role>, <market support role>, <market role>, <section role>, <region role>,
+  <account role>, <HQ role>, <support role> - the company's titles at each level.
+- <market>, <market id>, <territory id>, <section id>, <region id>, <store id>, <store ids> - how
+  geographies and stores are named in scope lines and requests.
+- <business unit>, <business units>, <business unit 3>, <business unit 4> - the operating units,
+  and the two whose contracts the audit scores; <our brand 3A>, <our brand 4A>,
+  <competitor brand 4A> - the brands the audit measures.
+- <category 1>, <price support program>, <price ceiling>, <trade announcements> - the category,
+  program, pass price and announcements the pricing skills use.
+- <CRM> - the CRM whose visit report widget sends the Daily Schedule email; <data warehouse> - the
+  store-level source of 13-week data; <photo platform> - the store photo service.
+- <planning workbook>, <distribution gap export>, <loyalty program>, <loyalty program target list>
+  - the cycle inputs of the visit list and the Daily Store Brief.
+- <SKU volume report>, <label stock code> - the inventory report export that drives label facings
+  and the 1 x 2 inch die-cut label stock product code.
+- <sign type 1>, <sign type 2>, <sign type 3> - the state signage guide and two named sign programs
+  that route to the POS Gap Scorecard.
+- <jurisdiction> - a state as a legal jurisdiction in pricing requests; <chain name> - a slot for
+  any chain named in a request; <chain A> to <chain E> - example chains.
+- <user's manager> - the user's supervisor, whose emails carry priorities.
+- <n> - any count quoted for a named geography; <date> - dates in the bundle's history.
+
+Bundle Overview
+---------------
+
+Eight Copilot Cowork skills built by <author>, a <territory role> in <market>, for everyone in
+<sales org>: <territory role>s, <market support role>s, <market role>s, <section role>s,
+<account role>s and their directors, <region role>s and headquarters. Nothing to install. Version
+<date>. When the Read Me reaches the assistant inside an attached zip, the assistant opens START
+HERE - all skills.md in the same folder and follows its "If You Are Copilot" section; it does not
+describe the folder to the user but runs the request.
+
+What Is Here:
+
+Each row: folder or file: what it is.
+
+- START HERE - all skills.md: the router; a fresh Cowork session reads it, works out who is asking,
+  picks the skill that fits and runs it.
+- TEST SCRIPT.md: the prompts to try, what should come back, what to report.
+- The photo bridge flow setup guide: one-time setup of the flow the owner builds once in Power
+  Automate, after which photos fetch by themselves for everyone.
+- Contract Compliance Audit: <business unit 4> (<our brand 4A>) and <business unit 3>
+  (<our brand 3A>) contract compliance from <photo platform> store photos.
+- Top Opportunity Stores: ranked store visit list from the cycle's <planning workbook>.
+- POS Gap Scorecard: color-coded POS presence scorecard from the <shelf recognition model>.
+- Performance Write-Up Concierge: set objectives, track progress, write mid-year and year-end.
+- Business Unit Label Sheets: print-ready out-of-stock placeholder labels for any <business unit>
+  with real scannable reorder barcodes.
+- Pricing Audit: the Pricing Opportunity Agent's audit run from chat for a chain, state or
+  territory, in one workbook; same engine as the app, verified against it; for account teams and
+  managers.
+- Pricing Opportunity Agent (Builder): builds, seeds, repairs and ports the Managed App that audits
+  retailer margin on <company>'s items against the lowest-margin competitive item per store and
+  category; for builders and owners.
+- Daily Store Brief and Cycle Autopilot: every selling morning a phone-friendly email of that day's
+  planned <CRM> visits; every Saturday it finds the new cycle's planner and inputs in OneDrive and
+  the inbox by their columns (other store-keyed exports ride along as Other Cycle Data) and
+  rebuilds itself. "I'd like to enable daily briefings" starts it.
+
+Every skill folder holds SKILL.md (plus references/ and scripts/ where present) and a START HERE.md
+for a person: what to say, other ways to ask, what comes back, how long it takes. The package is
+instructions only, with no store lists, results or reports for any territory, market or person, so
+it can be forwarded to anyone in <sales org>; whatever the user runs stays in their own session and
+files, clipped by Power BI to what they may see.
+
+How to Use the Skills:
+
+Three ways, same result: attach the zip to a new Cowork session and ask in plain words; paste the
+<shared folder link> on one line and the request on the next, nothing else; or install permanently
+by copying the eight skill folders into the OneDrive folder Documents/Cowork/skills so each
+SKILL.md sits in its own subfolder, then just ask in any session. The user asks as they would ask
+a person; "give me my top stores", "help me with my 2H objectives" and "which of my stores are
+missing signs" all route. If Copilot describes the folder instead of starting, the explicit form
+is: Follow the START HERE file in the <skill folder> of the attached zip and <what you want>.
+
+Who You Are Is Read from Your Login:
+
+The user never says who they are. Copilot takes the login, finds the person in the <sales org>
+directory inside the <shelf recognition model>, and uses their span of control as the default
+scope. Anyone can name a different scope in the request, and the request always wins.
+
+| You are | "My" means | Contract audit default | Visit list shape |
+|---|---|---|---|
+| <territory role> | your territory | the regular independents in your territory | Top 10 + Next 25 |
+| <market support role> | your whole market | your market; Copilot proposes a cut first (one territory at a time, or contracted independents only) | Top 20 + Next 50 |
+| <market role> | your market | same as above | Top 20 + Next 50 |
+| <section role> | your section | your section; always a cut first | Top 20 + Next 50 |
+| <region role> | your region | your region; always a cut first | Top 20 + Next 50 |
+| <account role> (every account title, from specialist to the head of account sales) | your chains (every store whose account hierarchy carries your name) | your chains; a cut first (one chain) above a few hundred stores | Top 20 + Next 50 |
+| <HQ role> (the chief executive, communications and every home-office role with no sales geography) | nothing by default, even if your name sits at the top of a chain of command | name the scope: "in territory <territory id>", "for <market>", "for <section id>", "for <chain name>", or a <store id> list; Copilot asks once if you do not | the shape of the geography you name |
+| <support role> (support and administrative roles attached to a geography) | that geography | same as the field role at that level | that level's shape |
+
+Every answer opens with one line stating the scope used and why, "Scope: <scope>, <reason>" (for
+example "Scope: <market>, your market as <market role>, <n> territories"). Above one market every
+skill states the count and offers to run market by market before it starts; the contract audit
+does so already above one territory (one market alone is <n> contracted independents, roughly <n>
+hours of photo scoring at 1.7 minutes a store). Row-level security clips every query to what the
+user may see, so a wrong default can only under-deliver, never show stores outside their
+permissions. Scopes a request can name: a territory, market, section or region number, a chain
+name, "my business development prospects" (kept separate from regular independents), "my chains",
+a pasted <store id> list, or an attached list.
+
+What You Need Access To:
+
+Each row: skill: what it needs.
+
+- Top Opportunity Stores: the cycle's <planning workbook> if the market has one (attached, or the
+  user says where it lives), otherwise the Power BI model; reads the user's own mailbox for
+  <user's manager>'s priorities.
+- Contract Compliance Audit: read access to the <shelf recognition model>, which every field and
+  account role has; photos come through the photo bridge flow, owned by <author>, into a shared
+  folder everyone at <company> can use, nothing to install, click or be granted.
+- POS Gap Scorecard: the same model; no photos, no app.
+- Performance Write-Up Concierge: nothing; bring reports or nothing.
+- Business Unit Label Sheets: one file, the <SKU volume report> from <company>'s Power BI
+  workspace filtered to the user's geography and exported to Excel (without it facings fall back to
+  national averages, which differ materially); a color printer and off-the-shelf 1 x 2 inch
+  die-cut label stock (<label stock code>).
+- Daily Store Brief and Cycle Autopilot: nothing beyond the user's login. A one-time setup Copilot
+  walks the user through on "I'd like to enable daily briefings": a <CRM> visit report widget email
+  subscription named "Daily Schedule" (every remaining planned visit, daily Monday to Friday, at
+  the time the user chooses) and OneDrive backup of Desktop and Documents; the monthly planner,
+  <distribution gap export> and <loyalty program target list> are found where the user already
+  saves them. Reads the user's inbox, OneDrive, calendar and the <data warehouse>.
+
+The bridge flow has run since <date>; nobody sets anything up. Its setup guide is in the bundle
+only so the flow can be rebuilt if its owner ever changes.
+
+When Something Goes Wrong:
+
+- Copilot lists the folder or asks which skill: use the explicit form above.
+- Copilot asks a field role who they are or which territory they cover: a defect; the user tells
+  <author> their role and what it asked.
+- "No rows" or "no stores found" from Power BI: the user's access does not cover that scope; the
+  user tells <author> the scope used.
+- Copilot says the photo bridge flow is not running: the user tells <author>, who restarts it in a
+  minute.
+- A run stops part way or the session disconnects (the audit takes about 1.7 minutes a store, so
+  100 stores is about 2.5 hours): the user returns to the same Cowork conversation, still in the
+  task list, and says "continue"; it resumes from the last finished store in the same workbook. A
+  new conversation cannot see the old one's progress and would start over.
+- The visit-list skill takes a minute or two before anything visible happens: its instructions are
+  long; normal.
+- A label sheet prints misaligned to the die cuts: it was printed scaled; print at 100 percent or
+  Actual Size, never "Fit to Page". The skill checks its own registration before handing over the
+  PDF, so the file itself is right.
+- The label skill says it cannot match a SKU: deliberate; it refuses to guess a barcode and names
+  the SKU, which the user sends to <author>.
+
+Maintained by <author>, <author email>. Anyone at <company> may use and share all of it.
+
+Router and Role Resolution
+--------------------------
+
+Eight skills, nothing to install; anyone at <company> may use them. The assistant's section comes
+first; a person scrolls to "If You Are a Person".
+
+If You Are Copilot:
+
+A user pasted the folder's link, or attached it as a zip, together with a request. The assistant's
+job is to run the right skill, not describe the folder: it does not summarize this file or list the
+folder back, and does not ask which skill unless routing genuinely fails.
+
+If You Are Copilot - Step 1, Route:
+
+The assistant matches the request to ONE skill on meaning, not exact words. The table is enough;
+it does not open the other skill folders or their START HERE files to decide (it may cite a
+SKILL.md description when asked to explain a choice). If the request is about routing itself, or
+says not to run anything, it answers from the table and stops. TEST SCRIPT.md is for the tester and
+is never read to decide anything or to fill in a result.
+
+| The request is about | Skill |
+|---|---|
+| stores to visit, top stores, focus stores, visit list, where to spend time, a chain, zip, city or state subset of stores, comparing two planners, and similar phrasings | Top Opportunity Stores |
+| contracts, contract opportunities, a <business unit 4> or <business unit 3> contract, upgrade or downgrade, reclaim space, not performing, audit, a <store id> list, linear feet, shelf position, and similar phrasings | Contract Compliance Audit |
+| POS, signage, signs, missing POS, <sign type 1>, <sign type 2>, <sign type 3>, POS compliance, POS gap | POS Gap Scorecard |
+| objectives, OKRs, 1H or 2H, mid-year, year-end, self assessment, performance review, write-up, wins, what can I claim | Performance Write-Up Concierge |
+| labels, label sheet, placeholder labels, stickers for paddles, new store kit, barcodes to print, out-of-stock tags, UPC labels | Business Unit Label Sheets |
+| audit my <chain name> stores for pricing, audit <chain name> in <jurisdiction>, margin gaps, price audit for my territory, is <chain name> above the <price ceiling>, where are my pricing opportunities | Pricing Audit |
+| the pricing agent, build or seed or repair the pricing agent, add a state or market to it, shelf price refresh, buy-downs or allowances table, wholesale cost table, port the pricing agent to another category | Pricing Opportunity Agent (Builder) |
+| daily briefings, enable or set up daily briefings, the email is all set up for 5:00, daily brief, route-day guide, my plan today, what stores am I hitting today, refresh the cycle, new planner dropped, cycle autopilot | Daily Store Brief and Cycle Autopilot |
+
+Tie-breakers: auditing, checking or finding pricing opportunities for named stores, a chain, a
+state or a territory is the Pricing Audit (it runs the audit); building, seeding, repairing, adding
+a state to or porting the pricing agent is the builder (it builds the tool); either beats a store
+list, and a one-off margin question for one item is answered inline with no skill. "daily
+briefings", "my plan today" or "route-day guide" is the Daily Store Brief (today's stops with
+actions); "stores to visit" or "top stores" is Top Opportunity Stores (the ranked list for the
+cycle). "contract" beats "POS" (space versus signs). "labels" or "stickers" beats "POS" (a label is
+a barcode the retailer scans to reorder; POS is branded signage). "stores to visit" beats
+"objectives". A request that truly spans two skills: run the one the sentence is mainly about, then
+offer the other in one line at the end; never run two skills unasked. Nothing matches, or a genuine
+tie: ask ONE question listing the eight skills in the words of the "You say" phrasings under "If
+You Are a Person", then proceed.
+
+If You Are Copilot - Step 2, Stage Only the Chosen Skill:
+
+Two ways the file arrives. Link: the assistant resolves the link to the shared folder, lists it,
+opens the chosen skill's subfolder and downloads SKILL.md plus, if present, everything under
+references/ and scripts/; it skips the zip and START HERE.md (they are for people); downloads land
+in one shared folder under identical names (every skill has a SKILL.md), so it copies and verifies
+each file right after downloading it, before the next. Zip: it sits in the session's attachments,
+named as the skills bundle zip with a date; the assistant unzips it with Python into a hub
+subfolder of the session's working folder, nothing to download; the skill folders sit directly
+under the zip's top folder, next to this file. Either way the assistant puts the chosen skill's
+files, same layout, where its own SKILL.md expects them under the session's working folder (the
+Contract Compliance Audit and the Pricing Opportunity Agent builder each have a named staging
+folder; the other six go under a shared skills folder, one subfolder each), replacing the folder's
+contents if it already exists.
+
+If You Are Copilot - Step 3, Read the Staged Skill:
+
+The assistant reads the staged SKILL.md completely and follows it from its first step. Where it
+says to copy from an installed skill folder, the copy is skipped (the files are already staged).
+Where it says to invoke another skill (the built-in Power BI or Excel skill), the assistant does so;
+those are built into every Cowork session.
+
+If You Are Copilot - Step 4, Who Is Asking and What They Own:
+
+The request is the user's own words, whatever followed the link or attachment. Scope comes from who
+is asking, resolved from the login before any default is applied; each skill's SKILL.md repeats the
+rule. The assistant never asks who the user is; it looks it up.
+
+1. The signed-in user's profile gives the user principal name. The alias is the part before the @
+  sign, in upper case. The user principal name is the login name, not the display email: a person
+  whose display address is first name, initial and last name may sign in under a different short
+  alias, so the alias comes from the signed-in account, never the display address.
+2. In the <shelf recognition model> (report <report id>), the <user login table> row where the
+  <login alias column> equals the alias; the table lists every field and account person and is not
+  clipped by row-level security. The assistant reads the role, geography type, geography code,
+  market id, section id, region id, employee title and employee title code columns. The geography
+  code is six characters for every role, padded with zeros: the first digit is the region, the
+  first two the section, the first four the market, all six the territory; a market-level row ends
+  in two zeros, a section-level row in four, a region-level row in five. A market-level code is
+  never read as a territory; the market, section and region id columns are the parsed pieces. No
+  row: the <sales employee geography table>, at the row whose domain user name is <network domain>,
+  a backslash and the alias, with the permanent assignment type (temporary rows at market and
+  section level are ignored), gives the title and the sales geography code; the all-zeros code is
+  headquarters (the chief executive, communications and most home-office roles). No row there
+  either: headquarters.
+3. Classify from the row. This step decides the class; nothing later promotes a person to a wider
+  one.
+
+| The row says | Who | Default scope | Say it as |
+|---|---|---|---|
+| geography type territory, with the <territory role> role code | <territory role> | the territory code; the contract audit narrows to the regular independents in it, the other skills take the whole territory | "your territory <territory id>" |
+| non-geographic type, with the <market support role> title code | <market support role> | the market id: the whole market, never a single territory (that role's geography code is a market-level placeholder value) | "<market>" |
+| geography type unit, with the <market role> role code | <market role>, and equivalent market-level titles | the market id | "<market>" |
+| geography type section, with the <section role> role code | <section role> | the section id, every market in it | "<section id>" |
+| geography type region, with a region id among the <field region ids> | <region role> | the region id | "<region id>" |
+| geography type region with a region id among the <account region ids>, or any title containing "Account" | <account role> (every title in the account organization, from specialist to its head; all non-geographic except the head) | their chains, per the account span rule below | "your chains, <chain A> and <chain B>: <n> stores" |
+| the all-zeros code, or not found in either table | headquarters (<HQ role>) | no default, even when the alias appears high in a chain of command; the scope the request names. If it names none, ask ONE question offering region, section, market, territory, chain or a <store id> list (and, for the visit list, where the <planning workbook> is), then run | (none) |
+| found, but no row above fits (support and administrative title codes) | <support role> | the geography of the row if it has one (territory, unit, section or region type); otherwise headquarters | (none) |
+
+Account span rule: the stores in the <store hierarchy table>'s account-type rows where the alias
+appears either in the domain user name column (prefixed with <network domain> and a backslash) or
+in any of the level 0 through level 5 user name columns (as the alias at <company domain>); that
+table's store id column is the store list, and the <store profile table>'s chain name column names
+the chains. One role code is shared by <market support role>s and account people, so the
+<market support role> is keyed on the employee title code, never on the role code.
+
+4. The <store hierarchy table> is the store list for the class decided in step 3, not a way to
+  reclassify: geography rows (level 0 <territory role>, level 1 <market role>, level 2
+  <section role>, level 3 <region role>), account rows (level 0 <account role> up to the chief
+  executive), and <market support role> rows (their own row type, alias at <company domain> in the
+  domain user name column; the stores that role is assigned to cover, which the skills do not use
+  as the default because that role's default is the whole market). Unlike the directory, this
+  table is clipped by row-level security: from the person's own login it shows their own span;
+  from anyone else's, only the overlap. Verified on <date> from a <territory role>'s login in
+  <market>: that manager saw <n> stores, the <market role> <n>, an <account role> <n> (their
+  <chain A> and <chain B> stores inside that market), a <market support role> <n>.
+5. An explicit scope in the request always beats the default: "territory <territory id>",
+  "<market>", "<section id>", "<region id>", a chain name, "my business development prospects",
+  "my chains", a <store id> list, an attached list.
+6. Row-level security clips every store query to what the person may see, so a wrong default can
+  under-deliver but never over-reach. The answer opens with one line naming the scope and why:
+  "Scope: <market>, your market as <market role>, <n> territories." The counts in that line come
+  from the <user login table> (distinct territory codes of <territory role> rows per market id,
+  distinct market ids per section id, distinct section ids per region id), which is not clipped.
+7. Size the run before starting. A territory is a few hundred stores; <market> is <n> open stores,
+  <n> of them with a <business unit 4> or <business unit 3> contract. Above one market every skill
+  states the count, proposes to run market by market, and runs the whole span only when the user
+  says so. The contract audit scores photos at about 1.7 minutes a store with four agents in
+  parallel (a single agent takes about 5), so already above one territory it states the count for
+  the default scope (the contracted stores in it: regular independents for a geography, chain
+  stores for an account person, never the market total), the hours, and proposes a cut: one
+  territory at a time for a market, one market at a time for a section or region, one chain for an
+  account person; it runs the whole span only when told to, in blocks with checkpoints. A default
+  scope with zero contracted stores (some chains carry no store-level <business unit 4> or
+  <business unit 3> contract in the model) is stated as such in one line with an offer to run a
+  chain, a <store id> list or a geography instead; nothing is scored. An attached
+  <planning workbook> offered as the visit-list input is checked for a matching market before use.
+
+If the skill needs an input file (the <planning workbook> for Top Opportunity Stores) and none is
+attached, the assistant looks where the skill says first (attachments, then the user's OneDrive),
+then asks once. The Daily Store Brief needs no attached file: it reads the <CRM> Daily Schedule
+email and finds the cycle files in the user's OneDrive by their columns. If the attached zip holds
+a test-inputs folder, a file there may serve as the input, and the assistant says which file it
+used. It never invents stores, numbers or names to fill a gap.
+
+If You Are Copilot - Step 5, Deliver:
+
+The assistant delivers exactly what the skill's Output section describes, in the output pane, and
+stops. It never sends email or posts to Teams unless the user asks.
+
+If You Are a Person:
+
+The user opens a new Cowork session, pastes the <shared folder link> on one line and the request on
+the next, nothing else, asking as they would ask a person; Copilot reads this file, picks the skill
+and runs it. Without the link, attaching the zip of the folder works the same way.
+
+Each row: skill: what you say; what you get.
+
+- Top Opportunity Stores: "give me my top stores", "who should I visit this month", "build my visit
+  list"; a ranked, defensible visit list from the cycle's <planning workbook>, weighted by volume,
+  the supervisor's focus, headquarters priorities and the <business unit> hierarchy, as one Excel
+  workbook (<territory role>s Top 10 + Next 25, the manager tier Top 20 + Next 50). Attach the
+  current monthly planner or say where it lives.
+- Contract Compliance Audit: "what are my contract opportunities", "audit my <business unit 4> and
+  <business unit 3> contracts", "audit these <store ids>"; every contracted store scored from its
+  latest <photo platform> photo (<our brand 4A> linear feet, shelves, header and position versus
+  <competitor brand 4A>; <our brand 3A> facings), verdict and next step per store in one Excel
+  workbook. Photos arrive by themselves through the photo bridge flow; about 1.7 minutes a store;
+  the user can walk away and say "continue" later.
+- POS Gap Scorecard: "what POS is missing in my territory", "who is missing <sign type 2> signage",
+  "show me my POS compliance"; a color-coded Excel scorecard from the <shelf recognition model>:
+  green check where POS is present, red X for a real gap, yellow where the store could not be
+  assessed, a failure code explaining every miss.
+- Performance Write-Up Concierge: "help me with my 2H objectives", "set my OKRs", "write my
+  mid-year"; objective setting against headquarters and supervisor priorities, mid-period progress
+  tracking, completed mid-year and year-end sections. Bring reports or nothing.
+- Business Unit Label Sheets: "make my label sheets", "rebuild my <business unit 3> labels", "new
+  store kit"; a print-ready PDF of out-of-stock placeholder labels, each with the product name and
+  a real scannable UPC-A of the reorder unit, sized to land inside off-the-shelf 1 x 2 inch
+  die-cut label stock; facings follow the user's own market volume. Bring the <SKU volume report>
+  export from <company>'s Power BI workspace. Print at 100 percent, not Fit to Page.
+- Pricing Audit: "audit my <chain C> stores for pricing", "where are my pricing opportunities at
+  <chain D> in <jurisdiction>", "is <chain E> above the <price ceiling>"; one Excel workbook with
+  Summary, Findings (every <company> item above the lowest competitive margin in its store and
+  category, with shelf price, net cost, benchmark, parity price, weekly units and an ask
+  sentence), Above <price ceiling> (<category 1> items over the pass price, with a verify-in-store
+  read when the pass price changed inside the 13-week window), Gates (missing costs and buy-downs,
+  restricted programs, proposed rows), Benchmarks and Data Notes. Reads the tables the app writes;
+  enters nothing. A chain with no wholesale costs on file gets the Gates and Above <price ceiling>
+  sheets and the five families to price first.
+- Pricing Opportunity Agent (Builder): "seed the pricing agent for my market", "add <jurisdiction>
+  to the pricing agent", "port the pricing agent to another category"; builds, seeds or repairs the
+  Managed App that finds every store where <company>'s item carries more retailer margin than the
+  lowest-margin competitive item, net of wholesale cost, allowances and buy-downs, and gives the
+  parity price. Proves SKU-level scan access first, quotes the seed cost, loads the two workbooks,
+  seeds allowances from the <trade announcements>, publishes. For builders and owners; users open
+  the agent from the app list.
+- Daily Store Brief and Cycle Autopilot: "I'd like to enable daily briefings", "okay, the email is
+  all set up for 5:00 AM", "what is my plan today", "refresh the cycle"; one phone-friendly email
+  per selling day (Monday to Friday) with the planned stops in order and, per store, Top Store
+  rank, distribution gaps with the exact fix, <loyalty program> targeting, the 13-week business
+  table, Versus the Competition and a Do This list; the cycle rebuilds itself every Saturday from
+  files the user already saves. On day one Copilot walks the user through the <CRM> subscription
+  from the <CRM> home page; when the user returns with the time it is set for, the autopilot starts
+  and the first brief arrives the next selling morning. Nothing to attach.
+
+If Copilot describes the folder instead of starting, or asks which skill, the explicit form is
+"Follow the START HERE file in the <skill folder> of this folder <shared folder link> and
+<what you want>". Who it is for: every <sales org> role; Copilot works out who the user is from the login
+and defaults to their span (a <territory role> their territory, a <market support role> or
+<market role> their market, a <section role> their section, a <region role> their region, an
+account person their chains); headquarters roles have no default and name the scope ("in territory
+<territory id>", "for <market>", "for <chain name>", or a <store id> list); anyone can name a scope
+to override. A permanent install skips the link: copy the skill folder into the OneDrive folder
+Documents/Cowork/skills (the shared folder also holds a zip of each skill) and just ask.
+
+The photo bridge flow (used by the contract audit) is owned by <author> and has run since <date>;
+it fetches photos into a shared folder everyone at <company> can use, nothing to install, open or
+be granted. If Copilot reports the bridge is not running, the user tells <author>. Maintained by
+<author>, <author email>; suggestions and defects go to <author>.

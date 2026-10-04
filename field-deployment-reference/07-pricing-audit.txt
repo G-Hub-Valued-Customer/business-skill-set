@@ -1,0 +1,1107 @@
+----------------------------------------------------------------------------------------------------
+Part 7 of 11: Pricing Audit
+----------------------------------------------------------------------------------------------------
+
+Pricing Audit
+=============
+
+Purpose: Runs the Pricing Opportunity Agent's audit from chat for a chain, <jurisdiction> or
+territory and returns an actionable report: <company> items whose retailer margin sits above the
+lowest competitive margin in their store and category, <category 1> items priced over the
+<price ceiling>, the parity price and ask per finding, and the gates (missing costs, buy-downs,
+allowances, legal restrictions) that limit the answer. The engine is the app's own, proven by
+regression, so the chat answer and the app always agree.
+
+Triggers:
+- "audit my <chain> stores for pricing"
+- "audit <chain> in <jurisdiction>"
+- "where are my pricing opportunities"
+- "margin gaps at <chain>"
+- "price audit for my territory"
+- "is <chain> above the <price ceiling>"
+
+Inputs:
+- The Pricing Opportunity Agent's tables, pulled into the session's working folder as CSV: the
+  <store table>, <product table>, <item master table>, <wholesale cost table>,
+  <competitive buy-down table>, <program allowance table>, <state setup table> and <wholesaler table>.
+- One <shelf price table> per territory: 13-week realized scan prices per store and SKU, sourced
+  from the <data warehouse>.
+- The signed-in user's profile (territory or market), read when the request says "my".
+- The request itself: chain or account, state, territory, optional category, optional as-of date.
+
+Outputs:
+- One Excel workbook, "Pricing Audit - <chain or scope> - <state> - <date>.xlsx", in the
+  session's output folder, with sheets Summary, Findings, Above <price ceiling>, Gates,
+  Benchmarks and Data Notes.
+- A JSON summary of the run (scope, counts, top findings, gates) that feeds the chat reply.
+- A plain-language chat reply in a fixed order: scope and coverage, gates, top findings, Above
+  <price ceiling> count, what would widen the answer, file name and follow-through offer.
+- On request only: the workbook sent by Outlook email, or a weekly scheduled re-run.
+
+Parameters to Fill In:
+- <company> - the manufacturer whose items are audited against competitive items.
+- <business unit>, <business unit 1> through <business unit 5> - the operating units that own
+  <category 1> through <category 5>; each store has a primary wholesaler per unit.
+- <category 1> through <category 5> - the product categories; <category 5> is shown on the
+  shelf but never benchmarked.
+- <our brand 1A> through <our brand 1D>, <our brand 2A> through <our brand 2D>, <our brand 3A>,
+  <our brand 4A>, <our brand 5A> - the company's brands the price-family rules split or keep.
+- <competitor brand 1A>, <competitor brand 1B>, <competitor brand 1C>, <competitor brand 2A>,
+  <competitor brand 2B>, <competitor brand 2C>, <competitor brand 2G>, <competitor brand 3A>,
+  <competitor brand 3B>, <competitor brand 3C>, <competitor brand 3E>, <competitor brand 4A>,
+  <competitor brand 4B>, <competitor brand 4C>, <competitor brand 4G> - the competitive brands
+  with a fixed family rule; any other competitive brand keeps its brand family name.
+- <price family A> through <price family J> - the named cost families costs are saved under;
+  see the notes file for which brand line each letter stands for.
+- <promotional price program> - the consumer price promotion that one <allowance type A>
+  program row is paired with in the program list.
+- <flavor>, <variant> - the flavor word and the variant names the family tests look for in a
+  SKU name.
+- <price support program> - the program under which a store elects a pricing option; its
+  election mix is reported and its sheet lists the <business unit 1> candidate families.
+- <election option A> through <election option E> - the program's election labels; "All" is
+  the wildcard that applies to every election.
+- <price ceiling> - the pass price in force for a <category 1> family under an election; the
+  check flags 13-week prices above it.
+- <allowance type A>, <allowance type B>, <allowance type C> - the allowance programs whose
+  rows reduce net cost; two exclusive groups apply the smaller rate.
+- <allowance amount>, <price point> - a dollars-per-unit allowance and a shelf or pass price
+  from the current tables.
+- <store table>, <product table>, <item master table>, <wholesale cost table>,
+  <competitive buy-down table>, <program allowance table>, <state setup table>, <wholesaler table>,
+  <shelf price table> - the app's tables and the per-territory scan price table.
+- <account name column>, <account level 2 column>, <account level 3 column> - the store
+  master's corporate account name and its two sub-levels.
+- <self-distributing flag> - the <wholesaler table> column marking a chain's own DC.
+- <store id> - the retail account identifier that keys stores to scan rows.
+- <sales data model> - the enterprise sales model whose corporate account names and wholesaler
+  types the tables inherit.
+- <data warehouse> - the source of 13-week realized scan prices.
+- <market>, <territory id>, <jurisdiction> - the geography the tables hold today and the legal
+  jurisdiction whose promotion restrictions apply.
+- <chain A> through <chain E>, <wholesaler A> - example chains (several self-distributing) and
+  the largest wholesaler that serves as their cost proxy.
+- <territory role>, <market role>, <account role> - the roles whose territory, market or chain
+  bounds a run.
+- <date>, <n> - run dates and counts recorded from the company's own regression history.
+- Run-time template slots, not company parameters: <chain or scope>, <state>, <yyyy-mm-dd> and
+  <chain> in the file name pattern; <proxy>, <dc name>, <id>, <item>, <price>, <parity>,
+  <benchmark>, <allowance>, <company item>, <parity price> and <benchmark item> inside quoted
+  output text. The run fills them from its own rows.
+
+What the User Says and Gets
+---------------------------
+
+The user says "Audit my <chain A> stores for pricing" or "Where are my pricing opportunities at
+<chain B> in <jurisdiction>?" and Cowork runs the Pricing Opportunity Agent's audit and hands back
+a workbook and a plain-language summary.
+
+What comes back: every <company> item whose retailer margin sits above the lowest competitive
+margin in its store and category, with the parity price and an ask sentence; every <category 1>
+item priced over its <price ceiling>; and the gates (missing wholesale costs, buy-downs,
+allowances, legal restrictions) that limit the answer, named so the user knows what to enter next.
+
+Where prices go in: the app's State Setup sheets, the one-sheet entry for costs, buy-downs and
+allowances. This skill only reads.
+
+Files: SKILL.md (the workflow), references/ (rules, gates, report format, regression proof),
+scripts/ (engine, audit runner, table pull, regression check, oracle harness).
+
+Skill Instructions
+------------------
+
+The skill turns "audit my <chain A> stores for pricing" into a report the <account role> can act
+on, using the Pricing Opportunity Agent's own rules and data. The agent's Managed App is the
+surface account teams use; this skill is the same audit run from chat, so a person never has to
+open the app to get the answer, and the two always agree (the engine here is a verified port of
+the app's).
+
+When to Use:
+
+- The user names a chain, account, state or territory and asks for pricing opportunities, a
+  pricing audit, margin gaps, or whether items ring above the pass price.
+- The user asks the agent to run or re-run an audit, or to send one on a schedule.
+
+When Not to Use:
+
+- Building, seeding, repairing or porting the agent: Pricing Opportunity Agent (Builder).
+- Entering wholesale costs, buy-downs or allowances: the app's State Setup sheets (the assistant
+  says so and stops).
+- A single margin calculation with numbers supplied in chat: the assistant answers inline.
+- Non-scan stores: the audit needs scan prices; the assistant says the store has none rather
+  than estimating.
+
+Workflow:
+
+1. Resolve the scope. The assistant takes the chain, state and territory from the request. The
+  chain is matched loosely against the store master's <account name column> and
+  <account level 2 column> (case, spacing and punctuation insensitive, so a trade name resolves to a corporate
+  account name that may look quite different). If several accounts match, the assistant lists
+  them and asks which; it never guesses. If no state is named, every state the chain has stores
+  in is audited, one run per state, because costs and allowances are per state. When the request
+  says "my", the assistant reads the signed-in user's profile; their territory or market bounds
+  the stores until the platform provides per-user scope (see Reference: Scope and Gates).
+2. Pull the tables. The assistant runs the table-pull script (arguments: output folder, the
+  territories in scope, a skip-shelf switch). It writes the <store table>, <product table>,
+  <item master table>, <wholesale cost table>, <competitive buy-down table>,
+  <program allowance table>, <state setup table>, <wholesaler table> and the per-territory <shelf price table> as
+  CSVs. Shelf tables are pulled only for the territories in scope; a same-day copy is reused
+  when one exists.
+3. Run the audit. The assistant runs the audit runner with the tables folder, the account, the
+  state, the as-of date (today), a workbook path "Pricing Audit - <chain> - <state> - <date>.xlsx"
+  in the session's working folder, and a JSON summary path. Exit code 3 means no account
+  matched, 4 means ambiguous (the candidates are in the JSON), 5 means no stores in scope. A
+  chain supplied by its own distribution center (DC) is priced from the state's cost proxy, the
+  largest wholesaler with costs entered, because a chain DC prints no cost on its invoices; the
+  Gates sheet names every DC-to-proxy pair (Reference: Engine Rules, Cost Proxy).
+4. Publish the report. The assistant copies the workbook to the session's output folder (the
+  file is the deliverable) and reads the JSON summary for the chat reply.
+5. Reply in plain language, in this order: scope and coverage (stores, scanning stores,
+  elections); the gates first when they limit the answer (costs on file, buy-downs, restricted
+  programs, proposed rows); the top findings by weekly volume with the parity price and ask; the
+  Above <price ceiling> count with the "verify in store" caveat when the pass price changed
+  inside the 13-week window; and what would widen the answer (which wholesaler's prices, entered
+  on the app's cost sheet). A gate is never presented as an opportunity, nor an opportunity as a
+  gate.
+6. Offer follow-through: the assistant emails the workbook through Outlook with the file
+  attached (only when asked), or sets up a weekly scheduled prompt with this scope written into
+  it.
+
+Example:
+
+User: "Audit my <chain A> stores for pricing."
+
+1. <chain A> resolves to its corporate account (<n> stores, all in one <jurisdiction>); the user
+  is a <territory role> in <market>, so the market's tables are the data on file.
+2. The table-pull script refreshes the tables; the audit runner runs that <jurisdiction> with
+  as-of today.
+3. The reply follows the fixed order. Coverage: "<chain A>, <jurisdiction>: <n> stores, <n>
+  scanning, <n> <election option C> and <n> <election option B>." Gate first: <chain A> is
+  supplied by its own DC, which prints no cost on its invoices, so its stores are priced from
+  <wholesaler A>'s costs, the largest wholesaler in the <jurisdiction>; <wholesaler A> has one
+  price on file, so there are no margin findings yet; the first five families to price for
+  <wholesaler A> are named, to be entered on the app's cost sheet for that wholesaler. What the
+  audit can already show: <n> Above <price ceiling> flags in <n> stores, a named <our brand 1A>
+  item ringing <price point> against the <price point> <election option C> pass price effective
+  <date>; the pass price changed inside the 13-week window, so verify in store. Then the report
+  file name.
+
+Failure Handling:
+
+- The table-pull script fails or a table comes back empty: the assistant says which table,
+  retries once, then runs on the most recent local copy only if it is from today, and says so;
+  otherwise it stops.
+- The audit runner exits 3 (no account), 4 (ambiguous; candidates are in the JSON) or 5 (no
+  stores in scope): the assistant reports it in plain words and asks; it never runs the nearest
+  match.
+- No scanning stores in scope: the assistant says the audit needs scan prices and offers the
+  Above <price ceiling> check for the stores that do scan, or nothing.
+- A state with no costs and no buy-downs: the assistant delivers the Gates and Above
+  <price ceiling> sheets, names the wholesalers to price, and says the margin ladder is empty until
+  then.
+- A chain supplied by its own DC: the assistant never asks for the DC's invoice costs as the
+  fix; it names the proxy wholesaler (the Cost Proxy gate) and the families still needed from
+  it.
+- The as-of date matters: allowances, buy-downs and <price ceiling> rows are date-effective;
+  today is used unless the user names a date, and the date is printed in the summary.
+
+Output Format:
+
+One workbook: Summary (scope, counts, rule, read-the-gates note), Findings (store, item, shelf
+price, unit cost, allowance, net cost, margin, benchmark item and margin, gap points, penny gap,
+parity price, 13-week and weekly units, wholesaler, cost date, ask sentence), Above
+<price ceiling> (13-week and 4-week price, pass price, above by, effective date, standing or
+verify-in-store), Gates, Benchmarks (per store and category), Data Notes. Plus a chat summary as
+in workflow step 5. ASCII only, Title Case headings, no long dashes.
+
+Guardrails:
+
+- Never fabricate: every number traces to a workbook row or a scan row; nothing is estimated,
+  filled in or rounded away. When data is missing, the gap is named, not bridged.
+- Costs, buy-downs and allowances are read, never written, by this skill.
+- The audit is internal: output is never phrased as retailer-facing.
+- A state's Restricted programs are reported as applied-as-zero, not as gaps.
+- When the account is ambiguous or unmatched, the assistant stops and asks; it does not run the
+  nearest match.
+- The engine stays identical to the app's: changes go to the app first, then the regression
+  checker is re-run against the oracle (Reference: Regression) before this skill adopts them.
+
+References:
+
+- Reference: Engine Rules - the audit rules, exactly as the engine applies them.
+- Reference: Scope and Gates - chain resolution, per-user scope, the gates and how to read them.
+- Reference: Report Format - the workbook layout and the chat reply template.
+- Reference: Regression - how the Python engine is proven against the app's engine.
+- scripts/ - the pricing engine, the audit runner, the table-pull script, the regression checker
+  and the oracle folder.
+
+References
+----------
+
+Reference: Engine Rules:
+
+These are the rules the pricing engine applies, in the order it applies them. They are the same
+as the Managed App's (its shelf, allowance, store and workbook modules); the regression in
+Reference: Regression proves it.
+
+Engine Rules - Scope:
+
+- Stores come from the <store table>; the account filter matches the collapsed account name.
+- Only stores with scan rows produce anything. A store's SKU rows are the <shelf price table>
+  rows for its <store id>; a row needs a <store id>, a material id and a positive 13-week price
+  (the 13-week price field, else 13-week dollars divided by 13-week units).
+- Slim shelf rows (keys and numbers only) are enriched from the <product table> by material id:
+  name, brand family, manufacturer, category group, <company> flag. A row whose product is
+  unknown is skipped.
+
+Engine Rules - Categories:
+
+<category 1> (<business unit 1>, per pack, trigger 1.0 margin point, penny floor $0.10),
+<category 2> (<business unit 2>, per can, 2.0 points, $0.10), <category 3> (<business unit 3>,
+per stick, 2.0 points, $0.05; a 5-pack is its own unit with a $0.10 floor), <category 4>
+(<business unit 4>, per can, 2.0 points, $0.10). <category 5> is shown on the shelf but never
+benchmarked. The <business unit>'s primary wholesaler for the store prices every item in the
+group, competitive items included.
+
+Engine Rules - Price Family (What a Cost Is Saved Under):
+
+- <our brand 1A> has four cost families: <price family A> (the base non-<flavor> line),
+  <price family B> (the <flavor> line), <price family C> (a line identified by its color family or
+  name) and <price family D> (a line identified by its <variant> name). The tests run in this
+  order: color family or name -> <price family C>; <variant> name -> <price family D>; <flavor>,
+  unless the color family marks the <price family E> sub-line -> <price family B>; otherwise
+  <price family A>. Names come from the <item master table>.
+- <our brand 1B>, <our brand 1C> and <our brand 1D> resolve by brand family. <our brand 2A>
+  resolves to <price family G> (its value-priced line) when the SKU name carries a brand the
+  <item master table> lists under that line, else to <price family F> (its main line); the
+  brand's value sub-brand abbreviation also maps to <price family G>. <our brand 2B>,
+  <our brand 2C> and <our brand 2D> resolve by brand family. <our brand 3A> resolves by tip words (filter,
+  plastic, wood and one named <variant>) and 5-pack versus single, matched against the
+  <business unit 3> family names. <our brand 4A>'s premium line versus its base line resolves by name.
+  <our brand 5A> maps to one fixed family.
+- Competitive families are a fixed list: <competitor brand 1A> (split into <flavor> box, <flavor>
+  soft pack and a non-<flavor> line), <competitor brand 1B> (two named sub-lines),
+  <competitor brand 1C>'s value line, <competitor brand 2A>, <competitor brand 2B>, <competitor brand 2G>,
+  <competitor brand 2C>, <competitor brand 1B>'s <category 2> line, <competitor brand 4A>,
+  <competitor brand 4B>, <competitor brand 4C>, <competitor brand 4G>, <competitor brand 3A>
+  (5-pack versus twin pack), <competitor brand 3C> single, <competitor brand 3E> single and
+  <competitor brand 3B> single; anything else keeps its brand family name.
+
+Engine Rules - Cost:
+
+The latest <wholesale cost table> row per state, wholesaler and family wins (ties go to the later
+row). Unit cost = invoice price divided by the packing factor, where the factor is the invoice
+price divided by the derived unit price, rounded. No cost means status "needed" (wholesaler
+known) or "no-wholesaler".
+
+Engine Rules - Cost Proxy for Self-Distributing DCs:
+
+A chain's own distribution center (<chain A>'s, <chain C>'s and <chain D>'s, for example) prints
+no cost on its invoices, so nobody can enter one. The <wholesaler table> marks these rows with a
+<self-distributing flag> of Yes (a blank cell falls back to the <sales data model>'s wholesaler
+type for a retailer-owned DC or club). For a store whose <business unit> wholesaler is flagged:
+
+- A cost entered for the DC itself is used when it exists. Otherwise the item is priced from the
+  state's cost proxy: the largest wholesaler in the state (by stores served in the
+  <wholesaler table>, then name) that is not self-distributing and has at least one cost entered for the
+  state. When no wholesaler in the state has costs yet, the proxy is simply the largest, so the
+  prices still needed are asked of the right wholesaler.
+- The item's cost source is the proxy; its "needed" rows roll up under the proxy, not the DC;
+  the ask sentence reads "based on <proxy> cost (proxy for <dc name>) dated ...".
+- The run reports the count of SKU rows priced from a proxy and the list of cost proxies (each
+  DC, its proxy and the stores in scope it serves). A flag can be set or cleared on the app's
+  Wholesalers board; the change takes effect on the next run.
+
+Engine Rules - <company> Allowance:
+
+- Candidate families for <business unit 1> are the <price support program> sheet families
+  (<price family A>, <price family B>, <price family H> (a short-length pack line),
+  <price family E>, <price family C> in non-<flavor> and <flavor> forms, <price family I> and
+  <price family J> (two label-color lines), <price family D>), tried in that order, with the cost
+  family last; every other <business unit> resolves on the cost family alone.
+- A <program allowance table> row applies when: same state; same <business unit>; its election
+  is All or the store's <price support program> election (two legacy labels normalize to
+  <election option C> and <election option D>, and a "<price support program> " prefix is
+  ignored); same family; status Confirmed, with an amount, effective on or before the as-of date
+  and not ended; its selling unit matches the item's (a roll row never reduces a per-can margin;
+  a blank unit matches anything); and, when the row carries an item-match pattern, the SKU name
+  satisfies it (all words present, a minus-prefixed word absent, pipe-separated alternatives).
+- An item-scoped row takes its program for that item; the family row for the same program does
+  not stack. The latest effective date wins per program; on a tie a row naming the election
+  beats All.
+- Exclusive groups apply the smaller rate when both are on file: <business unit 4>'s three
+  <allowance type B> variants (multi-pack offer, scan multi-pack offer, non-scan);
+  <business unit 2>'s non-scan <allowance type A> and multi-unit <allowance type A>.
+- Amount = the sum of the applied programs except the <price ceiling> row. The <price ceiling>
+  row is the pass price for <category 1>, not an allowance.
+- No Confirmed row but a Restricted row for the family: applied as zero, and the item is not
+  "allowance missing".
+
+Engine Rules - Competitive Buy-Down:
+
+The sum of active <competitive buy-down table> rows for the state whose brand matches the family.
+When the brand has none and a "lowest-priced <category 1> in store" row is active, the store's
+cheapest competitive <category 1> item (lowest 13-week price, ties to most units) gets that
+amount.
+
+Engine Rules - Margin, Benchmark, Finding:
+
+- Net cost = unit cost - allowance. Penny profit = shelf price - net cost. Margin percent = penny
+  profit / shelf price x 100.
+- Per store and category: benchmark = the competitive item with a cost and the lowest margin.
+- Finding = a <company> item with a cost whose margin exceeds the benchmark's by more than the
+  category trigger, or whose penny profit exceeds the benchmark's by more than the floor.
+- Parity price = benchmark penny profit + the <company> item's net cost.
+- Above <price ceiling> = a <category 1> item whose 13-week price exceeds the <price ceiling> in
+  force by more than $0.001.
+- Order: findings by 13-week units, then penny gap; <price ceiling> flags by units, then amount
+  above.
+- Missing = every "needed" item rolled up by wholesaler and family with store count and units.
+- Gaps = categories where no competitive item in a store has a cost (no benchmark possible).
+
+Reference: Regression:
+
+The app's engine is TypeScript; this skill's engine is a Python port. They must agree exactly, so
+the port is checked against the app's own code, not against a description of it.
+
+Regression - The Oracle:
+
+The oracle folder holds a copy of the app's engine modules with the Excel connector import
+replaced by a stub (only pure functions are used), plus a harness that loads a JSON snapshot of
+the tables, runs the shelf-run computation and writes findings, <price ceiling> flags, every
+shelf item, benchmarks, gaps and missing prices as JSON. It runs under the bun TypeScript runtime
+(installed in the Cowork container) with three arguments: snapshot path, output path, as-of date.
+
+Regression - The Snapshot:
+
+The snapshot builder assembles the snapshot from the local table mirrors. A synthetic switch adds
+a regression fixture of wholesale costs (one per wholesaler and family, list price with a fixed
+uplift; every row is labelled as a synthetic regression fixture) and three buy-downs, because
+the live table has too few costs to exercise the benchmark path. The fixture is never loaded
+anywhere. The state's <wholesaler table> rows ride along with their <self-distributing flag>;
+self-distributing DCs get no synthetic cost and the state's two largest true wholesalers always
+do, so the cost proxy path is exercised in every scope.
+
+Regression - The Check:
+
+The Python engine runs on the same snapshot and as-of date and writes its own JSON; the
+regression checker compares the oracle JSON to the Python JSON. PASS requires identical
+summaries, the same finding keys with every field equal (numbers within 1e-6), the same
+<price ceiling> flags, the same shelf items, benchmarks, gaps and missing rows, and the same finding
+order.
+
+Regression - Results on Record:
+
+Each recorded run lists its date, scope and counts (stores, scanning stores, items, items priced
+from a proxy, findings, <price ceiling> flags, DC-to-proxy pairs) and its verdict. Before the
+cost proxy rule (<date>, no wholesaler flags in the snapshot): a territory scope and a chain
+scope (<chain B>) in one <jurisdiction> with synthetic costs, both PASS with zero differences.
+After the cost proxy rule (<date>): both earlier snapshots were re-run first and still PASS, so
+the rule changes nothing where no wholesaler is flagged; the comparison now also covers the ask
+text, the cost source and proxy per item, and the DC-to-proxy pairs; the territory, the two
+self-distributing chains <chain A> and <chain C>, and the whole <jurisdiction> (four DCs,
+including <chain D>'s and <chain E>'s, all priced from <wholesaler A>) all PASS with zero
+differences. Six scopes, <n> findings compared, zero differences.
+
+Regression - When the App Changes:
+
+The app's engine modules are re-copied into the oracle folder (replacing the connector import
+line the same way), the change is ported into the Python engine, and both scopes are re-run. The
+skill adopts a change only on PASS.
+
+Reference: Report Format:
+
+Report Format - Workbook:
+
+File name: "Pricing Audit - <chain or scope> - <state> - <yyyy-mm-dd>.xlsx", published to the
+session's output folder. Sheets, in order:
+
+1. Summary: scope, as-of date, stores in scope and scanning, <price support program> election
+  mix, findings, Above <price ceiling> count, weekly units on flagged items, costs / allowances
+  / restricted / buy-downs on file, the self-distributing DCs in scope and the proxy each is
+  priced from, SKU rows priced from a proxy, shelf price source, the rule in one paragraph, and
+  "Read The Gates Sheet First".
+2. Findings: state, store, <store id>, account, city, election, category, <company> item, shelf
+  price, unit cost, allowance, net cost, margin percent, benchmark item, benchmark price,
+  benchmark margin percent, gap points, penny gap, parity price, 13-week units, weekly units,
+  wholesaler, cost source (the wholesaler whose price list priced the item; "<proxy> (proxy)"
+  for a DC store), cost dated, ask. Sorted by weekly units then penny gap.
+3. Above <price ceiling>: state, store, <store id>, account, election, item, 13-week shelf
+  price, 4-week shelf price, <price ceiling>, above by, <price ceiling> effective date, read
+  (Standing or Verify in store), 13-week units, <price ceiling> row title.
+4. Gates: state, gate, item, stores, detail, top needed.
+5. Benchmarks: per store and category, the benchmark item, its price and margin, <company>
+  items priced and flagged.
+6. Data Notes: where each number comes from.
+
+Report Format - The Ask Sentence:
+
+"<company item> rings at <price point>; at <parity price> it matches <benchmark item>'s margin
+and keeps the <allowance amount> allowance." The parity price is the shelf price at which the
+retailer earns the benchmark's penny profit on our item; the allowance clause names the amount
+applied and is dropped when none applies. Internal wording; never retailer-facing.
+
+Report Format - Chat Reply (Order Matters):
+
+1. Scope and coverage: "<chain A>, <jurisdiction>: <n> stores, <n> scanning, <n>
+  <election option C> and <n> <election option B>."
+2. Gates that limit the answer, plainly: the chain is supplied by its own DC, which prints no
+  cost on its invoices, so its stores are priced from <wholesaler A>'s costs; <wholesaler A>
+  has one price on file, so there are no margin findings yet; the first five families to price
+  for <wholesaler A> are named.
+3. Top findings by weekly volume, each with item, shelf price, parity price, benchmark, weekly
+  units, and the ask.
+4. Above <price ceiling>: count, the items, and the verify-in-store caveat when it applies.
+5. What would widen the answer and how (the app's cost or buy-down sheet for a named
+  wholesaler).
+6. The file name, and the offer to email it or run it weekly.
+
+Plain ASCII, no long dashes, no markdown tables in the chat reply.
+
+Reference: Scope and Gates:
+
+Scope and Gates - Resolving the Chain:
+
+The <store table> carries the <account name column> (the corporate name the <sales data model>
+uses), the <account level 2 column> and the <account level 3 column>. Names are matched after
+removing case, spaces and punctuation, as a substring, so a chain's trade name finds its
+corporate account even when the two share only a fragment, and a hyphenated chain name finds its
+headquarters account. When the match spreads over more than one account (less than 80 percent of
+the matching stores on the leader) the audit runner exits 4 with the candidates: the assistant
+shows them and asks. "Independent" is the account of every store without a chain.
+
+Scope and Gates - Per-User Scope:
+
+Today every table holds one <market> only and the user is the market's own team. When the
+platform lands the feed under each user's own row-level security, the same scripts run against
+the user's tables: a <territory role>'s territory, a <market role>'s market, an <account role>'s
+chain across states. Until then, the assistant reads the signed-in user's profile and states
+plainly when the request reaches beyond the data on file (for example a chain's stores in a
+<jurisdiction> the tables do not hold).
+
+Scope and Gates - The Gates, and How to Read Them:
+
+Every finding is conditional on the inputs, so the report shows the gates before the findings.
+
+- Wholesale Cost: per wholesaler serving the scope, how many prices are on file and how many
+  families the scanning stores still need. Zero prices for the dominant wholesaler means zero
+  benchmarks: the report will show Above <price ceiling> findings (which need no cost) and
+  nothing else. The fix is the app's cost sheet for that wholesaler and state. A wholesaler that
+  stands in for a DC says so ("also the cost proxy for ..."), and a proxy that serves no store in
+  scope directly still gets a row, because the DC's stores wait on its prices.
+- Cost Proxy: one row per self-distributing DC in scope (a chain's own warehouse, which prints
+  no cost on its invoices): the wholesaler its stores are priced from and how many prices that
+  proxy has on file. Not a gap to close by chasing the DC for an invoice; the fix, when the
+  chain's real cost is known, is to enter it for the DC, which then takes precedence over the
+  proxy.
+- No Benchmark: a category where no competitive item has a cost in those stores, with the three
+  highest-volume competitive families to price first.
+- Competitive Buy-Downs: none on file means competitive margins are gross of any buy-down and
+  will look worse than they are; the fix is the app's buy-down sheet.
+- Allowance Missing: priced <company> rows with no allowance in force; their margin is gross of
+  the allowance and will look better than it is. The user checks Missing By Program Level in the
+  app.
+- Restricted By Law: programs the <jurisdiction> prohibits (the <jurisdiction> on file bans
+  every multi-unit discount except on <category 4>, and all <category 5> promotions). Applied as
+  zero; not a gap. The assistant never suggests entering a rate for one.
+- Proposed Allowances: rows the weekly reader loaded that nobody has confirmed. Not applied.
+- Aging Cost: prices older than 90 days; still applied, flagged for a Still Current check.
+
+Scope and Gates - Reading Above <price ceiling>:
+
+The shelf price is a 13-week realized average. When the pass price changed inside that window
+the store may already have moved; the 4-week column is the earlier read and the row says "Verify
+in store". A standing flag (pass price older than the window) is a pass-through failure to raise.
+
+Scripts
+-------
+
+Script: Pricing Engine  (source role: the Python port of the Managed App's margin engine; the
+rules of Reference: Engine Rules as code)
+Purpose: Computes, per store and category, the lowest-margin competitive benchmark and every
+  <company> item above it, plus Above <price ceiling> flags, missing-cost roll-ups and benchmark
+  gaps, from the app's tables, rule for rule as the app does. Nothing in it reads the network.
+Inputs: The tables as lists of rows (the CSV or JSON mirror): stores, shelf SKUs, products, item
+  master, wholesale costs, allowances, buy-downs and wholesaler rows; an account filter, a
+  category filter and an as-of date. Run standalone it takes a snapshot JSON (the same file the
+  oracle harness takes), an output path and an optional as-of date.
+Outputs: A run object: stores in scope, scanning stores, SKUs on shelf, SKUs with a cost, SKUs
+  priced from a proxy, the DC-to-proxy pairs, store-category count and how many have a
+  benchmark, the categories with a benchmark, findings, <price ceiling> flags, the
+  allowance-missing count, per-store shelves with items and benchmarks, gaps and missing-cost
+  roll-ups. Standalone: a comparable JSON (as-of date, summary, findings, flags, items,
+  benchmarks, gaps, cost proxies, missing) with numbers rounded to six decimals, and the summary
+  printed to the console.
+Logic:
+  1. Normalization helpers: any value to text (booleans to Yes or No, whole floats without
+    decimals), text to number (blank or non-numeric to none), yes-words (yes, true, y, 1),
+    whitespace collapse, compaction (no spaces, lowercase), word splitting, Excel serial dates
+    between 20,000 and 80,000 to ISO dates (else the first ten characters of the text). Money
+    formatting rounds half-up on the exact value and integer rounding rounds halves upward, both
+    mimicking the app's runtime so the ask text and packing factors are byte-identical.
+  2. Category table: five category groups (<category 1> through <category 5>), four of which can
+    produce findings; each carries a category label, the owning <business unit>, a unit name
+    (pack, can, stick, device), trigger points (1.0 for <category 1>, 2.0 elsewhere) and a penny
+    floor ($0.10, or $0.05 per stick); a 5-pack of <category 3> uses a $0.10 floor. A set of
+    <company> manufacturer codes marks our items. Raw category text maps to a group by prefix and
+    keyword. Competitive families get default list units and pack factors by category (box of 25
+    for <category 3>, roll of 5 for <category 2> and <category 4>, carton of 10 otherwise).
+  3. Row parsers. Shelf SKU: <store id> and material id from their columns or from a
+    "<store id>|material" title key; 13-week units and dollars; the 13-week price, else dollars
+    divided by units; the row is dropped without a <store id>, a material id or a positive
+    price; 4-week units and price are kept only when positive; the our-flag comes from its
+    column or from the manufacturer code. Product: material id, name, brand family,
+    manufacturer, group, our-flag, <flavor> flag (a yes-word, or the <flavor> word without
+    "non"), color family, sub-brand, 13-week units. A slim SKU (keys and numbers only) is
+    enriched from its product; one with no product and no name receives a placeholder name.
+    Store: <store id> (or the title key); the election from the normalized election column,
+    else the raw column (blank or opt-out -> "No Election"; a value beginning with the
+    <election option D> word -> <election option D>; else as written); name (or "Store <id>"),
+    store number, city, state, territory, account (or "Independent"), account level 2,
+    ownership, on-recommendation flag, two volume figures and one wholesaler per
+    <business unit>. Cost: state, wholesaler, family and printed invoice price required; derived unit
+    price (else the invoice price); packing factor = invoice price over derived unit price,
+    rounded, at least 1; effective date (else entered-on), source, notes, entered by, entered
+    on. Wholesaler option: one per name (first row wins) with store count, type and the
+    self-distributing verdict (the flag column when filled, else the type equals the
+    retailer-DC-or-club type), sorted by stores descending (missing last), then name. Buy-down:
+    state, brand or line and allowance per selling unit required; manufacturer, offer type
+    (default "Buy-down"), qualifying quantity (default 1), effective date (else entered-on), end
+    date. Allowance: state, family and program required; status from the status text (a
+    "needed" word, a missing amount or a missing effective date -> Needed; restrict, prohibit or
+    illegal -> Restricted; proposed, pending or review -> Proposed; reject or decline ->
+    Rejected; else Confirmed); election (default All), selling unit, end date, source document,
+    notes, item-match pattern (lowercased).
+  4. Latest costs: rows group by state, wholesaler and family; a row with an equal or later
+    effective date replaces the current one, and the count of earlier versions is kept; the
+    result sorts by wholesaler then family.
+  5. Catalog from the item master: competitive rows versus ours; among ours, the tracked rows
+    when any exist, else all. Each family records its group (a <business unit>, or
+    "Competitive - <category>"), category, list unit, units per carton or roll and its items
+    (item key and brand description, deduplicated); competitive families fill a blank unit and
+    factor from the category defaults; a sorted brand list per competitive manufacturer is kept.
+  6. Family rules (Reference: Engine Rules, Price Family). A name is made canonical when the
+    catalog holds a family of the same name. <our brand 1A>: the color family (or the name when
+    no color is on file) is tested for the <price family C> word, then the <price family D>
+    word; <flavor> comes from the product flag or the color, else from name words, and a color
+    not marked as the <price family E> sub-line sends the item to the catalog's <price family B>
+    entry (found by its group letter, else by the <flavor> word without "non", else a default
+    name); otherwise <price family A>. <our brand 2A>: the catalog's <price family G> family is
+    found by exact name or by the brand word plus the value word; a SKU whose name equals,
+    contains, is contained in, or holds every significant token of one of that family's item
+    brands maps to it, else to <price family F>; a brand family carrying the value sub-brand
+    abbreviation maps to <price family G> directly. <our brand 3A>: the tip comes from the name
+    words (the named <variant>; filter tip or its two-letter code; plastic tip or code; wood tip
+    or code) with a 5-pack test; every <business unit 3> family is scored (+4 for a tip match,
+    +2 when the 5-pack status agrees, +1 for a single when not a 5-pack), the top score wins
+    with ties keeping catalog order, and with no score a fallback name by tip and pack is used.
+    <our brand 4A>: the premium line when the name carries the premium word, else the base
+    line. <our brand 5A>: one fixed family. Any other our-brand: the first catalog family whose
+    compact name contains or is contained in the brand family, else the brand family as
+    written. Competitive: an ordered list of brand-family prefix rules, each returning a fixed
+    family name, three with sub-rules (<competitor brand 1A>: <flavor> soft pack when the name
+    says soft, <flavor> box otherwise, the non-<flavor> line when not <flavor>;
+    <competitor brand 1B>: one sub-line when the name carries its word, else the other;
+    <competitor brand 3A>: 5-pack when the name says so, else twin pack); no rule -> the brand family as written.
+  7. Allowance candidate families: for <our brand 1A> only, from name, sub-brand and color: a
+    short-length pack marker in the name -> <price family H> in <flavor> or non-<flavor> form;
+    the <price family E> sub-brand or name -> <price family E>; the <variant> word ->
+    <price family D>; the <price family I> sub-brand -> <price family I> then <price family C>; the
+    <price family C> color, two sub-brand names belonging to that line, or its word in the name
+    -> <price family C> (<flavor> form by the flag, where the <flavor> color family also counts);
+    the <price family J> sub-brand or name -> <price family J> then <price family A>; else
+    <price family A> or <price family B> by <flavor>. The cost family is appended last unless
+    already present. Every other brand: the cost family alone.
+  8. Elections: a label is lowercased, a "<price support program> " prefix dropped and the two
+    legacy labels normalized to <election option D> and <election option C>; <election option E>
+    is recognized by name; a store has a program election when the label is non-empty and does
+    not start with "no"; a row applies to a store when its election is All or matches.
+  9. Item match: whitespace-separated words that must each appear in the lowercased SKU name; a
+    minus-prefixed word must be absent; pipe-separated alternatives need one present; an empty
+    pattern matches everything. In force: Confirmed, with an amount, an effective date on or
+    before the as-of date, and no end date or one on or after it. Unit match: blank on either
+    side matches; otherwise units are compacted, a trailing "s" dropped, "5pack" and "fivepack"
+    normalized to 5-pack and "single" and "stick" to the <category 3> unit.
+  10. Resolve the allowance for one item (state, <business unit>, election, family, unit, SKU
+    name): the rows matching on state, <business unit>, election, family, in force, unit and
+    item match. With none: a Restricted row for the same state, <business unit>, election and
+    family applies as zero and is recorded as applied, so the item is not "missing"; else
+    nothing. Otherwise programs that have an item-scoped match drop their family-level rows; the
+    latest effective date per program wins, a tie going to the row naming the election over
+    All; each exclusive group collapses to its smallest amount; the <price ceiling> row is set
+    aside; the amount is the sum of the rest.
+  11. The shelf run. Stores in scope by account; a cost index by wholesaler and family; the
+    self-distributing set from the wholesaler rows; a state's proxy = the first
+    non-self-distributing wholesaler by stores served then name that has a cost in the state,
+    else the first overall (cached per state). When a "lowest-priced <category 1> in store"
+    buy-down is active, the cheapest competitive <category 1> SKU per store is found (lowest
+    13-week price, ties to more units). For each shelf SKU of an in-scope store: enrich, skip
+    without a group, apply the category filter, resolve the family (cached); the wholesaler is
+    the store's for the group's <business unit>; the cost comes from that wholesaler, else, when
+    it is self-distributing and the proxy differs, from the proxy (recording the DC-to-proxy
+    pair and the store); unit cost = invoice price over packing factor; the unit is 5-pack for a
+    <category 3> 5-pack, else the group unit; our items resolve the program allowance over their
+    candidate families (the first family yielding applied rows or a <price ceiling> row wins;
+    cached per state, <business unit>, election, unit, families and, for <business units> with
+    item-scoped rows, the SKU name); competitive items sum the active buy-downs for their family
+    plus the floating lowest-price amount when they have none of their own and are the store's
+    cheapest; an allowance counts only when a cost exists; net cost, penny profit and margin
+    percent follow; status is priced, needed or no-wholesaler; an our-item with a cost and no
+    applied rows counts as allowance-missing. A <category 1> item whose 13-week price exceeds
+    the <price ceiling> row's amount by more than $0.001 becomes a flag carrying the amount
+    above.
+  12. Per store, items sort by group order, ours before competitive, then units descending. Per
+    finding group: "needed" items roll into the missing list by cost source and family (store
+    set, units, units per SKU); the benchmark is the competitive item with a margin and the
+    lowest margin; with none, the category becomes a gap for that store with units per
+    competitive family; otherwise every our-item with a cost is compared: gap points and penny
+    gap, the two triggers, parity price = benchmark penny profit plus the item's net cost, and
+    an ask text naming the amount above parity, the benchmark, the parity price, the cost
+    wholesaler (with "proxy for <dc name>" when proxied) and the cost date.
+  13. Findings sort by units then penny gap; flags by units then amount above; shelves by units
+    then store name; cost proxies by stores then name; gaps keep the three competitive families
+    with most units; missing rows sort by units then store count and keep the three SKU names
+    with most units.
+Checks and failure handling: Rows missing their key fields are dropped, never estimated. A slim
+  row whose product is unknown is skipped when it has no category group of its own. Allowance
+  and family lookups are cached per distinct key so a whole-state scope stays fast. The
+  standalone entry prints usage and exits with code 2 when fewer than two arguments are given.
+  All rounding mimics the app's runtime so the regression compare is exact.
+
+Script: Audit Runner  (source role: the command-line runner that resolves the scope, calls the
+engine per state, builds the gates and writes the workbook and the JSON summary)
+Purpose: Runs a pricing audit for a chain, state or territory and writes the report workbook plus
+  a JSON summary for the chat reply. No number is invented: every value traces to a table row,
+  and every gap is named.
+Inputs: Arguments: the tables folder (default the session's working tables folder), an optional
+  single shelf CSV (else the per-territory <shelf price table> CSVs in the tables folder), the
+  account (default All), state, territory, category (default All), as-of date (default today),
+  the output workbook path (required), an optional JSON summary path and a top-rows cap (default
+  400, applied times ten to the Findings sheet). It reads the eight table CSVs the table-pull
+  script wrote.
+Outputs: The workbook (Summary, Findings, Above <price ceiling>, Gates, Benchmarks, Data Notes),
+  the JSON summary file, and a one-line JSON on the console (the summary without the top
+  findings and gates). Exit codes: 3 no account matched, 4 ambiguous, 5 no stores in scope.
+Logic:
+  1. Reads each CSV (a missing file is an empty table) and parses every store row with the
+    engine's store parser.
+  2. Resolves the account unless it is All: the wanted name is compacted, lowercased and
+    stripped of apostrophes, periods and commas; every store whose <account name column> or
+    <account level 2 column> contains it votes for its account; with no votes the
+    <account level 3 column> and the store name are tried as a last resort. No votes: an error with the hint to
+    try the corporate name as the <sales data model> writes it, or a store name, and exit 3.
+    More than one account with the leader under 80 percent of the votes: the top eight
+    candidates with store counts, and exit 4. Otherwise the leader is the account.
+  3. The scope is that account's stores (or all), filtered by state and territory when given;
+    an empty scope prints the scope and exits 5. The states, <store ids> and territories in
+    scope are collected.
+  4. Shelf rows come from the single shelf CSV when given, else from each in-scope territory's
+    shelf CSV; a row is kept when its <store id> (column or title key) is in scope.
+  5. The engine runs once per state with the state's stores and SKUs, the latest costs for the
+    state, the state's allowances, buy-downs and wholesaler options, account All (already
+    filtered), the category filter and the as-of date.
+  6. Gates are built per state in this order. For each wholesaler serving the stores (most
+    stores first): a Cost Proxy row when it is a flagged DC (its proxy, the proxy's prices on
+    file, whether costs entered for the DC itself exist and take precedence, and the fix: enter
+    the DC's own costs on the app's cost sheet), else a Wholesale Cost row (prices on file,
+    families still needed for items that scan, "also the cost proxy for ..." when it stands in
+    for a DC, and the top five needed families with store counts). Then a Wholesale Cost row for
+    each proxy that serves no store directly. Then Aging Cost when any cost is older than 90
+    days (count, first six named with dates); Restricted By Law when Restricted rows exist
+    (count applied as zero, programs by <business unit> with counts); Proposed Allowances (count
+    awaiting review; not applied until a person confirms them); Allowance Missing (count of
+    priced our-item rows with no allowance in force; margin shown gross; check Missing By
+    Program Level in the app); No Benchmark per gap category (stores with no priced competitive
+    item and the top competitive families with units); Competitive Buy-Downs when none are on
+    file; and Pass Price rows per election in scope: <election option E> stores have no
+    <price ceiling> by design and are not checked; an election with no <price ceiling> rows in force
+    cannot be checked until its pass prices are on file; an election with rows for fewer than
+    three families lists them.
+  7. Summary sheet rows: the scope text (account, states, territory, category), as-of date,
+    stores in scope and with scan data, election mix, findings, Above <price ceiling> count,
+    weekly units on findings and on flagged items (13-week units over 13), wholesale costs on
+    file (the state total and those for wholesalers serving these stores, proxies included),
+    self-distributing DCs with their proxies and store counts, SKU rows priced from a proxy,
+    allowance rows in force, Restricted rows, buy-downs on file, the shelf price source, the
+    rule in one paragraph (benchmark, triggers, floors, margin formula) and "Read The Gates
+    Sheet First" (missing costs mean fewer benchmarks and fewer flags, not fewer opportunities).
+  8. Findings sheet: one row per finding with the columns of Reference: Report Format; the ask
+    sentence is "<item> rings at <price>; at <parity> it matches <benchmark>'s margin" plus "and
+    keeps the <allowance> allowance" when one applies; money to two decimals, percentages to
+    one; sorted by weekly units then penny gap; capped at the top-rows setting times ten.
+  9. Above <price ceiling> sheet: one row per flag; the read column says "Verify in store: pass
+    price changed inside the 13-week window" when the <price ceiling> row took effect fewer than
+    91 days before the as-of date, else "Standing"; the 4-week price appears when the shelf rows
+    carry it.
+  10. Gates sheet; then Benchmarks (per store and finding group: the benchmark item, price and
+    margin, or "none priced", with counts of our items priced and flagged); then Data Notes
+    (shelf prices, costs, cost proxy, our allowances, competitive buy-downs, parity price, Above
+    <price ceiling>, and the engine's regression record).
+  11. Styling: a bold light header on a dark fill, a frozen header row, column widths by header;
+    the workbook is saved.
+  12. The JSON summary (account, states, territory, category, as-of date, stores, scanning
+    stores, elections, findings, flags, weekly units, costs serving the scope and on file,
+    buy-downs, Restricted rows, proxied SKUs, cost proxies, the top ten findings, the first
+    twelve gates, categories with a benchmark, report path) is written when a path is given and
+    printed without the top findings and gates.
+Checks and failure handling: Missing CSVs become empty tables rather than crashes, so a state
+  with no costs still yields the Gates and Above <price ceiling> sheets. An unmatched or
+  ambiguous account never falls back to the nearest match (exits 3 and 4). An empty scope exits
+  5. Dates that fail to parse count as neither aging nor recent.
+
+Script: Table Pull  (source role: the tool script that mirrors the Pricing Opportunity Agent's
+tables from the OneDrive workbooks into CSVs)
+Purpose: Pulls the app's data tables and the per-territory shelf price tables through the Excel
+  workbook API so the audit runs on fresh local copies.
+Inputs: Arguments: the output folder (default the session's working tables folder), an optional
+  list of territory codes whose shelf tables to pull (default every territory in the <market>),
+  and a skip-shelf switch for when a fresh local copy of the very large shelf tables exists. The
+  data workbook and the shelf workbook in OneDrive, identified by their drive and item ids.
+Outputs: One CSV per table, named after the table, header row included, in the output folder; a
+  result object with the folder and the row count per table (none for a table not found); a log
+  line per table with its row count and range address.
+Logic:
+  1. Lists the data workbook's tables (name and id) through the workbook API.
+  2. For each of the eight data tables, reads the table's range values and writes them row by
+    row as CSV, blanks for empty cells, and logs the row count. A table not in the workbook is
+    logged as not found and recorded as none.
+  3. Unless skip-shelf is set, lists the shelf workbook's tables and pulls each in-scope
+    territory's shelf table the same way.
+  4. Returns the folder and the row counts.
+Checks and failure handling: Large responses that the tool spills to a file are reloaded from
+  that file (a spill marker in the JSON, or a "saved to" note in the text). Missing tables do not
+  stop the run; the caller (workflow step 2 and Failure Handling) decides whether to retry or
+  fall back to a same-day local copy.
+
+Script: Regression Check  (source role: compares a Python engine run with the oracle run on the
+same snapshot)
+Purpose: Proves that the Python port agrees with the app's engine field for field.
+Inputs: Two JSON files in the comparable shape: the oracle's and the Python engine's.
+Outputs: A console report per section (counts on each side, keys present on one side only, field
+  differences, OK or FAIL, the first eight differences listed), then "RESULT: PASS" or "RESULT:
+  FAIL"; exit 0 on PASS, 1 on FAIL.
+Logic:
+  1. The summaries must be identical.
+  2. Findings, <price ceiling> flags and shelf items are indexed by key; every key must exist on
+    both sides and every field must be equal, numbers within 1e-6.
+  3. Benchmarks: per store, the map of group to benchmark key must be identical.
+  4. Missing rows are keyed by wholesaler and family and compared the same way.
+  5. Gaps and cost proxies (the DC-to-proxy pairs) must be identical as whole lists; on a proxy
+    mismatch both lists are printed.
+  6. The finding order (the sequence of keys) must be identical.
+Checks and failure handling: Any failed section fails the whole run; the output names the
+  section and the first differences so the port can be corrected before the skill adopts a
+  change.
+
+Script: Oracle Harness  (source role: runs the app's own engine, copied verbatim with its data
+connector stubbed, over a table snapshot and writes the run as JSON)
+Purpose: Produces the reference answer the Python port is compared against, row for row, using
+  the app's code rather than a description of it.
+Inputs: A snapshot JSON (store rows, shelf SKU rows, product rows, item master rows, cost rows,
+  allowance rows, buy-down rows, optional wholesaler rows, the account, the category and an
+  optional territory), an output path, and an optional as-of date (else the snapshot's, else
+  today). Runs under the bun TypeScript runtime.
+Outputs: A JSON file in the comparable shape (as-of date, summary counts, findings,
+  <price ceiling> flags, every shelf item, per-store benchmark keys, gaps, cost proxies and missing
+  rows, numbers rounded to six decimals) and the summary printed to the console.
+Logic:
+  1. Parses each table's rows with the app's own row parsers (store, SKU with the snapshot's
+    territory, product, catalog, latest costs, allowance, buy-down, wholesaler options),
+    dropping rows the parsers reject.
+  2. Runs the app's shelf-run computation with those inputs, the snapshot's account and category
+    (default All) and the as-of date.
+  3. Flattens the run into the comparable shape: per finding the key, <store id>, group, SKU,
+    cost family, allowance family, price, unit cost, allowance, net cost, margin, benchmark key,
+    SKU and margin, gap points, penny gap, parity price, both trigger flags, 13-week units, the
+    sorted titles of the applied allowance rows, the cost proxy and the ask text; per flag the
+    key, <store id>, SKU, price, <price ceiling> amount, amount above and row title; per shelf
+    item the key, <store id>, group, families, competitive flag, wholesaler, cost source and
+    proxy, status, unit cost, allowance, allowance-missing flag, net cost, margin and benchmark
+    flag; per store the benchmark key per group; gaps, cost proxies and missing rows as the run
+    reports them.
+  4. Writes the JSON and prints the summary.
+Checks and failure handling: Missing snapshot or output arguments print usage and exit with code
+  2. The engine files are copied unchanged except for the connector import, so the harness
+  cannot drift from the app.
+
+Script: Snapshot Builder  (source role: builds the JSON table snapshot the oracle harness and the
+Python engine both consume)
+Purpose: Assembles one self-contained snapshot of the tables for a state, optional territory and
+  optional account, with either the real costs or a synthetic regression fixture dense enough
+  to exercise the benchmark and cost-proxy paths.
+Inputs: Arguments: output path (required), state (default the <jurisdiction> on file),
+  territory, account (default All), category (default All), a synthetic switch and an as-of
+  date (default today). The local CSV mirrors in the session's working folder: raw store rows,
+  the shelf price seed, the product seed, the item master, the current allowance, buy-down and
+  wholesale cost mirrors, the <wholesaler table> CSV from the table pull, and a supplementary
+  self-distributing flag file used when the wholesaler mirror lacks the flag column.
+Outputs: The snapshot JSON (as-of date, account, category, territory, stores, SKUs, products,
+  items, costs, allowances, buy-downs, wholesaler rows) and a console line with the row count of
+  each table and the number of self-distributing wholesalers.
+Logic:
+  1. Filters stores to the state (and territory when given); keeps the shelf rows of those
+    stores; loads products and the item master whole; filters allowances, buy-downs, real costs
+    and wholesaler rows to the state, treating a missing buy-down, cost or wholesaler mirror as
+    empty.
+  2. When the wholesaler rows lack the flag column, the supplementary file supplies it by row
+    title. A wholesaler is self-distributing when its flag is a yes-word or, with a blank flag,
+    when its type is the retailer-DC-or-club type. The two largest non-self-distributing
+    wholesalers by stores served are noted.
+  3. Without the synthetic switch the real costs are used as-is.
+  4. With the synthetic switch: the set of wholesalers is the two largest plus every wholesaler
+    named on an in-scope store for any <business unit> that is not self-distributing. Every
+    item-master family (ours and competitive) gets one cost per wholesaler: the family's list
+    price (a default per category when the item master has none), its list unit (default
+    carton) and its units per carton or roll (default 10) give an invoice price = list price
+    times a seeded random uplift between 12 and 35 percent (standing in for excise and markup),
+    a derived unit price = invoice over the factor, a fixed effective date, and a source,
+    notes and entered-by that label the row as a synthetic regression fixture.
+  5. Three sample buy-down rows are appended: one on a <competitor brand 1A> family, one on a
+    <competitor brand 4A> family and one "lowest-priced <category 1> in store" row, each with a
+    sample amount and the fixture label, so the own-brand and floating buy-down paths both run.
+  6. Writes the snapshot and prints the counts.
+Checks and failure handling: The fixture is never loaded to the workbook; every synthetic row
+  is labelled in its source and notes, and the random generator is seeded so the fixture is
+  reproducible. Self-distributing DCs receive no synthetic cost, forcing their stores through
+  the cost-proxy path in every scope.
+
+Script: Oracle Library - Program Allowances  (source role: the app's allowance module, copied
+into the oracle; the <company> allowance rules plus the app's review and entry functions)
+Purpose: Parses the <program allowance table>, resolves the allowance and <price ceiling> row for
+  one item, and gives the app its coverage, review-queue and save operations. The engine block
+  above ports the resolution part; this block records the module's own definitions.
+Inputs: <program allowance table> rows (one per state, <business unit>, program, election, price
+  family and effective date); for the app functions, the elections the stores in scope hold,
+  the as-of date, a reviewer's decision and name, and new-entry fields.
+Outputs: Parsed allowance records; a resolved allowance (amount, applied rows, <price ceiling>
+  row); in-force, needed, proposed and restricted listings; coverage gaps; new rows and change
+  log entries in the workbook (app only; the oracle stubs the writes).
+Logic:
+  1. Fixed option lists: the five <business units>; the programs (a per-pack allowance, the
+    <price ceiling> row, <allowance type B> in plain, multi-pack-offer and scan
+    multi-pack-offer forms, a non-scan allowance, a special price promotion, <allowance type A>
+    in non-scan and multi-unit forms, and <allowance type A> paired with the
+    <promotional price program>); the elections (<election option A> through <election option E> and All); the
+    selling units (pack, can, roll, 5-pack, single).
+  2. Status meanings: Confirmed is applied by the run; Proposed was loaded by the weekly
+    announcement reader and awaits a person's review, shown everywhere and applied nowhere;
+    Needed has no rate on file; Rejected is a proposal a reviewer turned down, kept for the
+    audit trail, never applied, hidden from working lists; Restricted cannot be offered in the
+    <jurisdiction> by law, shown with its reason, applied as zero, never a gap. Three canned
+    restriction reasons: multi-unit discounts prohibited by law, price promotions prohibited by
+    law, program not offered in the state.
+  3. Row parsing, election normalization, item-match patterns, in-force test, latest-per-program
+    with the election-beats-All tie rule, selling-unit match, the two exclusive groups and the
+    resolution order are exactly as the engine block, steps 3 and 8 through 10. An item-match
+    pattern is documented with a sample: brand words that must appear, a line word with
+    alternatives, and a minus word excluding a look-alike product.
+  4. Allowances in force: the Confirmed rows in force on the as-of date whose election is held
+    by a store in scope (or All), latest per <business unit>, program, election and family,
+    sorted by <business unit> order, family, program, election.
+  5. Coverage gaps (the app's Missing By Program Level view): every <business unit>, program and
+    family the state has rows for is a triple; a triple with any election-specific row is
+    checked per election the stores hold, a triple with only All rows is checked once; a pair
+    is covered when a Confirmed in-force or Restricted row applies to it; the <price ceiling>
+    program under <election option E> is never a gap (that option sets no pass price); each gap
+    carries the Needed row's notes or a default sentence, and the list sorts by <business unit>,
+    program, family, election order. A gap can be rendered as a Needed row.
+  6. Listings: needed rows by <business unit>, family, program; proposed rows newest effective
+    date first (the review queue on the state gate); restricted rows by <business unit>,
+    family, program, newest first. For a proposal, the Confirmed row it would supersede (same
+    state, <business unit>, program, election, family, unit and item scope, latest effective
+    date on or before the proposal's) is shown beside it.
+  7. Review: the row's status changes in place to Confirmed, Rejected or Restricted, an optional
+    note is appended, and the change is logged with the reviewer's name; nothing else on the
+    row moves; restoring a restricted row is a Confirmed decision.
+  8. Source document short form: a document number and any date found in the source text
+    (ISO, long month or US format), else the text itself shortened to 48 characters.
+  9. Saving: every entry is a new row (title = state, <business unit>, program, election, family,
+    effective date; status Confirmed or Restricted; entered-by and entered-on filled), never an
+    overwrite, and each save is logged. Marking a gap as restricted by law writes a new row with
+    amount zero, effective today, and the reason as its source and note.
+Checks and failure handling: Rows without state, family or program are rejected. A missing
+  amount or effective date forces status Needed whatever the status text says. The oracle uses
+  only the pure functions; the write paths are stubbed and never reach the workbook.
+
+Script: Oracle Library - Domain Model and Sample Set  (source role: the app's domain types, an
+earlier simple margin-parity engine, formatting helpers and the bundled sample scan set)
+Purpose: Defines the record shapes the app shares (item, store, scan, wholesale cost, buy-down,
+  program buy-down, <price support program> election, state setup, finding, missing cost, run
+  result), the name-matching rule and the sample dataset the app shows when no live scan source
+  is selected.
+Inputs: A dataset of those records, a period (week or month) and an as-of date.
+Outputs: Findings sorted by units then penny gap, missing costs sorted by units then store
+  count, and the count of stores scanned; formatted money, signed points, percent and period
+  labels.
+Logic:
+  1. Thresholds: a margin-gap trigger of 1 point for <category 1> and 2 points for the other
+    three finding categories, and a ten-cent single-unit trigger. Unit cost = invoice price over
+    packing factor. A buy-down is active when its effective date is on or before the as-of date
+    and its end date is open or later. Two names match when they agree after trimming,
+    collapsing spaces and lowercasing.
+  2. The simple engine, per store: category units are summed from the store's scans; each scan's
+    item is costed from the store's primary wholesaler and the item's family; a competitive
+    item's allowance is the sum of its active buy-downs, our item's the sum of program
+    buy-downs for the store's election and family; a scan with no cost adds its store and
+    category units to the missing list for that wholesaler and family.
+  3. Per category the benchmark is the competitive item with the lowest margin. For each of our
+    costed items: margin, an above-pass-price amount when a <price support program> election
+    row exists for the state, election and family and the price exceeds it by more than $0.001,
+    gap points, a parity price equal to net cost divided by one minus the benchmark margin
+    (equal-percent parity, unlike the live engine's equal-penny parity), the penny gap, a
+    margin opportunity when both the points and the ten-cent trigger are met, and dollars at
+    stake = (price minus the target price) times units, the target being the parity price or
+    the pass price. An item is reported when it is a margin opportunity or above the pass price.
+  4. The sample set is sample rows only: a handful of sample items (ours and competitive across
+    the four finding categories), ten sample stores in three sample states with sample
+    elections and sample wholesalers, sample scans with prices and weekly and monthly units,
+    sample wholesale costs with sample entered-by names, sample buy-downs, sample program
+    buy-downs, sample pass prices and a state setup row per state (owners, approval mode of ask
+    every run, approved for month or approved until revoked, approval dates, last pricing
+    announcement date, wholesalers covered). The <jurisdiction> that runs on real tables has no
+    sample stores, allowances or pass prices here, only its state setup row.
+Checks and failure handling: The sample set is invented and may never supply a number for the
+  <jurisdiction> on real data. Scans whose item is unknown are ignored.
+
+Script: Oracle Library - Shelf Run  (source role: the app's SKU-level shelf module, the original
+the pricing engine ports, plus the app's family pick lists)
+Purpose: Maps each scanned SKU to the price family a wholesale cost is saved under, runs the
+  per-store, per-category margin benchmark and produces findings, <price ceiling> flags, gaps
+  and missing prices; also builds the competitive family pick lists for the app's cost picker
+  and buy-down form.
+Inputs: Shelf SKU rows (one per scan store and SKU from the per-territory <shelf price table>),
+  the product master behind them, the item catalog, latest costs, allowances, buy-downs, the
+  account and category filters, the as-of date and the wholesaler options.
+Outputs: The shelf run in the same shape the engine block describes; family groups for the
+  picker; competitive manufacturers and their families for the buy-down form.
+Logic:
+  1. Category groups, triggers, floors, the our-manufacturer set, <flavor> words, 5-pack words
+    and raw-category mapping are as the engine block, step 2.
+  2. SKU rows, product rows and enrichment are as step 3; a slim row whose product is unknown
+    keeps a placeholder name and stays out of the run because its group is unknown, while a
+    full row in the original wide layout is honored as read.
+  3. Allowance candidate families are as step 7. The module notes why: the family a
+    <business unit 1> allowance or <price ceiling> row is published under (the
+    <price support program> sheet family) is finer than the list price group a wholesale cost is saved under,
+    so candidates are tried in order and the cost family closes the list so an older row keyed
+    by list price group still applies.
+  4. Family rules are as step 6. Every competitive family name in the rules is the exact string
+    the app's cost picker saves, so a saved cost always matches a scanned SKU.
+  5. The run is as steps 11 through 13: the cost index gives one lookup per row even for a
+    whole-market run of well over a hundred thousand rows; the self-distributing set, proxy rule
+    and DC-to-proxy record; the allowance cache keyed by state, <business unit>, election, unit
+    and family list, with the SKU name added only for <business units> that have item-scoped
+    rows; the floating lowest-price buy-down; the <price ceiling> flag that applies whether or
+    not a cost is known, since cost-reducing allowances only matter once there is a cost to
+    reduce; and the ask text.
+  6. Pick lists (app only): competitive families from products with sales, largest first, each
+    named by the run's own rules and carrying category defaults, then the item master's seed
+    families not already present; merged with the catalog's our-family groups once products
+    have loaded; and competitive manufacturers with their families, so a buy-down's brand or
+    line is the family name the run matches.
+Checks and failure handling: Identical to the engine. Without the wholesaler list no wholesaler
+  is treated as self-distributing. A row whose SKU name and group are both present skips
+  enrichment entirely.
+
+Script: Oracle Library - Stores and Family-Level Run  (source role: the app's store model, its
+earlier family-level margin run over store-level realized prices, the <sales data model>'s own
+pass-through pass/fail findings and the required price grid)
+Purpose: Parses the <store table> and the store-level price table (seven tracked families per
+  store), computes the retailer margin per store and tracked family wherever a realized price
+  and a wholesale cost both exist, and builds the list of prices every wholesaler should be
+  asked for.
+Inputs: Store rows; store price rows; latest costs; allowances; the families resolved from the
+  catalog; the account and category filters. For the grid: stores, the catalog, costs, the
+  shelf run's missing list, the state and the self-distributing names.
+Outputs: A family-level run (stores in scope, scan stores, families priced, categories present,
+  margin rows, pass/fail findings, missing prices, unknown families, no-wholesaler row count);
+  the required price grid; a wholesaler coverage map; accounts by store count.
+Logic:
+  1. Constants: one <jurisdiction> runs on real stores; every other state opens in setup mode
+    (wholesalers, costs, buy-downs and allowances) until store data for it is connected; the
+    <market>'s territory list and default territory; 13 scan weeks. The five <business units>
+    each map to a display group name. Seven tracked family keys: one <our brand 1A> family
+    standing in for the main line, the <our brand 2A> main and value families, the
+    <our brand 3A> filter-tip 5-pack (five sticks per selling unit) and single families, one
+    <our brand 4A> family blending its two lines, and the <our brand 5A> family; each carries its
+    <business unit>, category, default family name, label, unit name, units per selling unit
+    and an optional matcher that picks the catalog's spelling when it differs.
+  2. Store parsing is as the engine block, step 3. The normalized election column holds the five
+    options or "No Election"; the raw column carries long forms such as the two-word
+    <election option D> label or opt-out; the raw column is consulted only when the normalized cell is
+    blank, so a store loaded in long form still resolves to a rung.
+  3. Store price parsing: <store id>, a has-scan flag, per tracked family the price, units and
+    dollars (absent when the price is not positive), pass/fail days and volume, and the
+    pass-through opportunity.
+  4. Resolving families from the catalog: per key, the catalog family matched by the rule within
+    the <business unit>'s group, else by the default name; until the catalog has loaded every
+    family counts as known; afterwards an unmatched family keeps its default name but is marked
+    unknown so its cost shows as not available.
+  5. The family-level run, per in-scope store: a pass/fail finding when failed days or failed
+    volume are positive (category All or <category 1> only); a store without scan is skipped
+    for margins; per tracked family with sales, under the category filter: units divided by
+    units per selling unit, price times units per selling unit, the cost from the store's
+    <business unit> wholesaler, status priced, no-wholesaler, unknown-family or needed (needed
+    rows roll into missing with store count and units), the allowance resolved on the family
+    and unit for the store's election when a cost exists, then net cost, penny profit and
+    margin, with allowance-missing when priced with no applied rows. Stores without scan add to
+    a needed price's store count, never its volume. Margins sort by units; pass/fail findings by
+    failed volume then failed days.
+  6. The required price grid: every wholesaler is asked for the same prices: for each
+    <business unit> it supplies at any store in scope, every tracked our-family of that unit and every
+    competitive family in that unit's category. Self-distributing DCs are skipped (their stores
+    price from the proxy, which the shelf run already names). Prices already on file are
+    excluded; a scanned missing row supplies its units and the larger of the two store counts;
+    anything the shelf asked for that the grid did not cover stays; sorted by units, store
+    count, wholesaler, family. Scan data ranks the asks but never gates them, so a wholesaler
+    whose stores do not scan is still asked for the full list.
+  7. Wholesaler coverage counts distinct stores naming each wholesaler for any <business unit>;
+    account counts list accounts by store count, largest first.
+Checks and failure handling: Rows without a <store id> are dropped. Unknown families are
+  reported by name, never guessed. Oracle use is limited to the store parser; the rest serves
+  the app.
+
+Script: Oracle Library - Workbook Storage  (source role: the app's storage layer over the data
+workbook's tables, with the connector stubbed in the oracle)
+Purpose: Reads and writes the tables (state setup, wholesale costs, buy-downs, change log,
+  wholesalers, item master, stores, store prices, products, allowances) through the Excel Online
+  connector, parses cost, buy-down and wholesaler rows, and builds the item catalog.
+Inputs: The data workbook and the shelf workbook in the same OneDrive folder (the per-territory
+  shelf tables live apart because the data workbook passed 20 MB with them inside and the
+  connector stopped answering large reads); table names; rows and entry fields.
+Outputs: Pages of rows, appended rows, patched rows and change-log entries (app only); cost
+  versions; wholesaler options; the item catalog with family groups, families by name,
+  manufacturers and brands by manufacturer.
+Logic:
+  1. Every table's first column is the title and is the key for updates. Four storage
+    operations only: read a page, add a row, update a row by title, append to the change log.
+    Reads ask for ISO dates; serial dates are still converted (days since 1899-12-30). Page size
+    100; aging threshold 90 days; age text helpers (effective today, n days old, age unknown).
+  2. Read a page: blank starter rows (empty title) are dropped after the read, and page fullness
+    is judged on the raw page. Large tables try page sizes 1000, 256 and 100 in order; a
+    transient refusal is retried once after a 400 millisecond pause before the size steps down;
+    a short page is probed once more so a silently capped page size is not mistaken for the end,
+    and reading continues at the capped size; the size that worked is remembered for the rest
+    of the session; the row cap defaults to 20,000 with a truncated flag. Read-all follows the
+    skip continuation page by page up to a page bound.
+  3. Add and patch surface a plain "unable to save" or "unable to update" error on connector
+    failure. The change log is best effort (a failed log entry never undoes the saved row) and
+    records timestamp, user, state, table, row key, field, old and new value and action.
+  4. Cost versions: every saved price is a new row titled state, wholesaler, family and
+    effective date; a listing shows the latest per group with the count of earlier versions
+    (a tie goes to the row appended later); workbook versions overlay the bundled sample costs
+    for the same group and add groups the sample set lacks; a saved row carries the derived
+    unit price rounded to four decimals and status Active; a save appends and logs a summary of
+    price per invoice unit, units and unit cost; "Still Current" re-saves the same values with
+    today's effective date.
+  5. Buy-down parsing is as the engine block, step 3. A wholesaler typed as "other" joins the
+    state's list as an active user-added row, and is logged.
+  6. Wholesaler options and the self-distributing verdict are as the engine; setting or clearing
+    the flag writes the row's flag column and logs the change, and the engine re-reads it on
+    the next run.
+  7. Category mapping, category defaults and the catalog build are as the engine block, step 5,
+    plus family groups ordered by <business unit> order and then by competitive category,
+    families sorted by name within a group, and a sorted manufacturer list.
+Checks and failure handling: Connector errors are logged and surfaced as plain errors. The
+  oracle's stub throws on any connector call, so only the pure parsing and catalog functions
+  run during a regression.

@@ -1,0 +1,2259 @@
+----------------------------------------------------------------------------------------------------
+Part 8 of 11: Pricing Opportunity Agent (Builder)
+----------------------------------------------------------------------------------------------------
+
+Pricing Opportunity Agent (Builder)
+===================================
+
+Purpose: Builds, seeds, repairs or ports the Pricing Opportunity Agent, a Managed App that audits
+the retailer's margin on <company>'s items against the lowest-margin competitive item per store and
+category, net of wholesale cost, <company>'s allowances and competitor buy-downs, and hands account
+teams the parity price. Scan prices come from a semantic model and allowances from a weekly
+announcement reader; only wholesale cost and competitive buy-downs are person-entered.
+
+Triggers:
+- "build the pricing agent"
+- "seed the pricing agent for <market>"
+- "the pricing agent says it cannot read the stores, fix it"
+- "refresh the shelf prices for <jurisdiction>"
+- "load the buy-downs from the new <business unit 1> announcement"
+- "port the pricing agent to <category>", and questions about what the agent is and needs
+
+Inputs:
+- Store-by-SKU shelf prices (13-week and 4-week units and dollars) for all manufacturers, from the
+  <data warehouse> scan semantic model in <sales org>'s analytics app, read as the signed-in user
+- The store master and the primary wholesaler per <business unit> per store, from the
+  <sales data model>
+- <trade announcement> rate tables and the state <price support program> sheets, from the
+  announcement folders on <company>'s SharePoint and the user's inbox
+- Wholesale invoice costs (per wholesaler, price family and state) and competitive buy-downs (per
+  state and brand), entered by people in the app
+- The skill folder itself (SKILL.md, references/, scripts/), attached to the session or pasted as
+  a link
+
+Outputs:
+- Two Excel workbooks in a team-site document library: the data workbook (every table except
+  shelf prices) and the shelf workbook (one shelf price table per territory)
+- The published Managed App: assumptions gate, findings table, Above the <price ceiling> list,
+  Costs Still Needed board and Shelf view, every number with its provenance
+- A weekly scheduled announcement reader that appends Confirmed allowance rows and emails a digest
+- A seed report: counts (stores, scan stores, SKUs, shelf rows, allowance rows Confirmed and
+  Needed) and the first three findings
+- Access and extract requests to the <data team>, drafted for the user to send
+
+Parameters to Fill In:
+- <company> - the manufacturer whose items the agent audits
+- <sales org> - the field sales organization that runs the agent
+- <business unit>, <business units> - the operating companies whose items and allowances are in
+  scope; <business unit 1> through <business unit 5> name them individually, in the order the
+  category list gives them
+- <business unit code> - the short code a <business unit> carries in announcement file names
+- <category 1> through <category 5> - the product categories sold, in the order the triggers list
+  them; <category 5> is shelf view only; <category> alone is the user's own word in a request
+- <industry> - the industry word used in regulatory and legal language
+- <flavor>, <strength>, <variant>, <pack style> - the product attribute words of the categories
+- <packing factor> - selling units per invoice unit for each category (packs per carton, cans per
+  roll)
+- <data warehouse> - the scan semantic model holding store-by-SKU prices for all manufacturers
+- <scan fact table>, <product dimension>, <store dimension>, <calendar dimension> - the four
+  objects of the <data warehouse> the pull reads
+- <sales data model> - the semantic model holding the store master and primary wholesalers
+- <shelf recognition model> - the photo-recognition model used by the contract audit skill
+- <data team> - the group that owns the scan model, grants Build access and lands the extract
+- <platform team> - the group that owns the Managed Apps platform and takes platform tickets
+- <trade announcement>, <trade announcements> - the manufacturer's periodic announcement that
+  carries rate tables
+- <price support program> - the retailer price program whose per-store election sets allowance
+  rates
+- <price ceiling> - the pass price a <category 1> item must not be shelved above
+- <election option A> through <election option E> - the <price support program> election
+  choices, in the order the program lists them ("All" stays All)
+- <allowance type A>, <allowance type B>, <allowance type D> - the named allowance programs (an
+  equity fund allowance, a loyalty allowance, a special price promotion)
+- <variant suffix> - the suffix the allowance programs of <business unit 4> carry on their names
+- <promotional price program> - the <business unit 3> target-price program whose targets are pass
+  prices, not allowances
+- <special account channel> - the account channel whose announcements the parser skips
+- <pricing portal> - the external site that publishes the full current allowance schedule
+- <price family A> through <price family G> - the price families and tiers named in
+  announcements and the item master
+- <our brand 1A> and similar; <competitor brand 1A> and similar - brands by category
+- <market> - the pilot sales market; a territory is a subdivision of it
+- <jurisdiction> - a state whose law or program sets a rule used by the agent
+- <author> - the skill's owner
+- <territory role>, <market role>, <account role> - the roles that use the app
+- <wholesaler A> - a wholesaler named as an example
+- <chain A>, <chain B>, <chain C> - self-distributing chains named as examples
+- <store id>, <product id> - the store and product key columns
+- <item master table>, <wholesale list price table>, <competitive buy-down table>,
+  <state setup table>, <store table>, <store price table>, <product table>, <shelf price table>,
+  <program allowance table>, <wholesaler table>, <change log table>, <finding ledger table>,
+  <snapshot table>, <subscription table> - the names given to the app's fourteen storage tables
+- <app id>, <managed app id>, <environment id> - the published app's platform identifiers
+- <allowance amount> - a dollars-per-unit amount from the current <trade announcement>
+- <date>, <n> - dates and counts that describe the company's own history
+- <time zone> - the time zone the weekly announcement reader is scheduled in (Monday 6:30 AM)
+- <drive id> - the SharePoint drive id of the document library holding the two agent workbooks
+- <file id> - the workbook item id of the data workbook that holds the allowance table
+- <table id> - the allowance table's id inside the data workbook
+- <dataset id> - the Power BI dataset ids of the SKU-level scan model and of the <sales data model>
+  store master (one each)
+- <start year> - the first announcement year the allowance table is seeded from
+- <excluded promotion type> - any <business unit 1> short-term allowance type that is not modeled as
+  a per-unit allowance and is only listed in the digest
+- <allowance type E> - the allowance program paid against submitted scan data
+- <allowance type F> - the allowance program for participants not submitting scan data
+- <volume incentive program> - the volume-growth incentive whose payment-rate tables the
+  <business unit 3> parser must skip
+- <all-options election label> - the printed election label that means "all elections" on
+  <business unit 1> rate lines
+- <competitor manufacturer codes> - the manufacturer codes of the competitors carried in the scan
+  model, for the product pull's combination list
+- <brand-family pricing fact table> - the <sales data model> table of per-store brand-family units
+  and dollars by timeframe
+- <location dimension table> - the <sales data model> table carrying store number and primary
+  distributor per <business unit>
+- <store master fact table> - the <sales data model> table of stores with account hierarchy,
+  contract and election fields
+- <territory ids> - the territory ids of the market being seeded (the store master puller's list)
+- <chain D> - a chain whose chain-specific announcement prints account-level rates that must be
+  skipped
+- <price family A>, <price family C>, <price family D>, <price family E>, <price family F>,
+  <price family G>, <price family H> - the <business unit 1> price families printed as rate-table headers
+  (which ones have a <flavor> and non-<flavor> column pair)
+- <price family A> and <price family B> (as <our brand 2A> families) - the two <our brand 2A> price
+  families and the <variant> wordings that scope a row with an item pattern
+- <category 3 unit> - the selling-unit word for a single <category 3> item as printed in pass-price
+  tables
+
+What the User Says and Gets
+---------------------------
+
+For a person: the agent itself is a Managed App. The user opens it from the Power Apps list
+(Pricing Opportunity Agent), picks a state and a territory, reviews the assumptions gate and runs.
+The skill folder is not needed to use the app; it is needed to build, extend or repair it. For
+that the user opens a new Cowork session, attaches the folder or pastes its link, and asks in
+plain words: "seed the pricing agent for <market>", "add <jurisdiction> to the pricing agent",
+"the pricing agent says it cannot read the stores, fix it", "refresh the shelf prices for
+<jurisdiction>", "load the buy-downs from the new <business unit 1> announcement", "port the
+pricing agent to <category>".
+
+What the agent does: for every scan store and every category it finds the competitive item the
+retailer makes the least margin on and flags every <company> item the retailer makes more margin
+on than that, net of wholesale cost, <company>'s allowances and the competitor's buy-downs. It
+ranks by volume then gap and hands the account team the parity price. The only things a person
+enters are wholesale invoice costs and competitive buy-downs; allowances come from the
+<trade announcements> by themselves every week.
+
+What is needed before a new market: SKU-level scan prices for all manufacturers in a semantic
+model the user can see (the <data warehouse> in <sales org>'s analytics app), the store master
+(the <sales data model>), and the <data team>'s blessing for the seed pull or, better, their
+scheduled extract. The references are read first.
+
+Owner: <author> (<sales org> <territory role>, <market>). Data owners: the <data team>.
+
+For Copilot, when a user points it at this folder:
+
+1. Stages the skill: copies SKILL.md, references/ and scripts/ in the same layout into the
+   session's working folder, SKILL.md at the top. A folder that arrived as a zip is already local
+   once unzipped.
+2. Reads SKILL.md completely, then every file in references/. They are short; the build sequence
+   and the recovery notes are where the time was lost the first time.
+3. Classifies the user's own words as one of: build new market, add state, repair, refresh feed,
+   load allowances, port, or explain. Follows the matching step of the Build Sequence reference.
+   For "explain", answers from SKILL.md Sections 1 to 5 and stops.
+4. Before any full scan seed for a market, tells the user what it costs (the last section of the
+   Data Sources reference) and asks whether the <data team>'s extract exists yet; runs the seed
+   only with their agreement.
+5. Writes every string into the app or the workbooks as ASCII, Title Case in labels, no markdown.
+   Never invents a rate, a cost or a store.
+
+Skill Instructions
+------------------
+
+An end-to-end price and margin audit that no report in the environment produces: for every store
+with scan data and every category <company> sells in, the agent finds the competitive item the
+retailer makes the least margin on, and flags every <company> item the retailer makes more margin
+on than that, because that gap is exactly the room the retailer has to lower the shelf price on
+<company>'s item and still be no worse off than on the competitor's. Findings rank by volume so
+the account team fixes what moves first, then by gap. The account team gets the parity price and
+the sentence to say.
+
+Version <date>. Built and running on one <market> in one <jurisdiction>: <n> stores, <n> scan
+stores, <n> SKUs across all manufacturers, <n> store-by-SKU price rows and <n> allowance rows
+covering <n> states. Published as a Managed App (Copilot Cowork) with an Excel Online store.
+
+The skill has two halves and the seam matters. The pattern (Sections 1 to 6, the Data Model
+reference and the Build Sequence reference) is industry-neutral: it works for any distributed
+consumer good with a manufacturer allowance and a competitor doing the same. The instance (the
+Domain Reference and the Data Sources reference) is everything that names a brand, a
+<business unit>, a <price support program> election, a semantic model or a SharePoint folder. To
+port the agent, the builder keeps the pattern, replaces the instance and reads the Porting
+reference.
+
+Scripts (each described in the Scripts section): the scan pull (SKU master and store x SKU
+prices), the store pull (store master and brand-family prices), the wholesaler pull (state x
+wholesaler pairs), the self-distributing seed (the flag for chain-owned distribution centers,
+which price from the state's cost proxy), the announcement appendix parser (rate tables to
+allowance rows) and the announcement reader prompt (the weekly scheduled prompt as deployed).
+
+The assistant reads every reference before building. They are short and they record where the
+mistakes were paid for.
+
+When to Use:
+
+- Build or seed the agent for a new <market> or state (steps 0 to 9 of the build sequence).
+- Repair a failing read, a failing publish or a wrong number ("the pricing agent cannot read the
+  stores", "the buy-downs for <jurisdiction> are wrong").
+- Refresh a feed: shelf prices, allowances from a new announcement, the wholesaler list.
+- Port the pattern to another category or industry (the Porting reference).
+- Explain what the agent is, how the rule works, what it costs to run or what access it needs
+  (answered from Sections 1 to 5; no build starts).
+
+When Not to Use:
+
+- A one-off margin or parity calculation for one item: answered inline with the formula in the
+  One Rule section; no workbook, no app.
+- Editing the data workbook's cells or formatting by hand: the xlsx skill. The agent's tables are
+  written through the app or the scripts so the change log stays whole.
+- POS signage presence: POS Gap Scorecard. Contract compliance from store photos: Contract
+  Compliance Audit (<business unit 4> and <business unit 3>). Ranked store visit lists: Top
+  Opportunity Stores. Performance write-ups: Performance Write-Up Concierge. Label sheets:
+  Business Unit Label Sheets.
+- A Power BI question about a report or model that is not this agent's feed: the Power BI skill.
+- Drafting the email to the <data team> or leadership about the agent: the stakeholder
+  communications skill, with the facts from the Validation Status section and the Data Sources
+  reference.
+
+Quick Start:
+
+Request "seed the pricing agent for <market>":
+
+1. The assistant reads SKILL.md and every reference.
+2. Step 0: discovers the scan model, reads its schema and runs one query proving that store x SKU
+   rows return under the user's row-level security. If only brand-family averages come back, it
+   stops and writes the access request.
+3. Tells the user the seed cost (about 490 queries per 1,350 scan stores) and asks whether the
+   <data team>'s scheduled extract exists. If it does, loads from it and skips the pull.
+4. Steps 1 to 5: pulls products, prices, stores and wholesalers; builds the item master; creates
+   the two workbooks; seeds allowances from the announcements and the state's
+   <price support program> sheets.
+5. Step 7: adds the <market>'s territories to the app scope and publishes through the gate.
+6. Step 8: runs one territory end to end and reports the counts (stores, scan stores, SKUs, shelf
+   rows, allowance rows Confirmed and Needed) and the first three findings.
+
+Request "the pricing agent says it cannot read the market's stores":
+
+1. Reads the Recovery Notes in the Build Sequence reference.
+2. Checks the workbook's file size through the Microsoft Graph file API and lists the workbook's
+   tables.
+3. Over about 20 MB, or shelf tables found inside the data workbook: moves them to the shelf
+   workbook, deletes the sheets highest index first, updates the README rows, republishes.
+4. Confirms with a direct API read of the table's rows, then has the user refresh the app.
+
+1. Who Uses It and What They Ask:
+
+Values are: the question asked; the scope the app resolves.
+
+- <account role>: Where is my chain over-margining our items against the competition, across
+  every state it operates in; Account, all states.
+- <territory role>: What are my independent pricing opportunities; Territory, independents.
+- <market role>: What are all the pricing opportunities in my market; Whole market.
+- Rep: Which wholesale prices are still needed from my wholesalers; Wholesaler board.
+
+The app is for account teams first. A <territory role> and a <market role> are bonuses the same
+run answers by changing scope.
+
+2. The One Rule:
+
+Per store and per category:
+
+- Benchmark: the competitive SKU with the lowest retailer margin percent among those with a cost.
+- Finding: one of <company>'s SKUs whose margin percent exceeds the benchmark's by more than the
+  category trigger, or whose penny profit exceeds the benchmark's by more than the penny floor.
+- Parity price: the benchmark's penny profit plus the <company> SKU's net cost.
+- Ask: "<our SKU> is $X above margin parity with <benchmark SKU>; parity price $P, based on
+  <wholesaler> cost dated <date>". A store supplied by a self-distributing chain distribution
+  center, which prints no cost on its invoices, is priced from the state's largest wholesaler
+  with costs entered; the ask then reads "based on <proxy> cost (proxy for <DC>) dated <date>".
+
+Margin definitions (per selling unit, everything in the same unit):
+
+- Unit cost: the invoice price divided by the packing factor.
+- Net cost: unit cost minus allowance. For <company>'s items the allowance is the sum of
+  Confirmed program allowances in force for the store's election and the item's allowance
+  family; for competitive items it is the sum of active competitive buy-downs.
+- Penny profit: shelf price minus net cost.
+- Margin percent: penny profit divided by shelf price, times 100.
+
+Shelf price is the realized price: 13-week dollars over 13-week units per store per SKU (the
+everyday price proxy; a weekly mode price is the planned replacement). Ranking: volume first
+(13-week units), then penny gap.
+
+Triggers as built (points of margin, then a penny floor per unit):
+
+| Category group | Trigger points | Penny floor | Unit |
+|---|---|---|---|
+| <category 1> | 1 | 0.10 | pack |
+| <category 2> | 2 | 0.10 | can |
+| <category 3> | 2 | 0.05 (0.10 on a 5-pack) | single or 5-pack |
+| <category 4> | 2 | 0.10 | can |
+| <category 5> | shelf view only | | device |
+
+A second <category 1> check runs beside the benchmark: any <company> <category 1> SKU priced
+above the <price ceiling> in force for the store's election (the pass price row) is an "Above the
+<price ceiling>" finding whether or not a cost is known. See the Domain Reference.
+
+3. The Four Inputs and Who Supplies Them:
+
+Values are: source; who maintains it; cadence.
+
+- Shelf price by SKU by store: the scan semantic model (all manufacturers); the agent by pull,
+  then a scheduled extract owned by the <data team>; weekly once the extract exists, a one-time
+  seed until then.
+- <company>'s program allowances by state, election and family: <trade announcement> rate tables
+  and the manufacturer's price promotion sheets; the agent, through a weekly announcement reader
+  that appends Confirmed rows; weekly, no human keying.
+- Wholesale invoice cost per wholesaler per price family per state: a rep or two per wholesaler,
+  from an invoice; people, in the app; every 3 to 6 months, with the app prompting at 90 days.
+- Competitive buy-downs per state per brand: people, in the app; people; the same cadence.
+
+The last two are the only user gates. Everything else arrives without a person keying it. That is
+the design constraint the user set and it is not negotiable: a process that needs fifty people to
+update allowances every month is the opposite of this tool.
+
+4. Storage and Scale:
+
+Pilot store: two Excel workbooks in a team-site document library, read and written through the
+Excel Online (Business) connector (SharePoint list creation is blocked by the tenant's data loss
+prevention policy; Excel Online is allowed). Production: Dataverse in a production environment,
+same schema.
+
+- The data workbook ("Pricing Opportunity Agent - Data") holds every table except the shelf
+  tables (about 1.3 MB).
+- The shelf workbook ("Pricing Opportunity Agent - Shelf Prices") holds only the shelf price
+  tables, keys and numbers, one table per territory (about 10 MB for one market).
+
+The split is not optional. With the shelf tables inside the data workbook the file passed 20 MB
+and the connector stopped answering the several-thousand-row store table read while one-row
+tables still answered. Descriptive fields for a shelf row (name, family, manufacturer, category)
+are joined from the <product table> by <product id> at run time, never stored per row.
+
+Every table's first column is the row key, named identically in every table, and that key drives
+updates. Four storage operations only: read a page, add a row, update a row by key, append to the
+change log. Reads page by an explicit skip offset at 1,000 rows, falling to 256 then 100 when
+refused; a short page is probed once more because the connector silently caps some page sizes.
+The Data Model reference lists every table and column.
+
+5. The Confirmation Loop:
+
+- A state is Not Set Up until someone claims ownership; any signed-in user may enter a price.
+- Every run opens on the assumptions gate: the wholesalers (top 10 by store count, with Show
+  All), the competitive buy-downs, and Missing By Program Level (each <business unit>, program,
+  family and election in scope with no Confirmed rate, each with an Enter button), then Looks
+  Accurate and Run. Owners may approve for the month or until revoked.
+- Prices are versioned: an update is a new row dated today; nothing is overwritten. Rows older
+  than 90 days show Still Current and Update Price. Any user can answer either, including mid-run
+  ("actually <wholesaler A> is at $x.xx in <jurisdiction> right now").
+- Every write goes to the <change log table> with who, what, when and the summary line.
+
+Guardrails:
+
+- Never invent a number. A rate not printed in a document is Needed, not guessed. A cost not
+  entered is a missing-cost line, not a default. Sample data never mixes with real data, and a
+  market state never shows sample rows.
+- Confirm before anything that costs: the assistant tells the user the query count and the model
+  owner's concern before a seed pull, never runs the seed for more than one market without the
+  <data team>'s extract or explicit agreement, and never repeats a pull the workbook already
+  holds.
+- Neither the app nor a script writes to a user's mailbox, a team channel or a SharePoint list.
+  The agent writes only to the two workbooks and the change log. Emails to the <data team>,
+  leadership or a rep are drafted and sent by the user through their own tools.
+- Never overwrite or delete a table row. Every change is a new versioned row plus a change-log
+  entry with who, what and when.
+- ASCII only in every string the app shows or stores. Title Case labels. No markdown, no long
+  dashes, no smart quotes, no emoji. Item names are the data model's own field values (the full
+  brand, variant and pack-style name, never a shelf nickname or a slang length word).
+- No Power BI query from the published app. Users create zero model load; seeds and refreshes
+  are the agent's job and move to the <data team>'s scheduled extract as soon as it exists.
+- Row-level security is the only security model: every read runs as the signed-in user; the
+  agent never caches or forwards data across users.
+- Republish only after the pre-deploy gate passes (typecheck, lint, build, browser-error scan)
+  and only when the user asked, or as the eager first publish of a new app.
+- The workbooks, sheets and tables are never renamed; the app finds them by id and name.
+
+Failure Handling:
+
+Values are: likely cause; what to do.
+
+- One large table fails to read while small ones answer: workbook over about 20 MB; check the
+  size through the file API, move the shelf tables to the shelf workbook, republish (Recovery
+  Notes).
+- Every read fails with "access was refused": the connection expired or the user lacks site
+  access; re-consent the Excel Online connection in the app and confirm the user can open the
+  folder.
+- Shelf loads but no findings: no competitive SKU in scope has a cost; show Costs Still Needed,
+  enter the top competitive family's wholesale cost, rerun.
+- A <company> item shows "no allowance on file": no Confirmed row for its allowance family and
+  election; Missing By Program Level lists it; enter from the <price support program> sheet or
+  the manufacturer's price promotion sheets.
+- Allowance rows exist but do not apply: the family or election spelling differs; compare the
+  row's price family to the allowance-family list in the Domain Reference; the two spellings of
+  <election option C> are treated as equal.
+- A pull returns exactly 1,000 rows for a group: the connector row cap; re-pull that group with
+  smaller batches (the scripts report capped groups).
+- A pull result is a spilled file: the result exceeded the tool budget; parse the saved JSON and
+  read the CSV part, never the preview.
+- The announcement parser returns 0 rows: the header pattern or the family words did not match;
+  read the text near the per-unit allowance heading, extend the header pattern or the
+  family-splitting rule, rerun.
+- Publish returns a build-failed status: an app code error; run the pre-deploy gate locally,
+  fix, republish; never edit protected scaffold files.
+- The scheduled reader did not run or did not save: the setup call was interrupted; list the
+  scheduled prompts before assuming it exists; recreate it from the announcement reader prompt
+  text.
+- The scheduled reader pauses for approval every Monday: the task carries no standing grant for
+  the Microsoft Graph write (a new task, or the old one deleted); Build Sequence Step 6: raise
+  the cards by hand, have the user choose Always Allow, then confirm on the allowed list.
+- A draft the assistant filled vanished: the user had the same draft open and autosave won;
+  create a separate draft rather than editing an open one.
+
+When a step cannot be completed, the assistant says exactly what was and was not done, names the
+blocker in plain language, and leaves the workbook in a consistent state (a partial table load is
+finished or the sheet removed; never a half table the app will read as truth).
+
+7. Build Sequence (Summary):
+
+The full sequence with the exact calls, caps and recovery steps is the Build Sequence reference.
+
+1. Discover the scan model and confirm SKU-level rows exist under the user's row-level security.
+2. Pull products and store-by-SKU 13-week and 4-week units and dollars under the 1,000-row query
+   cap (5 stores per query, 4 queries per call; re-pull capped groups singly).
+3. Pull the store master and the primary wholesaler per <business unit> per store; derive the
+   wholesaler list (pairs with 10 or more stores) and seed the self-distributing flag (the
+   self-distributing seed script) so chain-owned distribution centers price from the state's cost
+   proxy.
+4. Build the item master (price families, packing factors, list prices) from the newest list
+   price announcements.
+5. Create the two workbooks and load the tables (the bulk tabular insert, 8,000 rows per chunk).
+6. Seed the allowance table: parse every rate-table announcement on file with the announcement
+   appendix parser, add the manufacturer's price promotion sheets for the pilot state, keep
+   Needed rows for what no document states.
+7. Build the app (Managed App, Excel Online binding), publish, share.
+8. Wire the weekly announcement reader: grants first (raise and Always Allow the Microsoft Graph
+   write and the digest email cards with the user present, prove them on the task's allowed
+   list), then the schedule, then one run by hand; hand the user the digest. Build Sequence
+   Step 6.
+9. Ask the <data team> for the scheduled extract and Build access; never repeat step 2 per
+   market.
+
+8. Output Contract:
+
+The app's report for a scope, in this order: the assumptions gate (must be passed), the findings
+table (store, <company> SKU, shelf price, benchmark SKU, gap in points and pennies, parity price,
+ask sentence, 13-week units), Above the <price ceiling> (<category 1>), Costs Still Needed by
+wholesaler and family ranked by units held up, and the Shelf view per store. Every number carries
+its provenance: the cost row and date, the allowance rows applied, the benchmark SKU.
+
+9. Validation Status:
+
+Verified on one <market>'s real data on <date>: store reads, shelf reads (<n> territories),
+allowance resolution by <price support program>-sheet family, Missing By Program Level, versioned
+costs, aging prompts, publish gate. Known open items: the weekly mode price (replaces the 13-week
+average), the state excise table, the finding ledger and unconfirmed-opportunities tab from the
+inference ladder in the app's design spec, sharing to the pilot <jurisdiction>'s reps, and five
+select-state announcements of the current year not yet parsed. The scan feed is a one-time seed
+until the <data team> lands the extract.
+
+All-states seed (<date>): Build Sequence reference Step 5 and the Parser Spec reference; scripts:
+the all-states coverage ledger, the per-document parsers, the allowance ordering script and the
+load preparation script.
+
+Running an audit from chat ("audit my chain's stores for pricing") is the Pricing Audit skill, a
+verified Python port of this app's engine; this skill builds, seeds, repairs and ports the agent.
+
+References
+----------
+
+Reference: Build Sequence:
+
+The order that worked, with the caps and the recoveries. A blind agent following it should land a
+running instance for one market in one long session. Steps 1 to 6 are data; 7 is the app; 8 and 9
+are the loops that keep it alive. Instance ids are in the Data Sources reference.
+
+Build Sequence Step 0 - Confirm the Gate Before Writing Code:
+
+The agent is useless without SKU-level shelf prices for both <company>'s items and the
+competition. Before anything else the assistant discovers the semantic models the user can see,
+reads the schema of any that names a fact table keyed by store and product, and runs one query
+proving that row-level SKU x store x week data comes back under the user's row-level security. If
+the only reachable price is a brand-family average, it stops and writes the access request (the
+Data Sources reference lists whom to ask). It never builds on sample prices and calls it done.
+
+Build Sequence Step 1 - Pull the SKU Master and the Store x SKU Prices:
+
+Script: the scan pull, run as a tool script with three modes (products, products by id, prices);
+large arguments go in an arguments file.
+
+- Products: one query per category group x manufacturer (5 groups by 12 manufacturers), filtered
+  to SKUs with 13 or more 13-week units, four queries per call. A combination that returns
+  exactly 1,000 rows is capped; it is re-pulled by <product id> in a follow-up (the
+  products-by-id mode).
+- Prices: a DAX summary over the scan fact table by <store id> and <product id> with 13-week and
+  4-week filters, stores in groups of 5, four groups per call; any group returning 1,000 rows is
+  capped and those stores are re-pulled singly (batch size 1). The distinct-count-of-weeks column
+  is dropped (it serializes as a date). Kept: store id, product id, 13-week units and dollars,
+  4-week units and dollars; the 13-week and 4-week prices are computed from them.
+- Expect about 490 queries for about 1,350 scan stores. The <data team> is told before the run
+  or, better, asked for the extract instead (Step 9).
+
+Build Sequence Step 2 - Pull the Store Master and the Wholesalers:
+
+Scripts: the store pull (the <sales data model>'s store master fact and location dimension, plus
+its 13-week pricing fact for the brand-family <store price table>) and the wholesaler pull
+(primary distributor per <business unit> per store; state x wholesaler pairs with 10 or more
+stores are kept). The <price support program> election is stored exactly as the model spells it;
+the app normalizes program prefixes, the long two-word form of <election option D> and the
+alternate spelling of <election option C>.
+
+Then the self-distributing seed proposes the self-distributing flag for every wholesaler row: Yes
+for the <sales data model>'s retailer-owned distribution center or club type, and for a
+wholesaler that serves one chain exclusively in the store master when its name matches the
+chain's or says warehouse or DC; No otherwise; candidates that serve one chain without a name
+match are printed for review. The column loads with the <wholesaler table>. A chain distribution
+center prints no cost on its invoices, so the engine prices its stores from the state's largest
+wholesaler with costs entered (the <wholesaler table> in the Data Model reference); without the
+flag a self-distributing chain shows no margin findings at all.
+
+Build Sequence Step 3 - Build the Item Master:
+
+From the newest list price announcements per <business unit>: <company>'s items with price
+family, selling unit, units per carton or roll, pieces per selling unit, list price and unit,
+sanity bands, UPCs (check digit validated) and a tracked flag. The competitive brand seeds are
+added with the exact family strings the cost picker will save. Every description is renamed to
+the data model's field name (no shelf nicknames, no slang length words).
+
+Build Sequence Step 4 - Create the Workbooks:
+
+Workbook 1 (data): README, <item master table>, <wholesale list price table>,
+<competitive buy-down table>, <state setup table>, <change log table>, <finding ledger table>,
+<snapshot table>, <subscription table>, <wholesaler table>, <store table>, <store price table>,
+<product table>, <program allowance table>. Workbook 2 (shelf): README plus one
+<shelf price table> per territory, keys and numbers only.
+
+Adding a second market on the workbook tier (decision of <date>): the data workbook is shared
+across markets (its tables carry state and territory columns, and the item master, wholesalers
+and program allowances are national by nature), so the new market's store, store price and
+product rows are appended to the existing tables. The shelf workbook is per market: a second
+shelf workbook named "Pricing Opportunity Agent - Shelf Prices <market>" (about 10 MB per market)
+is created and registered in the app's storage layer as a second entry keyed by territory prefix
+(the shelf table name already derives from the territory). Appending shelf tables to the first
+shelf workbook would cross 20 MB by the second market. Past three or four markets, or for any
+account team running a chain across many states, the store moves to the Dataverse or Fabric tier
+(the app's design spec) rather than adding workbooks. The store pull takes the new market's
+territory list as an argument; its default list is the pilot <market>.
+
+Workbooks are built locally in Python (one Excel table per sheet, named as the sheet, a standard
+table style), uploaded into the app folder and verified by listing the workbook's tables through
+the Microsoft Graph API. For an existing live workbook the assistant edits the live surface: bulk
+tabular insert from a CSV in 8,000-row chunks, declaring the table on the first chunk and adding
+a table if needed; a table is rebuilt by deleting and re-adding its sheet (inserting rows or
+columns inside a table fails). Workbook 1 stays under a few megabytes; the item size is checked
+through the file API after any big load.
+
+Build Sequence Step 5 - Seed the Allowance Table:
+
+The ordering rule, learned twice on <date> and now the law of this step: a select-state
+announcement prints only the states that changed that cycle, so the newest announcement that
+names a state, <business unit> and family is the one in force. The folder is read in reverse
+chronological order, newest first, and a rate is marked Confirmed only when every newer document
+for that <business unit> has been read and none names the state and family. A rate is never
+loaded from the first document that names the state with the walk stopped there, and never from
+an older document without every newer one having been read. What went wrong, in order: a
+<business unit 2> promotional per-can rate for the pilot <jurisdiction> was read from an
+early-year announcement when a mid-year one had cut it in half and zeroed every buy-down on a
+sister line; then, having fixed that, a later single-product announcement (a per-can rate for
+non-scan stores from a stated date, on that one product) was still unread because the walk
+stopped at the announcement the user had named. The user knew both from memory and from his own
+email to his reps. The scheduled reader carries this rule verbatim; a builder re-seeding a state
+applies it by hand. Two corollaries: a state excluded by name in a title ("National Excluding
+<jurisdiction>, <jurisdiction> and <jurisdiction>") is a Confirmed zero with the exclusion cited,
+never a Needed row that asks a rep to find a number that does not exist; and a product-specific
+offer (one UPC) goes on the product's family with the item-match field set so it never applies to
+the rest of the family.
+
+The all-states seed of <date> turned the rule into a pipeline that runs without judgment until
+the last step, in this order (every script is in scripts/ and the parser contract is the Parser
+Spec reference):
+
+1. Coverage ledger (the all-states coverage ledger, a tool script): given the drive id and a list
+   of folder id, <business unit> and year, it lists every document in each <business unit> folder
+   newest first, downloads every <trade announcement> not yet local (keeping the PDF and a
+   layout-preserving text extract in the session's working folder) and writes one ledger CSV per
+   <business unit> and year with, per document, the states named on rate-bearing lines
+   (two-letter codes in geography lists, full names within three lines of a dollar amount) and
+   the states its title excludes. It over-flags on purpose: a document flagged for a state the
+   parser then finds sets no rate is reviewed; a document missed is not. The walk goes back until
+   every family a state sells has been restated at least once: <business unit 1> four years back
+   (pack allowance changes only), <business unit 2> three years back, <business unit 4>,
+   <business unit 3> and <business unit 5> two years back (self-contained cycle tables).
+2. Parse from the PDFs, not the text: the <business unit 1> batch parser runs the announcement
+   appendix parser over every <business unit 1> announcement (the appendix state x election
+   tables, the <our brand 1C> table without an election column, dashes as printed zeros, the
+   promotion calendar printed in sibling announcements for tables that show only a month, title
+   exclusions as Confirmed zeros); the <business unit 2>, <business unit 4>, <business unit 3>
+   and <business unit 5> parsers rebuild each <business unit>'s tables from PDF geometry
+   (<business unit 4> from border rectangles, words placed by center point) and write one
+   parsed-rows CSV per <business unit> plus a coverage CSV that explains every ledger-flagged
+   state they did not cover. The parsed-rows validator runs on each rows file and must print OK.
+   The pilot <jurisdiction>'s rows loaded by hand are the regression truth (the Parser Spec
+   reference lists them).
+3. Ordering engine (the allowance ordering script): for each state, <business unit>, program,
+   election, family, unit and item scope, the newest document wins for the same effective date,
+   older rows get an end date the day before the next effective date, row keys are made unique
+   (rows of <business units> other than <business unit 1> carry the unit), rows are diffed
+   against the current table (pulled live through the Graph API, because the OneDrive download
+   of a live-edited workbook can be stale) and three outputs are written: rows to insert;
+   conflicts (same key and date, different amount: review, never write); coverage gaps
+   (ledger-flagged states with no parsed row from that document).
+4. Policy filter (the load preparation script): drops undated rows, temporary special
+   initiatives and per-transaction multi-pack offers; converts multi-buy savings to per-unit
+   amounts; collapses notes to one ASCII line; writes the load file with the table's 16 columns
+   and no header.
+5. Load with the bulk tabular insert at the row beneath the table (header off); the table
+   extends. The table address is verified through the Graph workbook API, the first and last
+   rows are spot-checked, then the same rows are appended to the local mirror so a second batch
+   diffs correctly.
+6. Report: in force today per state and <business unit>, <business unit 1> families with nothing
+   on file, the ledger with parse status per document, programs not loaded with reasons, Proposed
+   rows for review. Programs deliberately not loaded at the seed: <business unit 1>'s
+   <allowance type B>, multi-pack, a separate merchandising incentive program and a one-week
+   promotional price offer; <business unit 5> multi-pack; account-specific <business unit 2>
+   offers. Base <price support program> rates (the <our brand 1A> <price family A> family,
+   <our brand 1D>, the <price ceiling> rows) live on an external pricing portal and <sales org>'s
+   price promotion API, not in announcements; they stay Needed outside the pilot state until that
+   source is connected.
+
+Build Sequence Step 6 - Wire the Announcement Reader:
+
+Grants first, schedule second. A scheduled run can only use what the task it lives in has already
+been allowed: the schedule card pre-approves email recipients and Teams targets and nothing else,
+so a Microsoft Graph write inside a Monday run pauses for approval unless the task already carries
+a standing grant. A grant is created when the user answers an approval card with Always Allow,
+and it lives and dies with the task. The reader's first production task had Microsoft Graph on
+its Always Allowed list from the start, which is why its Monday runs never paused; a task set up
+without that step pauses every week. So, in this order, with the user at the keyboard:
+
+1. Install the scripts, then run a zero-risk write that raises every card the Monday run will
+   need, one at a time: read the <program allowance table>'s address through the Graph workbook
+   API, append zero rows to it (a workbook write with an empty row list), then send the user a
+   one-line test email ("Announcement reader: permissions check") to their own address. The user
+   is told before the first card: "Choose Always Allow on each card, not Allow; this is what lets
+   Monday run without you." Each grant is confirmed by listing the task's allowed tools; nothing
+   continues until Microsoft Graph and the email send are on the list.
+2. Only then create the scheduled prompt: weekly (Monday 6:30 AM worked), separate execution
+   mode, the email permission scoped to the owner's address on the card as well. The schedule
+   card is approved as soon as it appears; it times out, and a timed-out card saves nothing (the
+   scheduled prompts are listed afterward to prove it exists).
+3. Run the reader once by hand, end to end, and read the digest. The first Monday is not the
+   place to find a missing grant.
+
+The prompt is self-contained: where the folders are, the row schema and key format, the parsing
+rules, "append only, never invent", and the digest format (plain ASCII, no markdown). The
+production prompt text is the announcement reader prompt in scripts/. A reader moved to a new
+task (the old one deleted or frozen) repeats all three steps; nothing carries over.
+
+Build Sequence Step 7 - Build and Publish the App:
+
+A Managed App with an Excel Online (Business) binding (the connector added as a data source; the
+generated service exposes list, add-row and patch-row operations). Structure that worked:
+
+- Storage layer: workbook and table identities; page read; large-table read with skip paging and
+  page-size fallback; read all rows; add row; patch row; change logging; cost versions; catalog
+  builders.
+- Store layer: the store model, family definitions per <business unit>, election normalization.
+- Shelf layer: SKU rows, the product join, family rules (the family of an item, the allowance
+  families of an item) and the run: benchmark, findings, <price ceiling> check, gaps, missing.
+- Allowance layer: row model, in-force logic, resolution, coverage gaps, save.
+- Data hooks: cached queries, 30 minutes per scope, paged reads with progress.
+- Components: a state setup panel (Costs, Buy-Downs, Allowances and Owners tabs), the wholesaler
+  board (top 10 per state, one open at a time, needed and entered prices inside), cost actions
+  (Still Current, Update Price, aging), the allowances pane (Missing By Program Level, Confirmed
+  collapsed, Add Allowance with locked fields), the report (findings, Above the <price ceiling>,
+  Costs Still Needed) and the shelf view.
+- Home page: scope pickers (State, Territory with Whole Market explicit, Account, Category, Scan
+  Data), the assumptions gate, the report.
+
+Rules: never import the generated Power BI module (typecheck fails); ASCII and Title Case in every
+string; the signed-in name from the managed-app authentication fills the entered-by field; no
+sample data in a market state. Publish through the pre-deploy gate, then share.
+
+Build Sequence Step 7 - Entry Sheets and the Background Save Queue:
+
+Added <date>. One form per row was too slow for a wholesaler with sixty families. Three sheets
+share one shell and one queue:
+
+- Cost sheet: opened from a wholesaler's expanded row on the board; one row per family the
+  wholesaler supplies, unit and packing factor prefilled from the item master, the current price
+  beside it, one effective date per sheet written onto every saved row, and "Last price update
+  <date> by <who>" at the top. One wholesaler, one state per sheet: every state prices
+  differently.
+- Buy-down sheet: the fixed competitive shopping list (the <item master table>'s competitive
+  brands by category) plus a first row "Lowest-Priced <category 1> In Store". A buy-down on that
+  row applies, per store, to the competitive <category 1> item with the lowest realized price
+  (ties go to the top seller) and only when that SKU's own brand has no buy-down.
+- Allowance sheet: the state's missing program levels, each with a rate box or a Restricted
+  checkbox and reason.
+- Queue: Save All hands filled rows to the queue and closes the sheet; the queue writes one row
+  per connector call, logs each, refreshes the affected reads as rows land, shows "Saving n of N"
+  in State Setup and keeps failed rows behind a Retry button. Blank rows are always skipped.
+
+Build Sequence Step 8 - Verify on Real Data:
+
+The pilot territory runs end to end: stores load, shelf loads for the territory, findings appear
+with a benchmark, Above the <price ceiling> lists <category 1> items above the pass price, Costs
+Still Needed ranks by units, Missing By Program Level shows exactly the rows with no rate. One
+real wholesale price is entered and confirmed to appear within a refresh (the cache is 30 minutes
+per scope; invalidated on save).
+
+Build Sequence Step 9 - Hand Off the Feed:
+
+The assistant drafts, for the user to send, a note to the model owners asking for the scheduled
+aggregated extract (store, product, 13-week and 4-week units and dollars, all manufacturers)
+landed to SharePoint or Fabric, Build access for validation, and exposure of the pricing models
+to the connector; it explains the row-level security gating in one paragraph. Until the extract
+exists the shelf tables are a one-time seed, and the app's README and every user say so.
+
+Build Sequence - Recovery Notes:
+
+- "Couldn't Read the Market's Stores" while a small table reads fine: the workbook is too big.
+  Check the size through the file API; move the shelf tables to workbook 2; the code path is
+  unchanged.
+- The same message clearing on the second or third Retry, or an allowances block that says the
+  elections in scope are "(none)" while the <store table> plainly holds <election option B>,
+  <election option C> and <election option D> rows: the large-page reader probed with a bare page
+  read that bypassed the page-size fallback, so a throttled short page threw the whole read away,
+  and a text-literal territory filter against the numeric territory column returned zero rows
+  that were then cached for 30 minutes as an empty scope. Fixed <date>: every page including the
+  probe goes through the fallback with one paused retry per size, the numeric filter runs first,
+  the page size that worked is remembered for the session, and a scoped read that returns zero
+  rows throws instead of caching. Verified with a row-level Graph read of the <store table> (a
+  small top and a skip offset) before touching code: if the workbook holds the elections, the
+  defect is in the read path, not the data.
+- The local pre-deploy gate fails because the lint tool is not found or the dependency folder is
+  missing: the app folder was rehydrated without its dependencies. This is an environment
+  condition, not a code fault. The server-side publish runs the full toolchain (typecheck, lint,
+  build) on its own; commit and publish, and read the result as the gate. The gate is never
+  skipped silently and packages are never installed to work around it.
+- An empty draft open in Outlook while the assistant fills it through the tools: Outlook's
+  autosave wins and discards the text. A separate draft is created.
+- A scheduled prompt call interrupted by a timeout did not save; the scheduled prompts are listed
+  before assuming it did.
+- A Power BI result larger than the tool budget spills to a file; the saved JSON is parsed, never
+  the preview.
+- Task ids from an earlier turn may be gone after a resume; recreate rather than update.
+
+Reference: Data Model:
+
+Every table is an Excel table whose name equals its sheet name, with the row key as its first
+column (the update key). Dates are stored as yyyy-mm-dd text where the agent writes them; Excel
+may return a date cell as a serial number (days since the Excel epoch) and the app converts on
+read. Numbers that arrive as text are parsed. Rows with an empty key are ignored.
+
+Workbook 1 is the data workbook ("Pricing Opportunity Agent - Data") in a team-site library
+folder named for the app. Workbook 2 is the shelf workbook ("Pricing Opportunity Agent - Shelf
+Prices") in the same folder. The app addresses each by drive id and item id, never by name; the
+README sheet in workbook 1 says so. Files, sheets and tables are never renamed.
+
+Data Model - Person-Entered Tables:
+
+Person-Entered Tables - <wholesale list price table>:
+
+Wholesale invoice costs, versioned. Fields: the row key (state, wholesaler, price family and
+effective date joined with a separator); state, wholesaler and price family, picked from
+dropdowns fed by the <wholesaler table> and the <item master table>'s families; an optional
+per-item override key; the invoice price as printed and its unit (Carton, Roll, Case, 5-Pack,
+Single, Can); the packing factor (selling units per invoice unit: packs per carton, cans per
+roll, and so on); the derived unit price (invoice price over packing factor); the effective date
+(the invoice date the user gives); entered-by and entered-on (signed-in name, today).
+
+A new price is a new row. "Still Current" re-saves the same values dated today.
+
+Person-Entered Tables - <competitive buy-down table>:
+
+Fields: the row key (state, manufacturer, brand or line and effective date); state, manufacturer
+and brand or line, the brand or line named exactly as in the <item master table>'s competitive
+seeds; the allowance per selling unit (dollars off); effective date and end date (the window; a
+blank end date means open); entered-by, entered-on, source and notes (provenance).
+
+Person-Entered Tables - <state setup table> and Owners:
+
+One row per state: status (Not Set Up, Setup, Partial Coverage, Ready), owners, approval mode
+(Confirmed this run, Approved for month, Approved until revoked), and the last pricing
+announcement seen.
+
+Data Model - Agent-Maintained Tables:
+
+Agent-Maintained Tables - <store table>:
+
+From the store master: <store id> (key), store name, store number, city, state, territory (a
+number), account, second-level account, ownership type, contract and program flags, the
+<price support program> election (<election option A>, <election option B>, <election option C>
+in either spelling, <election option D>, <election option E>, or No Election), industry and
+shipment volume, and the primary wholesaler per <business unit> (one field per <business unit>).
+<n> rows for the pilot <market>.
+
+Agent-Maintained Tables - <store price table>:
+
+Brand-family realized prices, one row per store, from the <sales data model>: 13-week units and
+dollars per tracked family, realized unit price, <price support program> days and volume passed
+or failed, pass-through opportunity. A has-scan flag of No means no scan data. Kept as the
+"<sales data model> 13-Week Realized Prices" scan option; the SKU tables are the primary source.
+
+Agent-Maintained Tables - <product table>:
+
+The SKU master: <product id> (key), SKU name, brand family, sub-brand, major manufacturer,
+manufacturer, category group, category, price groups, a primary <flavor> flag, form, <strength>,
+<flavor>, the <our brand 1A> color family, and 13-week market units, dollars and store count. One
+row per SKU with 13 or more units in the market in 13 weeks. Every descriptive field a shelf row
+needs is joined from here by <product id>.
+
+Agent-Maintained Tables - <shelf price table> per Territory (Workbook 2):
+
+Fields: the row key (<store id> and <product id> joined); <store id>, <product id> and territory
+as numeric keys; 13-week units, dollars and price (dollars over units); the same three for the
+last 4 weeks.
+
+Rows with fewer than 13 units in 13 weeks are not stored. <n> rows for the pilot <market> across
+<n> territories (several thousand to about twenty thousand rows each). These tables stay keys and
+numbers only; the original 18-column layout (SKU name, brand family, manufacturer, category
+group, price group, an is-<company> flag, state and account on every row) is what pushed the data
+workbook past 20 MB.
+
+Agent-Maintained Tables - <program allowance table>:
+
+<company>'s allowances and pass prices. Fields: the row key (state, <business unit>, program,
+election, price family and effective date joined, or the word Needed in place of the date);
+state (two-letter code) and the <business unit> that pays the allowance; program (Pack
+Allowance, <price ceiling>, <allowance type B>, <allowance type B> <variant suffix>,
+<allowance type A> / <promotional price program>); election (<election option A> through
+<election option E>, <election option C> in either spelling, or All); the price family the rate
+is published under (see the Domain Reference); the amount per selling unit (dollars; the pass
+price on a <price ceiling> row; blank on a Needed row); the selling unit (Pack, Can, Roll, 5-Pack,
+Single); effective date and end date (promotion period start; a blank end means open); status
+(Confirmed or Needed); the source document (document number and title, the appendix name or the
+sheet name); notes (the table heading the rate came from, or why it is Needed); entered-by and
+entered-on ("Parsed from <trade announcement>", "Parsed from ... sheet", or a user); and an
+optional item match, a word pattern scoping the row to SKUs whose name matches (all words
+present, a minus-prefixed word absent, pipe-separated alternatives), blank meaning the whole
+family. For example, a pattern of alternative spellings of a line name plus a required form
+word and an excluded sister-line word scopes the row to that one product line. An item-scoped row
+takes its program for that item; the family-wide row does not stack on it.
+
+Resolution rule: for an item, take the rows whose state, <business unit> and family match, whose
+election is the store's election or All, and which are in force on the run date (effective date
+on or before today, end date blank or on or after today); the latest effective date wins per
+program; on a tie a row naming the election beats an All row. Cost-reducing programs sum, except
+for two mutually exclusive pairs: a store holds one of <business unit 4>'s two <variant suffix>
+programs (<allowance type B> <variant suffix> or Scan Allowance <variant suffix>) and one of
+<business unit 2>'s two <allowance type A> forms (Non-Scan or Multi-Unit); when both are on file
+the smaller applies so a margin is never overstated. Rows match the item's selling unit (a Roll
+row never reduces a per-can margin). The <price ceiling> is the pass price, not a cost. The two
+spellings of <election option C> are the same rung. <n> rows as of <date> (the pilot
+<jurisdiction> carries every <business unit>).
+
+Agent-Maintained Tables - <wholesaler table>:
+
+<n> state-and-wholesaler pairs from the store master's primary distributors, 10 or more stores
+each, with the store count, used for the per-state top-10 board and the pickers. A
+self-distributing flag (Yes or No) marks a chain's own distribution center (for example the
+distribution arms of <chain A>, <chain B> and <chain C>): its invoices print no cost, so the
+engine prices its stores from the state's cost proxy, the largest wholesaler in the state (by
+stores served) with at least one cost entered, until a cost for the distribution center itself
+is on file, which then takes precedence. A blank cell falls back to the <sales data model>'s
+retailer-owned distribution center or club type. Seeded by the self-distributing seed script
+(the <sales data model> type, or an exclusive one-chain relationship in the store master with a
+name match); any user can flip a row on the app's wholesaler board (Mark Self-Distributing / Not
+Self-Distributing), logged to the <change log table>.
+
+Agent-Maintained Tables - <item master table>:
+
+<n> items: <company>'s items with price family, packing factors, list price (a reference floor
+only, never used in a margin), sanity bands, UPCs and a tracked flag; plus competitive brand
+seeds whose names are exactly the strings the cost picker saves (a <competitor brand 1A> <flavor>
+box, a <competitor brand 1B> line, <competitor brand 4B>, <competitor brand 4A>,
+<competitor brand 2A>, a <competitor brand 3A> 5-pack and similar).
+
+Agent-Maintained Tables - the Four Append-Only Tables:
+
+The <change log table>, <finding ledger table>, <snapshot table> and <subscription table> are
+append-only. The change log is written on every add or update (state, table, key, summary,
+action, user, timestamp). The other three are scaffolded for the finding lifecycle, movement
+tags and alert subscriptions (the app's design spec) and are not yet populated by the app.
+
+Data Model - Table Sizes and Limits Learned:
+
+- Excel Online (Business) connector: reads page by a skip offset; 1,000-row pages usually work,
+  some tables cap silently at a smaller page; a workbook over roughly 20 MB stops answering large
+  reads while small ones still do.
+- The bulk tabular insert: 150,000 cells per call and an 8 MiB file; chunk at 8,000 rows by 18
+  columns.
+- Inserting rows or columns inside a live Excel table fails; rebuild by setting cells or by
+  deleting and re-adding the sheet. Deleting a sheet works for a sheet that holds only its own
+  table. Deletes run highest index first.
+- The file upload cannot overwrite an existing file (a conflict error); a live workbook is edited
+  in place instead.
+- The Microsoft Graph workbook API lists table names and ids, and a row read with a small top
+  count is the fastest way to prove a table is healthy when the app cannot read it.
+
+Status values (as of <date>): Confirmed (applied), Proposed (weekly reader output awaiting
+review; shown, never applied), Needed (nothing on file), Rejected (reviewer declined; audit trail
+only), Restricted (barred by state law; applied as zero, never a gap). Keys of <business units>
+other than <business unit 1> carry the unit and, when present, the item match (state,
+<business unit>, program, election, family, effective date, unit, item match) so Can and Roll
+rows patch independently; <business unit 1> keys keep the original grammar.
+
+Reference: Data Sources, Access and Limits (<company> Environment):
+
+Instance-specific. Every id here was live on <date>; the assistant verifies each with a
+discovery call before relying on it in a new session.
+
+Data Sources - Semantic Models (Power BI, Through the Copilot Power BI Connector):
+
+All reads run as the signed-in user; row-level security applies exactly as in the report. A
+market user sees their market and nothing else.
+
+Semantic Models - <data warehouse> (<sales org>'s Analytics App), the SKU-Level Scan Model:
+
+The only source of shelf price by SKU by store for all manufacturers.
+
+- <scan fact table>: <store id>, <product id>, week end date, scan units, dollar sales.
+- <product dimension>: <product id>, SKU name, brand family, sub-brand, major manufacturer (the
+  five <business units> and the competitor manufacturers by short code), manufacturer, category
+  group (<category 1>, <category 2>, <category 3>, <category 4>, <category 5>), category, price
+  groups per category and a list price group, and a set of product attribute fields (<flavor>,
+  form, <strength>, <pack style>, a brand-specific color family).
+- <store dimension>: market (a six-digit code), territory, an is-scan-store flag, primary
+  distributor names.
+- <calendar dimension>: 13-week and 4-week flag columns whose values are text labels.
+- Row-level security for the pilot <market>: <n> stores, <n> scan stores.
+- Connector cap: 1,000 rows per query, several queries per call. A distinct count of a date
+  column serializes as a date string in CSV output. Large results spill to a file; the CSV part
+  is read.
+- Owners: the <data team> (the model's manager and senior manager are listed on its Power BI
+  page). Build permission on the model is per user and is requested from the model owner (the
+  Request access button on the model's OneLake page).
+
+Semantic Models - <sales data model> (the Store and Brand-Family Model):
+
+- The store master fact and its location dimension: the store master, account hierarchy,
+  ownership, contracts, <price support program> election, primary distributor per
+  <business unit>, industry and shipment volume.
+- The pricing fact: brand-family scan units and dollars per store per timeframe (coded 1 for the
+  last 4 weeks, 2 for the last 13, 3 for the last 26), <price support program> days and volume
+  passed or failed, pass-through opportunity. Realized price is dollars over units. No SKU
+  dimension. The pass-through opportunity field is the average overage above the
+  <price ceiling>, not the allowance.
+
+Semantic Models - Others Seen in <sales org>'s Analytics App:
+
+A <business unit 3> <promotional price program> model (per-store target and qualifying prices),
+a <category 1> business overview, a multi-category overview, and an execution dashboard for the
+<our brand 4A> premium line (non-promoted prices of that line and of <competitor brand 4A>). The
+<shelf recognition model> (used by the contract audit skill). The <price support program>
+overview and <our brand 1A> <price support program> calculator report (a pricing and payments
+workspace; owner listed on the report) is not exposed to the connector and is the source of truth
+the team asked to have exposed.
+
+Data Sources - SharePoint:
+
+SharePoint - Trade Announcements, <sales org>'s Communications Site:
+
+Library path: General > field sales and trade announcements > <year> > one folder per
+<business unit>. <trade announcement> PDFs are named "<date> Doc.<number><business unit code> -
+<title>" with a trade-announcement suffix; an R after the number marks a revision. Listings come
+oldest first, 20 per page; the assistant pages to the end for the newest. <business unit 1>'s
+current year held <n> files through document <n> (<date>). Pack allowance announcements in the
+current year: <n> documents, a mix of brand-line specials, single-<jurisdiction> changes, a
+national restatement and select-state restatements, listed by document number in the source.
+
+SharePoint - The App's Workbooks, the Pilot <market>'s Team Site:
+
+Documents > Pricing Opportunity Agent. The drive id and item ids are constants in the app's
+storage layer. Anyone with site access can read them; the app writes through the Excel Online
+connection bound to the app.
+
+SharePoint - Blocked, SharePoint List Creation:
+
+The SharePoint connector's HTTP request action returns HTTP 442 (tenant data loss prevention or
+connector policy) in the Managed Apps environment, so lists cannot be created by the app. Excel
+Online (Business) is allowed and is the store. Dataverse in a production environment is the
+intended replacement.
+
+Data Sources - Email:
+
+The pricing analyst emails the per-state <price support program> sheets as Word attachments. An
+attachment is fetched through the mail API's attachment resource (JSON with base64-encoded
+content, decoded in Python). The raw-bytes variant is never used through the query tool; it
+corrupts bytes.
+
+Data Sources - Platform (Managed Apps / Cowork):
+
+- Owner of the platform, not the data: the <platform team>. A platform ticket opened on <date>
+  covers: a Power BI code generation defect (the generated module fails typecheck; it is never
+  imported), <sales data model> Build permission, data loss prevention on the SharePoint HTTP
+  request, a production environment plus Dataverse, and exposing the <price support program>
+  calculator model.
+- App id <app id>, managed app id <managed app id>, environment <environment id>.
+- Publish: the pre-deploy gate (the project's check command, a browser-error filter and a deploy
+  commit), then a publish-mode publish (direct git push is disabled in the workspace).
+
+Data Sources - Cost of the Seed (So Nobody Repeats It Blind):
+
+The pilot <market> seed on <date> ran about 490 DAX queries in seven minutes against the
+<data warehouse> (272 store-group queries, 155 single-store re-queries for capped groups and
+about 60 product queries), all under one login, and registered as a usage spike with the
+<data team>. The right path is a scheduled aggregated extract (store, product, 13-week and
+4-week units and dollars) landed to SharePoint or a Fabric table by the model owners; with it
+the agent runs zero ad hoc queries. The seed is never run per market at national scale.
+
+Reference: Domain Reference (<company> Instance):
+
+Everything in this reference is specific to the built instance. Porting the agent means replacing
+this reference (see the Porting reference) and leaving SKILL.md, the Data Model reference and the
+Build Sequence reference alone.
+
+Domain Reference - Categories, <business units> and Units:
+
+One row per scan-model category group. Values are: the app category; the <business unit> that
+prices it; the selling unit; notes.
+
+- <category 1>: <category 1>; <business unit 1>; pack; a carton is <packing factor> packs.
+- <category 2>: <category 2>; <business unit 2>; can; a roll is <packing factor> cans.
+- <category 3>: <category 3>; <business unit 3>; single or 5-pack; <our brand 3A>, where a
+  5-pack shelf price is five times the unit.
+- <category 4>: <category 4>; <business unit 4>; can; the <our brand 4A> core line and premium
+  line, where a roll is <packing factor> cans.
+- <category 5>: <category 5>; <business unit 5>; device; shelf view only, no benchmark.
+
+The store's primary wholesaler for each <business unit> prices every item in that category
+group, competitive items included (a store buys <competitor brand 1A> from the same house it
+buys <our brand 1A> from).
+
+Domain Reference - Our Families Versus Competitive Families:
+
+Cost families (what a wholesale price is saved under; the <item master table>'s price family):
+
+- <business unit 1>: <our brand 1A> in four cost groups (core non-<flavor>, core <flavor>, the
+  <price family C> line and the <price family D> line), then each secondary brand as its own
+  family (<our brand 1B>, <our brand 1C>, <our brand 1D>, <our brand 1E>, <our brand 1F>,
+  <our brand 1H>, <our brand 1I>).
+- <business unit 2>: <our brand 2A> split into a <price family A> tier and a <price family B>
+  tier, then <our brand 2B> and its sister line, <our brand 2C> and <our brand 2D>.
+- <business unit 3>: <our brand 3A> by <variant> and by 5-pack versus single, a named line, the
+  <promotional price program> and pre-priced lines, and one further <category 3> family.
+- <business unit 4>: the <our brand 4A> core line and the <our brand 4A> premium line.
+- <business unit 5>: <our brand 5A>.
+
+Allowance families (what a <business unit 1> pack allowance or <price ceiling> is published
+under; finer than the cost family): <our brand 1A> <price family A> non-<flavor> and <flavor>,
+the short-length <pack style> non-<flavor> and <flavor>, <price family E>, <price family C>
+non-<flavor> and <flavor>, <price family F>, <price family G>, <price family D>, <our brand 1B>,
+<our brand 1C>, <our brand 1D>.
+
+SKU to allowance family (the shelf layer's allowance-families rule), first match wins, and the
+cost family closes the list so an older row keyed by list group still applies:
+
+1. The name carries the short-length size word: the short-length <flavor> or non-<flavor> family
+   by the <flavor> flag.
+2. Sub-brand <price family E>: <price family E>.
+3. Sub-brand <price family D>: <price family D>.
+4. Sub-brand <price family F>: <price family F>, then <price family C> by <flavor> (they share a
+   sheet row).
+5. Color family of the <price family C> line, or one of its named sub-brands: <price family C>
+   <flavor> or non-<flavor> by the <flavor> flag (<flavor> may be inferred from a color family).
+6. Sub-brand <price family G>: <price family G>, then <price family A> non-<flavor>.
+7. Otherwise <price family A> <flavor> or non-<flavor>.
+
+SKU to cost family (the shelf layer's family-of rule): <our brand 1A> by color family (the
+<price family C> color to its group, the <price family D> line to its group, <flavor> to the core
+<flavor> group, else the core non-<flavor> group); <our brand 1B>, <our brand 1C> and
+<our brand 1D> by brand prefix; <our brand 2A> split <price family A> versus <price family B> by
+the <item master table>'s brand list; <our brand 3A> by <variant> words and 5-pack versus single;
+<our brand 4A> by the premium word in the name; competitive items by brand prefix rules whose
+outputs are exactly the cost-picker strings.
+
+Competitive brands seeded: <competitor brand 1A> by <flavor> and <pack style>,
+<competitor brand 1B> by line, <competitor brand 1C>, <competitor brand 2A>,
+<competitor brand 2B>, <competitor brand 2C>, <competitor brand 2D>, <competitor brand 4A> and
+its premium line, <competitor brand 4B> and its premium line, <competitor brand 4C>,
+<competitor brand 4G>, <competitor brand 3A> (5-pack and twin pack), <competitor brand 3C>,
+<competitor brand 3E>, <competitor brand 3B>, <competitor brand 3D>, <competitor brand 5A>,
+<competitor brand 5B>, and about a dozen deep-discount <category 1> brands
+(<competitor brand 1H>, <competitor brand 1I>, <competitor brand 1G> and similar).
+
+Domain Reference - <price support program> Elections and the Allowance Schedule:
+
+Each store elects one <price support program> option: <election option A>, <election option B>,
+<election option C> (called by an alternate name in some states), <election option D> (also
+printed in a longer two-word form) or <election option E>. Pack allowances vary by state, by
+election and by family, and change with promotion periods (roughly monthly, effective on a
+Sunday). Each election also carries a <price ceiling>: the maximum shelf price at which the
+retailer still earns the allowance. The <price ceiling> is a pass price, never a cost. The
+<election option E> election has no <price ceiling> (a retailer decision) and no <price family A>
+allowance.
+
+Where the schedule lives:
+
+- <trade announcements> publish changes only, as appendix tables of rates by state and election,
+  one table per family, rows of state x election x rate (some tables carry two rate columns,
+  non-<flavor> then <flavor>; a dash is no allowance; a document marked REVISED supersedes). A
+  rate not restated is unchanged from the prior period. Parser: the announcement appendix parser.
+- The full current schedule is a price promotion report on an external pricing portal
+  (<pricing portal>) and the <price support program> overview and calculator report (Power BI,
+  a pricing and payments workspace), neither exposed to the Copilot connector as of <date>.
+- The per-state <price support program> sheets (one Word document per election per state, exported
+  from the manufacturer's price promotion tool, often emailed by the pricing analyst) list the
+  buy-down per pack and the maximum suggested retail price plus tax (the <price ceiling>) for
+  every family. These gave the confirmed pilot <jurisdiction> baseline.
+
+Pilot <jurisdiction> baseline as loaded (<date>), by shape rather than by amount: the
+<our brand 1A> <price family A> non-<flavor> family carries a descending per-pack
+<allowance amount> across <election option B>, <election option C> and <election option D> and
+none on <election option E>; <price family G> rides with <price family A>; <flavor> variants are
+not applicable on any election; the short-length variant, <price family E>, <price family C> and
+<price family D> each carry their own four-rung schedule (some rungs effective from a stated
+Sunday); <our brand 1B> and <our brand 1C> carry one flat amount on all elections. The
+<price ceiling> differs by election by a few tens of cents. The <election option A> sheet was
+not received; <business unit 2>, <business unit 3> and <business unit 4> current offers were
+still Needed.
+
+Other <business units> publish self-contained rate tables per cycle (<business unit 2>
+multi-unit and loyalty, <business unit 3> <allowance type A> and <promotional price program>,
+<business unit 4> multi-unit scan and non-scan offers with explicit windows, a <business unit 5>
+quarterly program). The weekly reader handles them the same way: state x election x rate x
+window.
+
+Domain Reference - Field Naming Rules (From the User):
+
+Item names are field names: the full brand, <variant>, size and <pack style> exactly as the data
+model spells them. Never a pack-count nickname (every pack holds the same count). Never a vague
+length word (sizes are named by their proper size words). Genuine short and extra-long sizes are
+real and kept. Title Case in labels. ASCII only.
+
+Domain Reference - The Finding That Started It:
+
+The <our brand 4A> premium line sold at a margin disadvantage of roughly <n> dollars per can to
+<competitor brand 4B> at the major chains once purchase price and buy-downs were compared, and no
+report could show that across a chain's footprint. That is the shape of every finding the agent
+produces.
+
+Domain Reference - State Law Restrictions:
+
+Added <date>. The pilot <jurisdiction> prohibits multi-unit discounts (multi-unit, multi-pack and
+buy-N-save offers) on every <industry> product except <category 4>. In the allowance table this
+is a row status of Restricted: the program's rows for the state stay on file with the reason in
+notes, the resolver applies them as zero (never "allowance missing"), and the gap logic treats
+the program as resolved, not Needed. <business unit 4>'s <our brand 4A> multi-unit loyalty offers
+remain valid there because <category 4> is exempt. Every buy-down line in the app carries a Mark
+Restricted control (reasons: multi-unit discounts prohibited, price promotions prohibited,
+program not offered) and a Restore control; both are logged with the reviewer's name. When
+seeding a new state, the assistant asks the state owner for its multi-unit and price-promotion
+law before confirming multi-unit, multi-pack or buy-N offers.
+
+Reference: Announcement Rate Table Parser Spec:
+
+Written for the all-states seed of <date>. Purpose: turn every <trade announcement> PDF that
+names states into <program allowance table> rows, one per state x program x price family x
+selling unit, exactly as printed. No judgment about which document is in force: a separate
+ordering engine sorts by document date and effective date. The parser's job is completeness and
+fidelity per document.
+
+Parser Spec - Inputs:
+
+All local, no network, no tools beyond Python and its PDF libraries.
+
+- PDFs in the session's working folder (<n> files, two years, all <business units>).
+- Layout-preserving text extracts of the same files.
+- Ledgers, one per <business unit> and year, with columns: order, file name, document date,
+  document number, revised flag, kind, verdict, title excludes, named states, rate lines,
+  families, file id, text path, PDF path. Every row whose kind is an announcement and whose
+  verdict is "names states" is processed for the <business unit>, both years. A document whose
+  verdict is "no state named" may still carry a national rate ("National" or "National
+  (excluding <jurisdiction>)"); every announcement of the <business unit> is opened and its
+  national tables parsed too.
+
+Parser Spec - Output:
+
+All four are written; the script must be re-runnable from scratch.
+
+1. Script: one parser per <business unit> (<business unit 2>, <business unit 4>,
+   <business unit 3>, <business unit 5>), plain Python, run with no arguments.
+2. Rows: one CSV per <business unit> with exactly 18 columns in this order: key, state,
+   <business unit>, program, election, price family, amount per selling unit, selling unit,
+   effective date, end date, status, source document, notes, entered-by, entered-on, item match,
+   document date, document number. Field rules:
+   - Key: state, <business unit>, program, election, family and effective date joined, plus the
+     item match when set (the engine may re-key; the key must be deterministic).
+   - State: two-letter code. DC is a state here. One row per state; every geography list is
+     expanded.
+   - <business unit>: exact spelling.
+   - Election: always "All" for these <business units>.
+   - Amount per selling unit: a decimal with two places. Never blank on a Confirmed row.
+   - Selling unit: Can, Roll, Pack, 5-Pack or Single (Roll is a 5-can roll; a <business unit 5>
+     per-unit rate is Pack; a <business unit 3> per-single rate is Single, per 5-pack is 5-Pack).
+   - Effective date and end date: ISO yyyy-mm-dd. End date blank when the document gives no end.
+   - Status: Confirmed when the amount is printed in the document for that state; Proposed when
+     anything had to be inferred (ambiguous column, unreadable cell, unclear geography). Never
+     Needed.
+   - Source document: the document date, "Doc." plus the number, R if revised, the
+     <business unit> suffix as in the file name, then the title words; built from the ledger
+     file name with the extension stripped and underscores turned to spaces.
+   - Notes: the table title, the geography cell text as printed, the offer mechanics in one
+     sentence (for example "loyalty offer on two or more cans, per transaction, limit one"), and
+     for a zero row why it is zero ("Excluded by name in the title", "Rate printed as $0.00",
+     "Geography list omits the state while the table is national: no offer").
+   - Entered-by: "Parsed from <trade announcement>"; entered-on: the seed date.
+   - Item match: blank for a whole family; a word pattern when the offer names one product (all
+     words required, a minus-prefixed word forbidden, pipe-separated alternatives). Three
+     patterns are known: one for a single named product line of <our brand 2A> (the full and
+     contracted spellings of the line name, a required form word with its two-letter
+     abbreviation, an excluded sister-brand word) and one each for the <variant> lines of
+     <our brand 2A> and <our brand 2B> (the <variant> word and its three-letter contraction).
+   - Document date and document number: from the ledger (the engine sorts on them).
+3. Coverage: one CSV per <business unit> with columns: file name, document date, document number,
+   tables found, tables parsed, programs, families, states covered, ledger states, ledger states
+   not covered, reason. One row per announcement of the <business unit> (both years), including
+   documents that produced no rows, with a reason explaining every ledger-flagged state not
+   covered (for example "state appears only in a UPC eligibility list", "pass-price table, not
+   an allowance", "<special account channel> document, skipped").
+4. Summary: a short plain-ASCII list of tables that could not be parsed and why, in the final
+   message.
+
+Parser Spec - Vocabulary (Exact Strings):
+
+Programs:
+
+- <business unit 2>: "<allowance type D>" (tables labelled as special price promotions for
+  several lines, and the single named line's offers when so labelled), "Non-Scan <allowance type A>"
+  (non-scan option allowances, per can or roll), "Multi-Unit <allowance type A>" (multi-unit
+  allowances or offers), "Scan Allowance <variant suffix>" only if a <business unit 2> table is
+  explicitly a scan allowance, "<allowance type B>" (loyalty fund allowances).
+- <business unit 4>: "<allowance type B> <variant suffix>" (loyalty offers: single can, two or
+  more cans, 5-can roll; the two-or-more or single-can rate is unit Can and the roll rate is unit
+  Roll; if both single-can and two-or-more rates print, the single-can rate is emitted as Can and
+  the other goes in notes), "Scan Allowance <variant suffix>" (everyday scan offers per can or per
+  roll), "Non-Scan Allowance" for non-scan offer documents (single-can non-scan offers); program
+  "<allowance type B>" is used for non-scan single-can loyalty offers if the document calls them
+  loyalty, otherwise "Non-Scan Allowance".
+- <business unit 3>: "<allowance type A> / <promotional price program>" for <allowance type A>
+  allowances (per single or per 5-pack); "<allowance type B>" for loyalty fund program allowances.
+  <promotional price program> target selling prices are pass prices, not allowances: no rows are
+  emitted for them; they are listed in coverage with reason "pass-price table".
+- <business unit 5>: "<allowance type D>" for per-unit special price promotion allowances;
+  "<allowance type B>" for loyalty fund offers per transaction.
+
+Price families (<item master table> spelling):
+
+- <business unit 2>: <our brand 2A> <price family A>; <our brand 2A> <price family B>;
+  <our brand 2B>; the <our brand 2B> sister line; <our brand 2C>; <our brand 2D>. The
+  <our brand 2A> <variant> line's rows go on <price family B> with its item match; the single
+  named product line's rows go on <price family A> with its item match; the <our brand 2B>
+  <variant> rows go on <our brand 2B> with its item match; two other <our brand 2B> sub-lines are
+  plain <our brand 2B>. A table that says just the brand name (premium) is <price family A>; a
+  table naming the value tier, in full or by the brand's nickname, is <price family B>.
+- <business unit 4>: "<our brand 4A> core line" or "<our brand 4A> premium line" (the documents
+  print registered marks; they are stripped).
+- <business unit 3>: the nine <item master table> names, which combine the line
+  (<promotional price program>, pre-priced, revenue) with <variant> and with single versus 5-pack. The
+  document's product wording maps to the closest; when a <allowance type A> applies to all of
+  <our brand 3A>, one row is emitted per family that the document's product list covers, and the
+  notes say so.
+- <business unit 5>: <our brand 5A> and its second device line.
+
+Parser Spec - Table Rules:
+
+- The PDF library's table extraction runs first; the fallback is word geometry (words clustered
+  by x and y) when cells come back misaligned (<business unit 4> tables do). Results are verified
+  against the text extract.
+- A rate cell holding two amounts separated by a slash under a "(Per Can/Per Roll)" header is two
+  rows: Can and Roll.
+- Footnote digits are glued to amounts: a three-decimal figure is a two-decimal amount followed
+  by a footnote number. An amount always has exactly two decimals; any trailing digit beyond them
+  is dropped.
+- "--", "-", "N/A" or "No Offer" in the effective column is 0.00 with notes "no offer printed".
+- Only the newest period column counts (the one whose header month and year is latest, or the one
+  the document says is effective on its effective date). Older-period columns and delta columns
+  are ignored except to mention the prior rate in notes.
+- Effective date: the document's "Effective <date>", "Beginning <date>" or "Promotion Period
+  (<date> - <date>)" text for that table. If a table shows only a month and the document states
+  the period's start date, the start date is used; if no date appears anywhere, the first of that
+  month is used and the row is marked Proposed with notes "effective day not printed". An end
+  date is written only when printed.
+- Geography: a comma-and-ampersand list of two-letter codes expands to states; "National" is all
+  50 states plus DC; "National (excluding <jurisdiction>, <jurisdiction>)" is all except those,
+  and an explicit 0.00 row is emitted for each excluded state with notes "Excluded by name". A
+  title of the form "National Excluding ..." works the same way. A table that lists geography
+  groups for some states only is select-state: rows for the listed states only (the engine
+  decides what the unlisted states keep).
+- Revised documents (R) are separate documents, parsed like any other. Originals are not skipped.
+- <special account channel> announcements (<business unit 2>) are skipped, with coverage reason
+  naming the channel.
+- Optional revenue pre-book or order tables, UPC lists, merchandising fund tables and
+  measurement date tables are not allowances: listed in coverage, nothing emitted.
+- Never invent: a state not printed in a geography cell (and not covered by a National scope)
+  gets no row from that document.
+- ASCII only in every output field (the registered mark, curly quotes, dashes and the delta sign
+  are replaced). Title Case is not required in notes; plain sentences.
+
+Parser Spec - Regression Truth:
+
+The rows already loaded by hand for the pilot <jurisdiction> are the truth the parsers must
+reproduce in amount, unit and effective date; differences are explained, never silently changed.
+Each truth row names the program, the family (with its item match where one applies), the Can
+and Roll amounts, the effective and end dates, and the source document. By shape:
+
+- <business unit 2>: a <allowance type D> on the <our brand 2A> value-tier variant published at
+  one rate early in the year and halved by a mid-year document; the <our brand 2B> sister line's
+  Non-Scan and Multi-Unit <allowance type A> rates taken to zero in every state by that same
+  document; a <allowance type B> Confirmed zero for two families from a title exclusion; and a
+  single-product Non-Scan <allowance type A> on the single named line with its own state line and a
+  stated window, with a Multi-Unit zero on the same item.
+- <business unit 4>: <allowance type B> <variant suffix> and Scan Allowance <variant suffix> rows
+  for the core line (one scan row with only a roll rate printed) and for the premium line across
+  two consecutive windows from two documents.
+- <business unit 3>: a Confirmed zero for the pilot <jurisdiction> because the document's
+  <allowance type A> states did not include it.
+
+Parser Spec - Self-Check Before Finishing:
+
+- The parsed-rows validator runs on each rows file and must print OK.
+- Every ledger "names states" announcement of the <business unit> appears in the coverage CSV.
+- The pilot <jurisdiction>'s rows match the regression truth.
+
+Reference: Porting the Agent to Another Category, Company or Industry:
+
+The agent is a pattern with a domain plugged in. This reference is the checklist for swapping the
+domain. If a line below is not answered, the port is not ready to build.
+
+Porting - What Stays (the Pattern):
+
+- The one rule: the lowest competitive retailer margin per store per category is the benchmark;
+  <company>'s items above it by the trigger or the penny floor are findings; the parity price and
+  the ask sentence are the output. Rank by volume, then gap.
+- The four inputs and their owners: shelf price (data), <company>'s allowances (parsed,
+  scheduled), wholesale cost and competitor buy-downs (people, aged at 90 days, versioned).
+- The confirmation loop: state or region setup, owners, the assumptions gate, Missing By Program
+  Level, Still Current and Update Price, the change log.
+- The storage layer and its limits: two workbooks (data and shelf), the row key, skip paging,
+  page-size fallback, the product join at run time, the 20 MB ceiling.
+- The build sequence, the publish gate, the announcement reader, the hand-off to the data owners.
+- The guardrails: ASCII, Title Case, never invent a number, user gates limited to cost and
+  competitor buy-down, no model queries from the published app, row-level security as the
+  security model.
+
+Porting - What Changes (the Instance):
+
+Each question is answered and the answers written into a new domain reference:
+
+1. Categories and units. What are the category groups, what is the selling unit in each, what is
+   the invoice unit and the packing factor (a carton, a case, a roll)? What is the penny floor and
+   margin trigger per category (start at 1 to 2 points and a dime; tune)?
+2. Who prices what. Is one wholesaler per store per category the rule (it is in <industry>) or
+   does each brand ship on its own truck? If the latter, the store needs a wholesaler per brand
+   and the <wholesaler table> gains a column.
+3. Our families versus the allowance families. At what level is a wholesale price quoted (the
+   cost family) and at what level are allowances published (the allowance family)? If they
+   differ, the SKU to allowance-family rules are written the way the Domain Reference does.
+4. The allowance schedule. Where are trade allowances published, how often, by what geography and
+   what retailer tier? Is there a pass price or eligibility price the retailer must not exceed
+   (the <price ceiling> idea)? The parser is written against the real document layout; the
+   announcement parser here is a template, not a drop-in.
+5. Retailer tiers. <industry> has <price support program> elections per store; beer has pricing
+   zones and chain contracts; candy has planogram tiers. Whatever it is, it is the election field
+   and it must be on the store master.
+6. The scan feed. Which model has SKU x store x week for all manufacturers under the user's
+   row-level security? A real row is confirmed before building. What is the query row cap and the
+   right batch size? Who owns the model and what scheduled extract will be asked for?
+7. Competitor set. Which competitive brands are seeded and what exact strings does the cost
+   picker save? Every output of the family-of rule must be one of those strings.
+8. Realized price definition. Dollars over units for 13 weeks is the proxy here; a category with
+   heavy promotional swings does better with a weekly mode price or a median.
+9. Regulatory and tax. Excise by state (or VAT) sits between list price and wholesale cost; the
+   inference ladder in the app's design spec needs the excise table for the geography.
+10. Names and words. The field's vocabulary for items and units, so the app speaks it. The ASCII
+    and Title Case rules still apply.
+
+Porting - What to Rename in Code:
+
+- The store layer: the family definitions, the <business unit> grouping, the real category list,
+  the election normalization.
+- The shelf layer: the category groups, the per-group units, triggers and floors, the
+  category-group-of rule, the family-of and allowance-families-of rules, the competitive rules,
+  the <business unit 1> allowance family list, and the <price ceiling> check (kept or dropped).
+- The allowance layer: the <business unit> options, programs, elections, selling units and the
+  <price ceiling> test.
+- The storage layer: the workbook ids and the category defaults.
+- The pull scripts: model ids, table and column names, filters.
+- The announcement appendix parser: header patterns, the family splitter, election names.
+- The scheduled reader prompt: folders, <business units>, family names, the row schema.
+
+Porting - Sizing a Port:
+
+One market of about 3,500 stores and 1,300 SKUs is about 186,000 shelf rows and 10 MB. A national
+retailer footprint of 100,000 stores at the same density is roughly 5 million rows, which is past
+Excel and is the Dataverse or Fabric tier (the app's design spec). The app's read path is the
+same; only the storage binding changes. A national port never starts on the workbook store.
+
+Porting - Minimum Viable Port (One Day):
+
+Category groups and units; one wholesaler per store per category; cost families equal to
+allowance families; a flat allowance table typed from one document; one region; a sample
+competitor set of ten brands; the existing app with renamed constants. That gives a working
+benchmark on real shelf prices. Everything else (the allowance parser, the reader, the inference
+ladder, national storage) layers on without changing the rule.
+
+Scripts
+-------
+
+Prompt: the weekly announcement reader  (source role: the scheduled prompt text as deployed,
+version <n>, <date>)
+Purpose: Keeps the Pricing Opportunity Agent's allowance table current from <company>'s
+<trade announcements>, with no one keying rates by hand and with proof that every document was
+read before any rate is proposed. The text is kept with the skill so the scheduled task can be
+recreated verbatim when it is missing. It runs weekly, Monday 6:30 AM <time zone>, in a separate
+execution mode, and may email its owner. Before scheduling, the builder raises the workbook write
+and the digest email approval cards by hand inside the task and has the owner choose Always Allow
+on each; the schedule card cannot pre-approve the workbook write, and without the standing grant
+every Monday run pauses for approval.
+Inputs: The <sales org> communications library (its drive id and the current-year <business unit>
+folders under the trade announcements folder, one per <business unit 1> through <business unit 5>;
+when a new year's folders appear they are resolved by web link and added); the allowance table in
+the data workbook, identified by <drive id>, <file id> and <table id>; the owner's mailbox for the
+last 90 days; the helper scripts kept with the skill (also copied into the task's own scripts
+folder); the parser contract in the skill's references. The table was seeded for every state from
+every announcement between <start year> and the current year (<n> rows) on <date>.
+Fields extracted: For every allowance row the reader is told the shape it must produce: the title
+key, state, <business unit>, program, election (<election option A>, <election option B>,
+<election option C>, <election option D>, <election option E> or All), price family, amount per
+selling unit, selling unit (pack, can, roll, 5-pack or single), effective date, end date, status,
+source document, notes, entered by, entered on, and an item scope pattern that narrows a row to one
+product (every word must appear, a word with a leading minus must not, a vertical bar separates
+alternatives, blank means the whole family). Titles join state, <business unit>, program, election,
+family and effective date with vertical bars; <business units> other than <business unit 1> add the
+unit and, when scoped, the item pattern. Status is Confirmed (applied by the app), Proposed (loaded
+by this reader, shown in the app's review queue, applied nowhere until a person confirms), Needed
+or Rejected. The reader writes Proposed rows only; it never writes Confirmed and never edits or
+deletes a row.
+Outputs: Proposed rows appended beneath the table's last row so the table extends, and one plain
+ASCII digest email (no markdown, no long dashes) to the owner who scheduled the reader.
+Logic:
+  1. Coverage ledger. Runs the all-states coverage ledger script over the <business unit> folders.
+     It lists every document newest first, downloads any <trade announcement> not yet local, keeps
+     the PDF and a text extract, and writes one ledger per folder with the states each document
+     names in a rate table and the states its title excludes. If any announcement is unreadable
+     the reader stops for that <business unit> and says so in the digest.
+  2. New documents only. Pulls the current table with the table pull script. A document already
+     named in the table's source document field is done; any announcement in the ledger newer than
+     the newest source document for its <business unit>, or absent from that field, is new.
+  3. Parse. Runs the five <business unit> announcement parsers; each writes a rows CSV and a
+     coverage CSV explaining every ledger-flagged state it did not cover. Runs the parsed-file
+     validator on each rows file; it must print OK. A table the parsers cannot read mechanically
+     is reported, never hand-typed. <business unit 1> <allowance type B>, multi-unit,
+     <excluded promotion type> and one-week transition allowances, and <business unit 5>
+     multi-unit and account-specific offers are not allowances in this model: they are listed in
+     the digest, not loaded.
+  4. Order and diff. Runs the allowance ordering engine over the parsed files: newest document
+     wins per state, <business unit>, program, election, family, unit and item scope; older rows
+     get an end date; rows are diffed against the current table. Conflicts (same key and date on
+     file with a different amount) are reported, never written. Coverage gaps (ledger-flagged
+     states with no parsed row) must be explained in the digest from the parsers' coverage
+     reasons.
+  5. Load as Proposed. Runs the load preparer with status Proposed, then appends the load rows
+     beneath the table's last row with the live workbook insert (no header row). Verifies through
+     the workbook API that the table address grew by the row count and spot-checks the first and
+     last rows. A state excluded by name in a title is a Proposed zero with the exclusion cited,
+     not a Needed row. A product-specific offer is a row on the product's family with the item
+     pattern set. A rate not printed in a document is never invented.
+  6. Reconcile. For each <business unit> with proposed rows, searches the owner's mailbox for the
+     last 90 days for emails naming the <business unit> and a buy-down or price promotion change;
+     where an email states a rate that differs from a proposal, the digest flags the disagreement
+     and does not resolve it.
+  7. Digest. Per <business unit>: the ledger summary (documents listed, announcements read, which
+     are new), the rows proposed with the document each came from and the Confirmed rate each
+     would replace, coverage gaps with reasons, conflicts, disagreements with email, unreadable
+     documents, whether the workbook write succeeded and the new table address, and one closing
+     line with how many rows await review in the app. If nothing is new, one line says so with
+     the ledger counts.
+Checks and failure handling: The process is deliberately mechanical because judgment alone stopped
+reading early twice; the rule is that a select-state announcement prints only the states that
+changed that cycle, so a rate is settled only when every newer document for that <business unit>
+has been read and none names the state and family. Unreadable documents, conflicts, coverage gaps
+and email disagreements all surface in the digest rather than being resolved silently.
+
+Script: all-states coverage ledger  (source role: the deterministic listing pass over every
+<business unit> announcement folder)
+Purpose: For each <business unit> folder it lists every document newest first, downloads any
+<trade announcement> not yet local (keeping the PDF for table extraction), extracts the text, and
+records which states each document names on rate-bearing lines and which states its title
+excludes by name. Over-flagging is intended: a document flagged for a state that the parser later
+finds sets no rate there is reviewed; a document missed is not. No judgment is exercised here.
+Inputs: The SharePoint drive id; a list of folders, each with a folder id, a <business unit> and a
+year; optional text and PDF folder paths (defaults inside the session's working folder); an
+option, on by default, that downloads rate-table announcements only (other document kinds in the
+same folders, such as other announcement types, field guides and summaries, are listed but not
+downloaded).
+Outputs: One ledger CSV per folder (named by <business unit> and year) and one JSON index. Ledger
+columns: order, file name, document date, document number, revised flag, kind, verdict,
+title-excluded states, named states, count of rate lines, family words found, file id, text path,
+PDF path. The verdict is one of: names states, no state named, not an announcement, unreadable.
+The index records per folder the ledger path, document count, announcement count, how many name
+states and the names of unreadable files.
+Logic:
+  1. Lists the folder page by page through the OneDrive file tools, following the next-page link,
+     and keeps PDF and Word files only.
+  2. Reads each file name for its leading date, its document number ("Doc. <nnn>", with an R suffix
+     marking a revision) and its kind (rate-table announcement, two other announcement kinds, a
+     field guide, a summary, or other), then sorts newest first by date, number and revision.
+  3. Makes each announcement local. When both the text extract and the PDF already exist it uses
+     them. Otherwise it downloads the file; a PDF is copied and converted with a layout-preserving
+     PDF-to-text tool, and a Word file is unzipped and its document XML flattened (paragraph ends
+     become line breaks, cell ends become pipe separators, tags are stripped).
+  4. For every line of the text it finds state codes (two-letter tokens that are valid codes,
+     skipped when a neighboring token is an all-caps word of three or more letters, which marks a
+     heading) and full state names (longest name first, no overlapping matches). A line counts as
+     rate-bearing only when a money amount (dollars with two decimals, a two-decimal number before
+     a slash, or a cents amount) appears within three lines before or after it; only then are its
+     states added to the document's named set.
+  5. Reads title exclusions from the file name: the two-letter codes listed after "excluding" or
+     "excl." in the title.
+  6. Notes which brand and price family words appear anywhere in the text (up to 14 recorded) so a
+     reviewer can see at a glance what the document covers.
+  7. Writes one ledger row per document with a logged one-line verdict, writes the folder's ledger
+     CSV, and adds the folder's counts to the index.
+Checks and failure handling: A download that reports no saved path is logged as failed and the
+document's verdict becomes unreadable (or "not an announcement" when it is not a rate-table
+announcement). A Word extraction error is logged and leaves the document unreadable. The index's
+unreadable list is what the weekly reader reports in its digest before it stops for that
+<business unit>.
+
+Script: allowance ordering engine  (source role: newest document wins per key; diffs parsed rows
+against the current table)
+Purpose: Turns the parsers' row files into the rows to insert, the conflicts to review, the
+coverage gaps to explain and a summary of the rate in force today, applying the rule that the
+newest document naming a state, <business unit> and family is the one in force.
+Inputs: The parsed row CSVs in the parser contract's schema (by default every rows file in the
+parsed folder), the current allowance table exported to CSV, the ledgers written by the coverage
+ledger script, and an optional as-of date argument (default <date>).
+Outputs: Four CSVs in an engine folder: rows to insert (unique titles; superseded history rows
+carry an end date), conflicts (same key and effective date on file with a different amount;
+reviewed, never written), coverage gaps (ledger-flagged document and state pairs with no parsed row
+from that document), and the in-force summary (per state, <business unit>, program and family, the
+rate in force on the as-of date).
+Logic:
+  1. Loads every parsed row, trims whitespace and marks any row without an effective date as
+     Needed. The key is state, <business unit>, program, election, price family, selling unit and
+     item scope.
+  2. Same key and same effective date across documents: sorts by document date then document
+     number, keeps the newest, and notes on the winner which documents it supersedes and whether
+     their rate differed.
+  3. History: for each key, sorts by effective date; an older row's end date becomes the day before
+     the next row's effective date (unless it already ends sooner), with a note naming the
+     replacing document.
+  4. Titles: the key fields joined by vertical bars - state, <business unit>, program, election,
+     family and effective date (or UNDATED). Every <business unit> other than <business unit 1>
+     adds the selling unit for uniqueness (<business unit 1> rows are all per pack and keep the
+     original grammar), and a scoped row adds its item pattern. Duplicate titles are printed.
+  5. Diff against the current table: Excel serial dates are converted to ISO dates; a row whose key
+     and effective date are not on file is an insert; one on file within half a cent is unchanged;
+     a different amount is a conflict that carries the current amount, source document and title.
+  6. Ledger reconciliation: for every rate-table announcement the ledger says names states, the
+     states it names minus the states any parsed row from that document covers (with or without
+     the revision suffix) are the missing states; one gap row per document with counts.
+  7. In force today: merges the current table and the inserts, keeps rows whose status is Confirmed
+     (or blank), whose effective date is on or before the as-of date and whose end date is not
+     before it, and keeps the newest effective date per key; prints the number of states with any
+     in-force rate and the in-force keys per <business unit>.
+Checks and failure handling: Prints row counts after each stage, any duplicate titles, the
+insert/unchanged/conflict counts and the number of documents with uncovered ledger states.
+Conflicts and gaps are never written to the table; they are reported for the digest.
+
+Script: the <business unit 4> announcement parser  (source role: deterministic parser for the
+<category 4> <trade announcement> PDFs; rebuilds every table from the PDF's own border lines)
+Purpose: Reads every <business unit 4> rate-table announcement listed in the ledgers and turns each
+geography-by-rate grid into allowance rows for the <our brand 4A> families, with nothing
+hand-typed. Every table is rebuilt from the PDF's own thin border rectangles, which gives the true
+merged-cell grid; words are assigned to cells by their centre point; a table is read as a geography
+column against rate columns, and the context columns (eligible brands, available offers, offer,
+participant, qualifying purchase) supply the program, unit and mechanics. A table that cannot be
+read mechanically is reported in the coverage file with a reason.
+Inputs: The <business unit 4> ledgers for the two most recent years (rate-table rows only), the
+local PDFs the ledger points to, and the matching text extracts (used for cross-checks). No
+arguments; two environment switches exist for debugging (a file-name filter and a raise-on-error
+flag).
+Outputs: A rows CSV in the parser contract's schema (title, state, <business unit>, program,
+election, price family, amount per selling unit, selling unit, effective and end dates, status,
+source document, notes, entered by, entered on, item scope, document date and number), written
+ASCII only and sorted by document, family, program, unit and state; and a coverage CSV with one row
+per announcement: file name, document date and number, tables found, tables parsed, programs,
+families, states covered, ledger states, ledger states not covered, and a reason string. A console
+summary prints rows per program and family.
+Logic:
+  1. Text normalization: every string is forced to ASCII (dashes, quotes, trademark and bullet
+     characters mapped or dropped), whitespace collapsed, a trademark suffix after the premium
+     line's name removed, and a single digit glued to a word of three or more letters (a footnote
+     marker such as a "1" after "Cans") stripped.
+  2. Date rules: a window is "Month d, yyyy" joined to a second date by a dash or the words to,
+     through, thru or until; a single date counts only when an effective-style keyword
+     (beginning, starting, effective, from, available, period and similar) ends the 24 characters
+     before it. A month and year alone give a first-of-month date that is only ever used as a
+     Proposed fallback.
+  3. Geography rules: a cell is a geography when it says national (optionally with an exclusion
+     list after excluding, excl., except) or lists two-letter state codes; national expands to
+     every state minus the exclusions. A "pure geography" cell holds nothing else once geography
+     words, codes and punctuation are removed.
+  4. Table geometry: thin rectangles and lines (2.5 points or less in one dimension, more than 4 in
+     the other) become explicit horizontal and vertical grid lines; tables with fewer than four
+     cells are dropped; each word joins the cell containing its centre (half-point tolerance);
+     words inside the table box that land in no cell are kept for a check when they are money
+     amounts or state codes; superscript footnote markers (one or two digits or an asterisk at
+     less than 82 percent of the cell's median font size) are removed from the cell text.
+  5. Document model: the document number comes from the ledger, or from the file name when the
+     ledger is blank (noted). The source document label is the cleaned file name. On each page a
+     "Subject" block near the top of any page after the first marks an appended earlier
+     announcement; those pages are recorded and not parsed, because the announcements among them
+     are parsed from their own files. The subject is collected from the first page until a To or
+     From line. The left label column (to the left of a fixed x position) is dropped so wrapped
+     body phrases join cleanly, and every date window or keyword date in the body text is
+     recorded with its vertical position for later fallbacks.
+  6. Table interpretation: wide cells (at least half the table width, sharing their band with no
+     other text cell) are title or period cells; the title is the first few of them. The geography
+     column is the one headed geography, state or states, else the column holding the most pure
+     geography cells; when no geography exists anywhere but money cells do, the states named in
+     the subject act as a synthetic geography and each rate cell of the first rate column becomes
+     a row band. Rows are the geography cells below the header band. Period markers are wide cells
+     inside the data area that print a date window; a table period comes from a title cell above
+     the header band. Data cells are grouped into leaf columns by horizontal overlap and each
+     column gets its stacked header texts.
+  7. Column roles from the header: participant or capability wording means participant;
+     qualifying purchase means qualifier; brand means brand; advertising, savings, price after,
+     selling price, qualifying price, recommended, pass-through, what's, topic or page means
+     ignore; anything else is an offer column. An offer column that holds printed amounts (or a
+     no-offer marker) and no price-advice wording is a rate column; a column of bare "or" cells is
+     ignored. No rate column skips the table ("no printed amounts"); any rate cell carrying more
+     than two amounts skips it as a bullet list rather than a grid.
+  8. Per geography row: the effective window is the nearest period marker above the row, else
+     the table period, else the nearest date phrase above the table on the page, else the
+     document's first date phrase (noted as taken from the announcement text), else a month-only
+     date from the title or subject (Proposed, "effective day not printed"); with none the table is
+     skipped ("no effective date found"). Context cells are matched to the row by vertical overlap
+     of at least half the row height or by containing the row's centre.
+  9. Rate reading: a money amount; a dash, n/a, none, "no offer" or "no ... allowance" reads as an
+     explicit zero; two amounts use the first with a note and make the row Proposed.
+  10. Program: a non-scan table is detected from "non-scan", "not submitting scan data" or a
+     single-unit participants phrase in the title, context or headers. "Same offer for loyalty and
+     scan" yields both programs. Otherwise the parent header decides loyalty versus scan; failing
+     that, the offer context, then the rate text (loyalty or transaction wording), then a
+     single-rate-column title that says loyalty; the default is scan. The result is
+     <allowance type B> or <allowance type E> in their promotional-offer form, or <allowance type B>
+     or <allowance type F> for non-scan participants.
+  11. Unit: the most specific header first ("N-can roll" wording reads as roll; can, per can,
+     transaction or unit reads as can), then the offer context, then the rate text; otherwise can
+     is assumed, the row is Proposed and the note says the unit was defaulted.
+  12. Family: the brand context, then the title, then the subject decide between the
+     <our brand 4A> premium line and the <our brand 4A> standard line; both words in the brand
+     context yield both families; the default is the standard line. Election is always All.
+  13. Purchase threshold for tie-breaking: five-or-more wording is 5, two-or-more or multi-unit
+     wording is 2, else 1.
+  14. Cross-checks that make a row Proposed with a note: words inside the table placed in no cell,
+     an amount not found in the text extract (a whole-dollar amount may print without decimals),
+     and a state code not found in the text extract.
+  15. Row building: candidates expand to one row per state. A state excluded by name in a
+     geography cell becomes an explicit 0.00 row unless the same table covers it elsewhere. Per
+     state, program, family and unit the newest window wins, explicit rows beat exclusions, and
+     the primary candidate is the lowest-threshold non-zero rate (then lowest threshold, page,
+     title). Notes carry the table title, the geography text, the mechanics (offer, column,
+     qualifying purchase, participants, printed rate), any zero reason, the second-amount note,
+     the effective-date note, every other rate printed in the same window, and prior windows. The
+     same state in two geography groups of one table with the same threshold and different rates
+     is ambiguous and Proposed. States excluded by name in the subject or file name ("national
+     excluding ...") get explicit 0.00 Confirmed rows for every program, family, unit and window
+     emitted. The title is state, <business unit>, program, All, family and effective date joined
+     by vertical bars; entered by reads "parsed from trade announcement" with a fixed entered-on
+     date.
+  16. Document skip rules (whole document reported, no rows): a military exchange retailer's
+     consumer value offer, military accounts, a clerk value offer and a paper coupon offer, none of
+     which is a retail allowance.
+  17. Table skip classification: a generic skip reason is replaced by the table kind when the
+     title matches: pass-through example, UPC list, certified brand list, SKU list, merchandising
+     levels and flex funds, key dates and pre-book schedule, summary of changes, a <jurisdiction>
+     qualifying-price (pass-price) table, table of contents, loyalty promotion code list, program
+     overview or offer availability without printed rates, value advertising guidance,
+     election-dependent bullet list of previously announced values, consumer value offer details.
+  18. Coverage row: ledger states not covered are explained: no bordered table in the
+     announcement; skipped tables grouped by reason (first three named); appended earlier
+     announcements not parsed; a two-letter code that is really the word "or" in merchandising
+     text; states that appear only in appended announcements; states not printed in a geography
+     cell of the parsed tables; states named in text only with no geography-by-rate table.
+Checks and failure handling: A missing PDF produces a coverage row saying so and the run continues.
+A parser error on one document is recorded as a skipped item with the error text and the run
+continues (unless the debug flag asks it to raise). The parsed-file validator is run on the output
+afterwards.
+
+Script: the <business unit 3> announcement parser  (source role: deterministic parser for the
+<our brand 3A> <trade announcements>; allowance tables to rows, everything else classified)
+Purpose: Opens every <business unit 3> rate-table announcement in the ledgers, finds the tables
+whose header pairs a geography column with a funds, allowance or discount column (the multi-single
+and multi-5-pack <allowance type A> tables and the <allowance type B> program tables), and turns
+them into allowance rows, one per item master family the document covers. Tables carrying price
+points, selling prices, <promotional price program> conditions, promotion SKU lists, measurement
+dates, UPC lists, pre-books or availability maps are pass-price or reference material: counted and
+listed in coverage, no rows.
+Inputs: The <business unit 3> ledgers for the two most recent years (rate-table rows only), the
+PDFs and text extracts they point to, and the item master CSV (for the <business unit 3> family
+names). No arguments.
+Outputs: A rows CSV in the parser contract's schema and a coverage CSV with one row per
+announcement (file name, document date and number, tables found and parsed, programs, families,
+states covered, ledger states, ledger states not covered, reason), both ASCII only; a console log
+per document and per table, a totals summary by program, family and unit, and a regression line
+giving the pilot state's row count (the expected truth being that the pilot state's
+<allowance type A> zero row is derived by the ordering engine because it is not a printed state).
+Logic:
+  1. Page text comes from the text extract's pages when their count matches the PDF, else from the
+     PDF library's own text. All strings are cleaned to ASCII (dashes, quotes, arrows, cents and
+     degree signs mapped), and trailing footnote digits or asterisks are stripped from labels.
+  2. Every table on every page is extracted with the PDF library's table finder. Rows are cleaned,
+     empty rows dropped; fewer than two rows is a layout artifact. The header row is the first row
+     holding a geography or state label and a funds, allowance or discount label with no
+     pass-price wording; from it come the geography, rate, qualifying-purchase (or offer) and
+     eligible-SKU columns.
+  3. Any other table is classified by its text: summary box ("what's", "staying the", "action
+     needed"), contents table, measurement-dates table, <volume incentive program> payment-rate
+     table (an incentive, not a promotional allowance), reporting-code table, pre-book table,
+     eligible-SKU appendix (UPC list), UPC list, pass-price table (price point, selling price,
+     lowest available, <promotional price program> conditions, "1 <category 3 unit> for",
+     discount to revenue, product promotion SKUs, available options or nationally, allocated, open
+     order, or a flavor name followed by a tip code), a state list or map fragment (every cell a
+     state code), otherwise "other table".
+  4. Data rows: the geography may sit in any cell of a multi-line row; a row whose cell count
+     differs from the header is a problem; an unreadable rate cell is a problem. Amounts: a dash,
+     n/a, "no offer" or "none" is an explicit 0.00 with a note; a dollar amount is normalized to
+     two decimals; digits glued after the amount are read as a footnote and noted.
+  5. Geography: "national" expands to every state minus any codes after "excluding", which become
+     0.00 "excluded by name" rows; a list of codes (with only the words and, excluding, only, state,
+     select around them) is a select-state table, and rows are written only for the printed
+     states (the ordering engine derives the rest, including the pilot state's zero row).
+  6. Table title: the last short stand-alone line above the table (under 60 characters, title-case
+     words) that ends with the <allowance type A> name or the <allowance type B> program name,
+     else the rate header.
+  7. Program and unit: loyalty wording in the title, rate header or qualifying text gives
+     <allowance type B>; <allowance type A> or funds wording gives
+     "<allowance type A> / <promotional price program>". Multi-single, single, singles or
+     "per <category 3 unit>" wording gives the single unit; multi-pack or 5-pack wording gives
+     the 5-pack unit. A table with no recognized program or unit is reported, not guessed.
+  8. The qualifying count is read from "buy N" (digits or the words one to six); when it exceeds
+     one the note states that the printed savings is per qualifying purchase of N units and gives
+     the per-unit equivalent.
+  9. Families from the eligible-SKU appendix: appendix tables (headers naming eligible, SKUs and
+     UPC) are scanned once each (the same appendix printed twice under both programs is skipped).
+     A 5-pack appendix is recognized from its header. Per SKU row the value column (carried down
+     when blank) and the tip wording decide the family: 5-pack rows with revenue wording go to the
+     plastic-tip or wood-tip revenue family, with <promotional price program> wording to the
+     <promotional price program> 5-pack family by tip; single rows with "1 for $" or pre-price
+     wording go to the pre-priced plastic-tip singles family, with <promotional price program>
+     wording to that program's singles family by tip, with revenue wording to the revenue family
+     by tip. Filter-tip SKUs are skipped. Counts per family are kept for the note.
+  10. Families for a table: appendix-derived families give Confirmed rows with a note listing each
+     family and its SKU count; with no appendix the default family list for the unit is used (plus
+     the filter-tip family unless the eligible-SKU wording excludes filter tip) and the rows are
+     Proposed with a note saying so.
+  11. Effective dates, page text first then whole document: a "promotion period" date range gives
+     start and end; "effective [on | with shipments on or after] date" or "[available] beginning
+     date" gives a start only. A table with no date is an error for coverage.
+  12. Row notes carry the table title, the geography note, the mechanics (qualifying purchase and
+     printed rate), the per-unit equivalent, the eligible SKUs, the family note, the amount note,
+     any zero reason, for <allowance type B> the statement that the loyalty offer stacks on the
+     <allowance type A> and requires multi-pack <allowance type A> participation, and the date
+     source. Election is always All; the title is state, <business unit>, program, All, family and
+     effective date joined by vertical bars.
+  13. Coverage reasons: families not in the item master; for a document with rows, the printed
+     states and the other table kinds found; for a document without allowance tables, a reason
+     keyed on the file name (a quarterly product promotions announcement with pass-price
+     conditions, price points, SKU lists, measurement dates, UPC lists and maps; a pre-priced
+     price-point announcement with pre-book and UPC tables; an informational announcement such as
+     a product discontinuation, a <jurisdiction> tax classification notice or a retail program
+     agreement amendment), the table kinds found, and the ledger-flagged states that appear only
+     in price-point rows, pre-book or UPC rows or on the availability map.
+Checks and failure handling: Row-shape and unreadable-cell problems, missing dates and
+unrecognized programs are logged per page as reasons and the table is skipped, never guessed.
+Families are verified against the item master. The parsed-file validator is run on the output
+afterwards.
+
+Script: the <business unit 5> announcement parser  (source role: deterministic parser for the
+<business unit 5> <trade announcements>, which arrive as bundles of several documents)
+Purpose: Opens every <business unit 5> rate-table announcement in the ledgers (both verdicts;
+national tables count too), splits each PDF bundle into its component documents, parses only the
+<business unit 5> sections, and turns every table that pairs a geography column with a rate column
+into allowance rows for the two <our brand 5A> families, per pack. Attached documents from other
+<business units> and the retail trade program agreement are listed, not parsed.
+Inputs: The <business unit 5> ledgers for the two most recent years (rate-table rows only) and the
+PDFs and layout text extracts they point to. No arguments.
+Outputs: A rows CSV in the parser contract's schema and a coverage CSV with one row per
+announcement (file name, document date and number, tables found and parsed, programs, families,
+states covered, ledger states, ledger states not covered, reason), both ASCII only; console logs
+per document, section and table; totals by program and family; and the pilot state's rows printed
+as a regression check.
+Logic:
+  1. Per-page text comes from the layout-preserving text extract (form-feed separated) when its
+     page count matches the PDF, else from the PDF library; the layout extract keeps footnote
+     sentences intact. All strings are cleaned to ASCII.
+  2. Section splitting: a new section starts on page one, on a page whose first line is a bare
+     "Month d, yyyy" date with a Subject line in its first eight lines, on a page containing
+     "Page 1 of N", or on a page starting with an issue-date label. Each section takes its
+     document code and <business unit> from the footer code (a three-digit number with an optional
+     R, the <business unit> name, then the announcement-kind suffix) and its subject line.
+  3. Section routing: the primary section is the one whose code and <business unit> match the
+     ledger entry (else the first section, with a reason noted). A section from another
+     <business unit> is skipped as not a <business unit 5> document. An uncoded non-primary
+     section is skipped as the retail trade program agreement or uncoded pages. An attached
+     <business unit 5> announcement with its own ledger entry (same code and date) is skipped here
+     and parsed under its own entry; one without a ledger entry is parsed under this document
+     with a note on every row and a coverage reason.
+  4. Footnote states: a sentence saying the <business unit 5> retail trade program is "not
+     available in" a list of states is captured per section.
+  5. Table analysis: tables come from the PDF library's table finder; cleaned, empty rows dropped,
+     fewer than two rows is a layout artifact. The header row is the first with a geography
+     label. Cells above the header are title cells: the one containing "allowance" (else the
+     first) is the title; an "effective on" date or a "promotion period" date range among them
+     sets the window. Columns are typed as geography, delta (change) columns, rate columns (a
+     header carrying a date range, or allowance, rate or dollar wording) or other. No rate column
+     means a geography table without rates, listed in coverage. Among dated rate columns the
+     newest wins and its range sets the window; older rate columns are ignored except for a note.
+  6. Non-allowance tables are classified: merchandising-fund (per-store) table, UPC list,
+     key-dates or measurement table, agreement form (plan code, exhibit, retailer name fields),
+     pre-book table, other table.
+  7. Data rows: a row whose first cell is not a geography (a header continuation such as
+     "criteria") is skipped; a cell count differing from the header is a problem; an unreadable
+     rate cell is a problem. Amounts: no-offer markers read as 0.00 with a note; dollar amounts
+     are normalized to two decimals; a digit glued after the amount is a footnote and noted; any
+     other difference between the printed cell and the amount is noted.
+  8. Program from the title: loyalty wording gives <allowance type B> (Confirmed); special price
+     wording gives <allowance type D> (Confirmed); multi-pack wording has no vocabulary entry
+     and is recorded as <allowance type D>, Proposed, with the mechanics in the notes; an unnamed
+     program defaults to <allowance type D>, Proposed. Family from the title: the single-use line
+     gives the <our brand 5A> single-use family; device or pod wording gives the <our brand 5A>
+     device-and-pod family; otherwise the single-use family, Proposed. A device-only or pod-only
+     title also sets the item scope pattern to "device" or "pod". Unit is always pack; election
+     is always All.
+  9. Effective date fallbacks when the table has none: an "effective on", "effective [with the]
+     <month year> promotion period (beginning ...)" or "beginning" sentence in the section text
+     (noted as taken from the announcement text); else a "<month year> promotion period" phrase
+     gives the first of that month, Proposed, "effective day not printed"; else the table is an
+     error for coverage.
+  10. Mechanics: the footnote sentences explaining the offer ("... promotional allowances are
+     ...", "limit one loyalty offer per transaction") are copied from the printed text into the
+     notes.
+  11. Row expansion: explicit state rows win over the national row; "national" expands to every
+     state, with excluded states as 0.00 "excluded by name" rows; a listed geography is
+     select-state and yields rows for those states only. A footnote state with no explicit row
+     and no exclusion becomes a 0.00 Proposed row citing the footnote. A delta cell in
+     parentheses yields the prior rate (amount plus delta) in the notes; a dash means no change.
+     Notes also record the rate column header, the printed cell and unit wording ("recorded per
+     pack"), older columns ignored, program and family notes, the date note and the attached
+     note. The title is state, <business unit>, program, All, family, effective date and, when
+     set, the item pattern, joined by vertical bars.
+  12. De-duplication within a document: rows identical on state, program, family, unit, item
+     scope, effective date and source document merge when the amount matches (notes
+     concatenated); a different amount makes both rows Proposed with a conflict note.
+  13. Coverage reasons: no table in the document (with the document kind read from the file
+     name: state product directory, state registry, state certification, mystery shop program,
+     store-specific suspension or termination, optional pre-book, agreement amendment, a trade
+     commission determination, state legislation, local ordinance, else informational); no
+     allowance table among the tables found; ledger-flagged states not covered, with the attached
+     document that names them when there is one; and the list of skipped sections and tables.
+Checks and failure handling: Problems, missing dates and unmatched footer codes are logged as
+reasons and the table or document is skipped, never guessed. The parsed-file validator is run on
+the output afterwards.
+
+Script: the <business unit 1> all-announcements parser  (source role: runs the appendix rate-table
+parser over every <business unit 1> announcement in the ledgers and dates the undated tables)
+Purpose: Produces one rows file for every <business unit 1> appendix table on file. Promotion
+period tables that print a month and year but no start date are dated from the <business unit 1>
+promotion calendar printed in sibling announcements, and states excluded by name in a title get
+their confirmed zero rows.
+Inputs: The <business unit 1> ledgers for the four most recent years (rate-table rows that have a
+text extract) and the text extracts they point to.
+Outputs: One rows CSV for all <business unit 1> appendix rows in the parser contract's schema; the
+promotion calendar, a per-document summary (date, number, rows, states, rows dated) and the total
+row count on the error stream.
+Logic:
+  1. Builds the promotion calendar from every "<month year> Promotion Period (<start date> ..."
+     phrase across all documents; for each period label the most common printed start date wins.
+  2. Runs the appendix rate-table parser on each document's text extract with the cleaned file
+     name as the source label.
+  3. Dates undated rows: the period label is read from the row's note ("<month year> pack
+     allowances") or from the document text ("<month year> Promotion Period"). When the label is
+     in the calendar, its start date is applied, the status becomes Confirmed, the note cites the
+     promotion calendar printed in sibling announcements and the UNDATED segment of the title is
+     replaced. Otherwise a "beginning <date>" sentence in the text supplies the start date
+     (Confirmed, note citing the announcement text). A row with neither stays Needed.
+  4. Stamps every row with the document date, the document number (with its R suffix when
+     revised), a blank item scope and the fixed entered-on date.
+  5. Title exclusions: a state excluded by name in the announcement title receives a Confirmed
+     0.00 row for every family, election and effective date the document prints, with a note
+     citing the exclusion ("no <business unit 1> pack allowance in this state for this family").
+  6. Writes the combined rows file and prints the summary.
+Checks and failure handling: Documents without rows are omitted from the summary; the parsed-file
+validator and the ordering engine's coverage gap report are the downstream checks.
+
+Script: the <business unit 1> appendix rate-table parser  (source role: text-extract parser for
+the state-by-election "Appendix A" pack allowance tables of one <business unit 1> announcement)
+Purpose: Parses the state-by-election rate tables of a <business unit 1> announcement text extract
+into allowance rows. It runs on its own (CSV to standard output) during build step 6 and as a
+library inside the all-announcements parser.
+Inputs: The path of one announcement text extract and an optional source label (default the path).
+Outputs: CSV rows in the parser contract's schema on standard output; a row count and the document
+effective date on the error stream.
+Logic:
+  1. Document effective date: a "Promotion Period (<start date>" phrase, else "effective [on |
+     beginning | with] <date>".
+  2. Table shapes handled: a header line "<family> <month> <year> Pack Allowances" (optional
+     REVISED prefix, optional "effective <date>" suffix, usually followed by "(Per Pack)"); state
+     and election lines "[ST] <election> $rate (delta) [$rate (delta)]" with one or two rate
+     columns, where the state code sits on one line of each election block or on a line of its
+     own; "ST <all-options election label> $rate (delta)" in the <our brand 1B> style; "ST Plus
+     $rate (delta)" for the <our brand 1C> plus option; and <our brand 1C> tables with no
+     election column ("ST $rate $delta").
+  3. A header is accepted only when its family text contains a known brand word (<our brand 1A>,
+     <our brand 1B>, <our brand 1C>, <our brand 1D>, <our brand 1E>, <our brand 1F>,
+     <our brand 1H> or <price family D>). A group-letter suffix is stripped from the family name.
+     A header naming both variant columns ("<family> <flavor> and non-<flavor>") yields the two
+     column families in table order, non-<flavor> first. The named families are <price family H>
+     (two variants), <price family C> (two variants), <price family A> (two variants),
+     <price family E>, <price family G>, <price family F>, <price family D>, <our brand 1B> and
+     <our brand 1C>; any other header keeps its cleaned text.
+  4. Rates: a dash in the rate column is a printed zero (no allowance on that election), not a
+     missing cell. The delta column may print "(amount) No Change", "(amount)", an amount, a dash
+     or "No Change" and is not used for the rate.
+  5. Elections: <election option A>, <election option B>, <election option C> (also printed under
+     an alternate spelling that means the same election), <election option D> and
+     <election option E> as printed; <all-options election label> and "Plus" lines carry the
+     election All, and a Plus line is recorded on the <our brand 1C> family with a "plus option
+     pack allowances" label.
+  6. Block logic: election lines collect into a block until a state is known; a new block starts
+     at <election option A> or when an election repeats; a state-only line attaches to the block
+     just closed or waits for the next; <all-options election label> and Plus lines are written
+     at once when they have a state; a no-election-column line is written at once for the
+     <our brand 1C> family.
+  7. A REVISED table supersedes the original table for the same state, election, family and
+     effective date.
+  8. Rows: title state, <business unit 1>, pack allowance, election, family and effective date (or
+     UNDATED) joined by vertical bars; program pack allowance; unit pack; Confirmed when dated,
+     else Needed with the note "effective date not found in the announcement text"; the source
+     reads "<label>, Appendix A"; entered by "parsed from trade announcement", entered on today.
+Checks and failure handling: When the parser returns zero rows for a document, the skill's failure
+table says to read the text near "Pack Allowances" or "(Per Pack)", extend the header pattern or
+the family splitter, and rerun; nothing is typed in by hand.
+
+Script: the <business unit 2> announcement parser  (source role: deterministic parser for the
+<business unit 2> <trade announcement> PDFs; cell geometry resolves merged cells and lost cells)
+Purpose: Reads every <business unit 2> rate-table announcement in the ledgers and turns each rate
+table into allowance rows for the <category 2> families. The PDF library's table finder gives every
+cell with its box; cell text is rebuilt from page words with struck-through words dropped; columns
+are labelled by the header cells that overlap them horizontally; every rate cell is joined to the
+geography and brand cells that overlap it vertically, which resolves merged cells. When a rate cell
+is missing (a table continued on a new page without its rate column) the rate is read back from
+word geometry inside the inherited column. Amounts are cross-checked against the text extract.
+Nothing is hand-typed; tables that cannot be parsed are listed in coverage.
+Inputs: The <business unit 2> ledgers for the two most recent years (rate-table rows only), the
+PDFs and the text extracts they point to. No arguments.
+Outputs: A rows CSV in the parser contract's schema (18 columns) and a coverage CSV with one row per
+announcement, both ASCII only; a console log per document (pages kept of pages total, tables found
+and parsed, rows, per-table row counts, notes) and totals by program.
+Logic:
+  1. Cleaning: strings are forced to ASCII (dashes, quotes, delta, registered and trademark marks,
+     fractions mapped; superscript digits removed), a hyphen split across a line break is
+     rejoined, and footnote digits glued to labels are stripped.
+  2. Words and strike-through: thin rectangles and lines (under 2 points tall, over 6 wide) that
+     cross the middle half of a word's height and cover at least 60 percent of its width mark the
+     word as struck; struck words never enter cell text.
+  3. Tables: nested tables are dropped, cells are de-duplicated by rounded box, and each cell's
+     text is rebuilt from its unstruck words grouped into lines.
+  4. Cell typing: an amount cell holds one amount or a "can / roll" pair (negatives allowed; a
+     dash, n/a, "no offer" or "none" is 0.00 with the reason "no offer printed"); a full-width
+     cell (at least 60 percent of the table width) is a title when above the header band or a
+     section label inside the data area; a geography cell is a list of state codes (or one full
+     state name) or "national" with optional exclusions; a brand cell carries brand words and no
+     program or geography words.
+  5. Columns: amount cells cluster by horizontal overlap of at least half; the header cells above
+     the first amount row that overlap a cluster label it. A column is a delta column (label says
+     delta or change, or negative values with no period), a period column (label carries months
+     and a year; each month pairs with the first year printed after it) or a value column. The
+     label also yields program and unit hints (per can and per roll pair, per transaction, per
+     roll, per can).
+  6. Selected rate column: among period columns, the one with the newest period (two columns
+     sharing the newest period is unparsed); otherwise every value column; only delta columns is
+     unparsed. A table with no amounts is unparsed as a SKU or UPC list (title says so) or "no
+     rate cells"; one with no rate, geography or brand cells is a text table.
+  7. Continuation: a table with no header row directly after a parsed table on the previous page
+     inherits that table's titles, margin label, column positions, kinds, programs and units; a
+     headerless table not adjacent to a parsed table is skipped.
+  8. Margin label: the text printed in the left margin beside the table (a section name), ignoring
+     generic headings such as at-a-glance, questions, subject, strategy, overview or summary of
+     changes.
+  9. Document facts from the page text: a promotion period map (month and year to the printed
+     date range in parentheses), "effective <date> - <date>" ranges, counts of "effective <date>"
+     and "beginning <date>" phrases (the most frequent wins as the document date), revision
+     sentences of the form "stores in <state> are not eligible for ...", the subject (between the
+     Subject label and the addressee line), and states excluded by name in the subject.
+  10. Pages: reading stops at a page that starts another announcement (a date line followed by
+     Subject) or at the cover of the promotional offers terms and conditions appendix (example and
+     UPC tables); the cut is noted in coverage.
+  11. Non-allowance titles (pass-through example, UPC, reference table, table of contents, offers
+     summary, pre-book, key dates) are listed and skipped.
+  12. Table effective date, in order: "Effective <date>" in a title or the selected column label
+     (end date from a matching effective range) is Confirmed; else a period in the selected column
+     or a title gives the start of that promotion period from the period map (end from the last
+     period's entry when the rate spans months, noted) or, failing the map, the document date
+     (Confirmed, noted) or the first of the month (Proposed, "effective day not printed"); else
+     the document date; else the table is unparsed.
+  13. Program, in order: table title (one revised document reuses the special-price column
+     template inside non-scan tables), rate column header (another prints scan and non-scan
+     columns side by side), margin label, subject. Non-scan wording gives the non-scan option
+     <allowance type A>; loyalty wording gives <allowance type B>; multi-unit wording gives the
+     multi-unit <allowance type A>; special price wording gives <allowance type D>; "scan
+     allowance" is recorded under the multi-unit <allowance type A> with a scan mechanics note,
+     because <business unit 2> offers it to those participants only.
+  14. Families: a brand cell on the row (an unmapped brand cell is unparsed), else title, column
+     header, margin label, subject; a loyalty table with no brand column yields one row per
+     loyalty-eligible family (<price family A>, <price family B>, <our brand 2B>, the
+     <our brand 2B> alternate-form family and <our brand 2C>, because the loyalty terms exclude
+     every <our brand 2D> SKU and product promotions). Brand wording maps to <price family A>,
+     <price family B>, <our brand 2B>, the <our brand 2B> alternate-form family, <our brand 2C> or
+     <our brand 2D>; two <variant> wordings map to <price family B> and <price family A> with an
+     item scope pattern that narrows the row to that variant. Wrapped names are joined and
+     families in one cell are separated by plus signs.
+  15. Logical rows: for each selected column, every amount cell joins the geography cells that
+     overlap it vertically, the brand cells in that band, the section label above it, and the
+     prior-period amounts from older period columns; a geography row with no rate cell in the
+     column gets its amounts from word geometry inside the column box (noted as read by word
+     geometry). With no geography cell the states come from the title, from a trailing state list
+     or "<state> only" or "state of <state>" in the subject; none is unparsed.
+  16. Units: two values give a can row and a roll row; a roll hint gives roll; otherwise can;
+     loyalty rows are always can.
+  17. Notes carry the table title, section label, rate column, geography as printed, brand family
+     as printed (or the family source), offer configuration, the program's mechanics sentence
+     (special price: passed through on eligible SKUs in any configuration regardless of election;
+     non-scan: passed through on cans in any configuration including rolls; multi-unit: for scan
+     participants on transactions of two or more cans or one or more rolls in one brand family;
+     loyalty: per qualifying loyalty transaction, recorded per can; scan: per can on every can
+     including rolls), the printed rate, prior period rates, the zero reason, the geometry and
+     continuation notes and the effective-date note. A printed rate not found in the text extract
+     makes the row Proposed. A state the revision text declares not eligible is recorded as 0.00
+     Proposed with the sentence; national exclusions are 0.00 Confirmed rows. A table that fails
+     midway has its partial rows rolled back and the reason recorded.
+  18. Loyalty collapse: loyalty tables print one-or-more and two-or-more configurations as
+     sections; one live rate is kept per state and family: the single non-zero configuration,
+     else the one-or-more rate, with the other configuration noted.
+  19. De-duplication within the document on state, program, family, item scope, unit and
+     effective date: a different amount makes the first row Proposed with a conflict note naming
+     the table; the same amount is noted.
+  20. Zero-row fill per printed table (a continued table shares its title): states the revision
+     text declares not eligible (Proposed), states excluded by name in the title (Confirmed), and,
+     when the table is a national listing (the subject says national, or 40 or more states are
+     printed and every printed rate is 0.00, meaning the offer is withdrawn everywhere), every
+     state omitted from the table (Proposed, with the reason). A Proposed date propagates.
+  21. Document skip rules: military accounts; military exchange accounts (an account-specific
+     special price table is not a state-level allowance); a chain-specific document for
+     <chain D> stores only (an account-level rate; the table also repeats states with differing
+     amounts and red-marked corrections); a missing PDF.
+  22. Coverage: ledger states not covered are explained as named only in narrative text (summary
+     bullets or a revision note) or not printed in the announcement pages (the flag came from
+     appended pages); no tables means an informational announcement (product, lids, packaging,
+     incentive or de-listing notice); otherwise "no allowance rate table".
+Checks and failure handling: Every unparsed condition above is a reason string in coverage, never
+a guessed row. The parsed-file validator is run on the output afterwards.
+
+Script: load preparer  (source role: turns the engine's rows to insert into the exact 16-column
+block the allowance table accepts, applying the load policy)
+Purpose: Filters and reshapes the ordering engine's insert rows into the block appended to the
+allowance table, reporting every row it drops or changes.
+Inputs: The engine's rows-to-insert CSV, the current allowance table CSV (for titles already on
+file), and an optional status override argument (the weekly reader passes Proposed, since it never
+writes Confirmed).
+Outputs: A load CSV with no header row in the table's 16-column order and a load summary JSON
+(rows loaded, dropped by reason, changed by reason, rows per <business unit>, rows per status,
+distinct states), also printed.
+Logic:
+  1. Drops undated rows (status Needed or no effective date).
+  2. Drops <business unit 1> <our brand 1C> special-initiative rows from the named documents of one
+     year: temporary additional allowances, not modeled.
+  3. Drops <business unit 5> multi-unit rows: a per-transaction multi-buy offer, not modeled as a
+     per-unit allowance.
+  4. Promotes <business unit 5> Proposed 0.00 rows for the two states named in the "not available"
+     footnote to Confirmed, because the footnote is printed in the announcement.
+  5. Converts <business unit 3> savings printed per qualifying purchase into per-unit amounts,
+     matched by the exact printed amounts the policy knows: a savings on three singles is divided
+     by three; a savings or a loyalty extra on two 5-packs is divided by two; the note states the
+     arithmetic.
+  6. Collapses notes to one ASCII line of at most 900 characters, cleans the source document,
+     sets entered by and entered on, formats the amount to two decimals, applies the status
+     override when given.
+  7. Drops any row whose title is already in the table.
+  8. Makes colliding titles unique by appending a sequence number (only rows from
+     <business units> other than <business unit 1> can collide this way) and counts them.
+Checks and failure handling: Every drop and change is counted by reason in the summary so the
+digest can list them; nothing is silently altered.
+
+Script: scan model puller  (source role: pulls the SKU master and store-by-SKU 13-week and
+4-week units and dollars from the SKU-level scan semantic model)
+Purpose: Seeds the product list and the shelf prices from the <data warehouse>'s SKU-level scan
+model (<dataset id>, in <sales org>'s analytics app) through the Power BI query tool, under the
+caps the model owners impose. Table and column names are instance-specific and must be changed
+for another model.
+Inputs: Arguments (or an arguments file) selecting a mode: products (category group by
+manufacturer combinations, a minimum 13-week units threshold with a default of 13), products by
+id (a list of product ids, to re-pull capped combinations), or prices (a list of <store ids>, a
+batch size in stores per query with a default of 5, the minimum units, an output CSV path).
+Outputs: A products CSV (product id, SKU name, brand family, sub-brand, major manufacturer and
+manufacturer, category group and category, the price-group fields, product attribute flags such
+as <flavor>, form, filter type, strength, blend and color family, and 13-week units, dollars and
+distinct stores) and a prices CSV (store id, product id, 13-week units, dollars and distinct
+weeks, 4-week units and dollars). Each run returns the combinations or store groups that hit the
+row cap.
+Logic:
+  1. Every query returns at most 1,000 rows and four queries go per call. One market of about
+     1,350 scan stores took about 490 queries in seven minutes and registered as a usage spike
+     with the model owners; the skill asks for the data team's scheduled extract before running
+     this per market.
+  2. Products mode: for each category group (<category 1> through <category 5>) and each
+     manufacturer (<business unit 1> through <business unit 5> and the
+     <competitor manufacturer codes>), selects products with 13-week units at or above the
+     threshold; appends rows and records any combination that returned exactly the cap.
+  3. Products-by-id mode: the same columns for an explicit product id list, appended to the file.
+  4. Prices mode: stores are split into groups of the batch size; per group, one query summarizes
+     scan units and dollars by store and product over the 13-week window with distinct weeks and
+     the 4-week figures, filtered to the minimum units; groups returning the cap are reported so
+     they can be re-run singly; progress is logged every ten calls.
+  5. Result reading: large results spill to a file; the reader finds the spilled envelope, reads
+     the CSV part of it (never the preview), and otherwise scans the response text for embedded
+     JSON result blocks.
+Checks and failure handling: Capped combinations and groups are returned, not silently truncated;
+a non-JSON block is logged and skipped. The seed is never repeated for data the workbook already
+holds.
+
+Script: store master puller  (source role: pulls the store master and the brand-family realized
+prices for the market being seeded)
+Purpose: Pulls every store in the market's territories with its account hierarchy, contract and
+election fields and primary wholesaler per <business unit>, plus the brand-family 13-week realized
+prices, from the <sales data model> through the Power BI query tool under the user's row-level
+security. The two raw CSVs become the stores and store-prices tables.
+Inputs: The territory list (defaults to the pilot market's eleven <territory ids>; another market
+passes its list in the arguments or an arguments file; a blind build for a new market must
+replace the list, and nothing else in the script is market-specific); the <sales data model>'s
+<dataset id>.
+Outputs: A raw stores CSV and a raw prices CSV, and a result with the row counts and column lists.
+Logic:
+  1. Per territory, one call runs two queries: the store query filters the
+     <store master fact table> to the territory and returns store id, store name, store number
+     (looked up in the <location dimension table>), city, state, territory, account number and names
+     at three levels, ownership type, contract flags per <business unit> and for the
+     <digital trade program>, loyalty elections per <business unit>, the <price support program>
+     flag, election, recommendation and on-recommendation flag, the <our brand 1C> election, the
+     <digital trade program> election, the <allowance type A> elections of <business unit 3> and
+     <business unit 4>, industry and <company> 26-week shipment volume, and the primary
+     wholesaler per <business unit> from the location dimension.
+  2. The price query filters the <brand-family pricing fact table> to the territory's stores and
+     the 13-week timeframe code and returns, per store, units and dollars for each tracked brand
+     family (<our brand 1A>; <our brand 2A> in two forms; <business unit 3> filter-tip 5-packs and
+     singles; <our brand 4A>; the <our brand 5A> single-use line) and the <price support program>
+     measures (days and volume passed and failed, pass-through opportunity).
+  3. Result reading: full tables arrive as CSV resource parts; a spilled result is read from its
+     envelope file; small results are parsed from embedded JSON blocks.
+  4. A territory that does not return exactly two tables is logged as an error and skipped; the
+     rest continue. Rows accumulate and are written with the header of the last successful call.
+Checks and failure handling: The result reports store and price-row counts per territory and in
+total so the builder can compare them with the model before loading.
+
+Script: workbook table puller  (source role: pulls whole Excel tables through the workbook API
+into CSVs)
+Purpose: Exports the live tables of the data workbook as CSVs with values exactly as stored (dates
+as Excel serial numbers) so the ordering engine and the load preparer can diff against the truth.
+Inputs: The drive id, the workbook item id, and a list of tables, each as a name, a table id and
+an output path.
+Outputs: One CSV per table and a result giving each table's row count (excluding the header) and
+its range address.
+Logic:
+  1. For each table, reads the table's range (values and address) through the workbook API.
+  2. When the response is a structured document it is used directly; when it is text it is
+     parsed as JSON; when it spilled to a file, the saved file is loaded.
+  3. Writes every row to the CSV with blanks for empty cells and logs the row count and address.
+Checks and failure handling: The address returned here is what the weekly reader compares against
+after its append to prove the table grew by the row count.
+
+Script: wholesaler list deriver  (source role: derives the state-by-wholesaler list from the store
+master's primary distributor per <business unit>)
+Purpose: Builds the wholesalers table and the per-state top-10 board from the store master: every
+state and wholesaler pair with 10 or more stores, counted across the primary distributor fields of
+four <business units>.
+Inputs: Optional state-range split conditions (default ten alphabetical ranges of state codes) and
+an output path; the <sales data model>'s <dataset id>.
+Outputs: A CSV with state, wholesaler and store count, and a result with the row and state counts.
+Logic:
+  1. One query unions state and primary wholesaler from the <location dimension table> for each
+     of the four <business units>, drops blank wholesalers, groups by state and wholesaler with a
+     store count, keeps pairs with 10 or more stores, and orders by state then count descending.
+  2. The query runs once per state-range split so no split approaches the 1,000-row cap; a split
+     that returns the cap is logged as a warning.
+  3. Results are read from the JSON result document, falling back to a CSV block in the text with
+     the query-suggestions trailer removed.
+  4. Pairs are de-duplicated across splits and written.
+Checks and failure handling: The warning on a capped split tells the builder to narrow that range
+and rerun.
+
+Script: self-distributing flag seeder  (source role: proposes the self-distributing flag for every
+wholesaler row from the data)
+Purpose: A self-distributing wholesaler is a chain's own distribution center. Its invoices usually
+print no cost, so the engine prices its stores from the state's cost proxy (the largest wholesaler
+in the state with costs entered) until a cost of its own is entered. This script proposes the
+flag; a person can flip any row in the app from the wholesalers board.
+Inputs: The exported wholesalers table CSV and stores table CSV (paths as arguments, with
+defaults), an output path, and a report flag.
+Outputs: A CSV with title, state, wholesaler, type, store count, the self-distributing flag and a
+reason per row; a one-line count of self-distributing rows and ordinary wholesalers; with the
+report flag, the pilot state's flagged rows and every review candidate.
+Logic:
+  1. From the stores table, for each state and wholesaler key, counts the store-<business unit>
+     assignments per account (blank account counts as independent) across the five primary
+     wholesaler fields and collects the distinct stores served.
+  2. Rule 1: a <sales data model> type of "retailer DC or club" is Yes.
+  3. Rule 2: the wholesaler serves one chain almost exclusively (95 percent or more of its
+     assignments, at least 5 stores, the account is not independent) and its name shares a
+     distinctive word with the chain's name (four or more letters, ignoring generic corporate and
+     distribution words) or says warehouse, distribution center or DC: Yes, with the chain, store
+     count and matching words in the reason. Exclusive service without a name match is No with a
+     "candidate, review in the app" reason.
+  4. Rule 3: everything else is No ("wholesaler").
+Checks and failure handling: Candidates are surfaced for a person's decision rather than guessed;
+the reason column records which rule fired.
+
+Script: parsed-file validator  (source role: schema and vocabulary check for parsed allowance rows)
+Purpose: Proves that a parser's rows file matches the parser contract before the ordering engine
+reads it. Each run of the weekly reader requires it to print OK for every rows file.
+Inputs: One parsed rows CSV path.
+Outputs: The first 40 errors, a line with the row and error counts, and OK or FAIL.
+Logic:
+  1. The header must be the contract's 18 columns in order.
+  2. Per row: the state is a valid code; the <business unit> is one of the five; the program is in
+     the vocabulary (pack allowance, the <price ceiling> row, <allowance type B> and its
+     promotional-offer form, the <allowance type E> promotional-offer form, <allowance type D>,
+     the non-scan option <allowance type A>, the multi-unit <allowance type A>, "<allowance type A>
+     / <promotional price program>", <allowance type F>); the election is All for every
+     <business unit> but <business unit 1>; the family is in that <business unit>'s family list
+     (six for <business unit 2>, two for <business unit 4>, eleven for <business unit 3>, two for
+     <business unit 5>; <business unit 1> is not checked); the amount has two decimals; the unit is
+     pack, can, roll, 5-pack or single; the effective date is an ISO date and the end date is ISO
+     or blank; the status is Confirmed or Proposed; the source document starts with the document
+     date; every field is ASCII; entered by is the fixed parser string.
+Checks and failure handling: Any error fails the file; a failing file is fixed in the parser and
+re-run, never edited by hand.

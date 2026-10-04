@@ -1,0 +1,1293 @@
+----------------------------------------------------------------------------------------------------
+Part 2 of 11: Contract Compliance Audit (<business unit 4> and <business unit 3>)
+----------------------------------------------------------------------------------------------------
+
+Contract Compliance Audit (<business unit 4> and <business unit 3>)
+===================================================================
+
+Purpose: Scores what is physically on the <industry> fixture in each store's latest shelf photo
+against the <business unit 4> and <business unit 3> contract level the store is assigned in the
+system, then tells the field exactly what each store needs to upgrade or to get back to standard.
+It runs at any scale from nothing but a list of <store ids>, a chain name or a territory, and it
+survives any interruption because every store is a file and "continue" resumes from the first
+store not yet scored.
+
+Triggers: "run the contract audit for my independents"; "audit these <store ids>"; "find
+<business unit 4> upgrade or downgrade opportunities"; "which stores are not performing their
+<business unit 4> or <business unit 3> contract"; "run the contract audit on this chain"; a pasted
+<store id> list with "what should I upgrade", and similar phrasings.
+
+Inputs:
+- A scope: a pasted or attached <store id> list (text, CSV or Excel), a chain name, a territory,
+  or nothing (the role default from the Hub section).
+- The <shelf recognition model> in Power BI: store names, addresses, assigned contract levels,
+  flavor-restriction flags, the <photo platform>'s own facing counts, photo quality flags and the
+  latest <photo platform> photo links per store per cycle.
+- The photo bridge flow: a Power Automate flow owned by <author> that watches a shared requests
+  folder in OneDrive and copies each photo from its <photo platform> link into a shared photos
+  folder.
+- The skill's own files: the instructions, one reference file (contract levels, photo reading
+  rules, the agent brief, <photo platform> signals, the bridge contract and the DAX) and one
+  helper script.
+- Fallback only: an image-only look book export of store photos (decks under 200 MB).
+
+Outputs:
+- One Excel workbook per run on the live surface, "<business unit 4> <business unit 3> Contract
+  Audit - <scope> - <year-month>.xlsx", three sheets (Overview, Store List, Method), one row per
+  requested store including stores with no photo, verdicts colored by kind.
+- A durable run directory in the session's working folder (one JSON file per store, an
+  append-only dispatch log, a manifest) that rebuilds the workbook on demand.
+- The request file and the fetched photos in the shared bridge folders, as the audit trail.
+- A chat summary per block and at the end: scorecard, money at risk, ranked reclaim list, clean
+  upgrades, Unclear stores with re-shoot reasons, judgments to confirm, photo-date range.
+
+Parameters to Fill In:
+- <company> - the company name ("<company>'s" for possessives); everyone there may use the skill.
+- <sales org> - the field sales organization whose analytics app in Power BI hosts the model.
+- <business unit 4> - the business unit that owns <our brand 4A> and the tiered merchandising
+  contract ladder measured in linear feet, position and header.
+- <business unit 3> - the business unit that owns <our brand 3A> and the two-level retail program
+  measured in contiguous facings.
+- <industry> - the product industry the fixture serves ("<industry> fixture").
+- <category 1> - the company's largest category; its fixture may carry a <category 3> shelf.
+- <category 2> - the legacy category that shares the backbar with <category 4> but never competes
+  with it for position or width.
+- <category 3> - the category <our brand 3A> belongs to (counted in facings).
+- <category 4> - the category <our brand 4A> belongs to (sold in cans; measured in feet and
+  position).
+- <our brand 4A> - the <business unit 4> brand audited; "<our brand 4A> premium line" is its
+  premium sub-line (four of its slots are 1 ft).
+- <our brand 3A> - the <business unit 3> brand audited.
+- <our brand 2A>, <our brand 2B>, <our brand 2C>, <our brand 2D> - the company's <category 2>
+  brands (position-neutral in this audit).
+- <competitor brand 4A> - the lead <category 4> competitor whose total section width is the
+  comparison for the top tier.
+- <competitor brand 4B> through <competitor brand 4H> - the other <category 4> brands that
+  can cost <our brand 4A> the top position.
+- <competitor brand 2A>, <competitor brand 2C>, <competitor brand 2D>, <competitor brand 2G> -
+  competitor <category 2> brands (position-neutral).
+- <competitor brand 5A> - a <category 5> brand often found under a misplaced header.
+- <tier 1>, <tier 2>, <tier 3>, <tier 4> - the <business unit 4> contract levels from highest to
+  lowest; <tier 4> is the countertop-display level and the ceiling for any display.
+- <tier 1 starter> - the small-store variant of the top level.
+- <tier code> / <tier codes> - the look book codes for those levels (not in rank order).
+- <tier 1 threshold>, <tier 2 threshold>, <tier 3 threshold>, <tier 4 threshold>,
+  <tier 1 starter threshold> - the minimum linear feet per level (section width x shelves).
+- <tier 1 starter category cap> - the whole-store <category 4> width cap in feet for the starter
+  variant.
+- <split header width> - the minimum header or product width in feet required of <our brand 4A>
+  in a split position.
+- <split width share> - the share of category linear width required in a one-manufacturer split
+  of the top position.
+- <base level>, <enhanced level> - the two <business unit 3> program levels, ascending.
+- <required facings> - the contiguous <our brand 3A> facing count for each <business unit 3>
+  level (one value per level).
+- <required SKU count> - unique SKUs ordered per level (not scored; lower where flavors are
+  restricted).
+- <top shelf coverage limit> - the top-shelf width in feet <our brand 3A> must cover for
+  <enhanced level>.
+- <minimum sign size> - the minimum <our brand 3A> sign area in square inches for
+  <enhanced level>.
+- <allowance amount> - the per-can or per-stick payment of each level, from the current program
+  documents.
+- <promotional price program> - the <business unit 3> promotional singles program whose trays
+  are counted separately pending a ruling.
+- <digital trade program>, <ordering system> - the digital program and the ordering system whose
+  data is out of scope.
+- <photo platform> - the store-photo platform whose links the model stores; "<photo platform>
+  API endpoint" is its tokenized link host.
+- <successor photo platform> - the platform announced to replace it.
+- <shelf recognition model> - the Power BI semantic model holding store profiles, contract
+  levels, photo links and the platform's recognition counts.
+- <report id> - the GUID of that model's app report, passed directly to the query tool.
+- <main fixture scene>, <display scene> - the platform's scene names for the backbar fixture
+  photo and the countertop display photo.
+- <store profile table> - the store dimension (profile, contract levels, geography, flags).
+- <recognized items fact table> - the per-store-per-cycle fact with POS flags and scene links.
+- <photo product visibility table> - the per-SKU-per-visit recognition table (facings).
+- <photo scene visibility table> - the per-scene-per-visit table with quality flags.
+- <user directory table>, <sales employee geography table>, <hierarchy table> - the
+  role-resolution tables of the Hub section.
+- <store id column>, <sales cycle column>, <territory column>, <market column>,
+  <section column>, <region column>, <chain name column>, <key account column>, <close date column>,
+  <chain store flag> (independent or chain values), <business development flag> (Y or N) -
+  column names on those tables.
+- <store id> / <store ids> - the label of the retail account identifier (fixed-width numeric).
+- <territory id>, <market> - a territory number and a market name as users say them.
+- <volume index> - the store volume index whose flavor-restriction flag variant the model
+  carries for <business unit 4>.
+- <sign type 1> - the state in-store signage guide program; <sign type 2>, <sign type 3> - the
+  age-verification sign programs that belong to the POS Gap Scorecard.
+- <jurisdiction> / <jurisdictions> - states with their own legal variants of the programs.
+- <planning workbook> - the cycle planning workbook sometimes offered as a visit-list input.
+- <author> - the skill's maintainer, owner of the photo bridge flow and its shared folders.
+- <shared folder link> - the sharing links for the skills folder, the requests folder and the
+  photos folder.
+- <territory role>, <market role>, <market support role>, <section role>, <region role>,
+  <account role> - the role titles resolved by the Hub section.
+- <date> - dates from the company's history (rulings, go-live, retirements, document dates).
+- <n> - a store count for a named geography.
+- Pattern tokens, not parameters: <run id>, <scope>, <reason>, <level>, <year-month>,
+  <yyyy-mm-dd>, <stem>, <tag>, <slide number>, <deck stem>, <store name>, <chain name>.
+
+What the User Says and Gets
+---------------------------
+
+The user opens a new Cowork session, pastes the <shared folder link> of the skills folder and
+asks in plain words on the next line: "run the contract audit for my independents". Copilot
+reads the folder's top-level START HERE, picks this skill and runs it; if it describes the folder
+instead, or asks which skill, the explicit form is "Follow the START HERE file in the contract
+audit folder of this folder <shared folder link> and run the contract audit for my
+independents." Other ways to ask: "... for these <store ids>: ..." (pasted or attached list);
+"... for my territory" (adds chain stores); "... for <chain name>" (account teams).
+
+What comes back: the skill pulls the user's stores, contract levels and <photo platform> photo
+links from the <shelf recognition model>, has the photo bridge flow fetch the photos into a
+shared folder (nothing to click), scores every photo for <our brand 4A> linear feet, shelves,
+header and position against <competitor brand 4A> and for <our brand 3A> facings, and hands back
+one Excel workbook with a scorecard, verdict and next step per store. The bridge is a flow owned
+by <author> whose shared folders are open to everyone at <company>; nothing to install or be
+granted. If Copilot says the bridge is not running, the user tells <author>. Time: about 1.7
+minutes a store (30 stores in about 50 minutes; a 100-store territory in about 2.5 hours); the
+user can walk away and say "continue" later. A permanent install skips the link: copy the skill
+folder into the OneDrive folder Documents/Cowork/skills (the shared folder also holds a zip of
+it), then just say "run the contract audit for my independents".
+
+When Copilot reaches this file because a user pointed at the folder: arriving from the top-level
+START HERE means it has already routed and goes straight to staging; an attached zip is local
+once unzipped and is copied from there; otherwise it resolves the shared link to the folder and
+downloads SKILL.md plus everything under references/ and scripts/ into the audit subfolder of
+the session's working folder in the same layout (skipping the zip and START HERE itself;
+downloads land in one shared folder under identical names, so each file is copied and verified
+right after download). It then reads SKILL.md completely and follows it from its first step,
+skipping any "copy from the installed skill folder" instruction. The user's request is their own
+words after the link, or after "and" in the explicit form; with no scope given the skill's role
+default applies, and if nothing resolves Copilot asks once. It delivers exactly what the Output
+section describes.
+
+Skill Instructions
+------------------
+
+The audit scores what is physically on the <industry> fixture in each store photo against the
+assigned <business unit 4> and <business unit 3> contract level and tells the field what each
+store needs to upgrade or to get back to standard. Store names, addresses, contract levels and
+the latest photos all come from the <shelf recognition model> and the photos are fetched by the
+shared photo bridge flow, so there is no deck, no export, no setup and no file-size limit between
+the user and a 3,000-store audit. It is merchandising-only: linear feet, shelf count, header
+width and position for <business unit 4>; visible contiguous facings, top-shelf coverage and
+sign for <business unit 3>. Ordering, unique SKUs ordered, scan data and administrative terms
+are never scored. Every store is a file, every batch is logged, and "continue" resumes from the
+first store not yet scored no matter how the last session ended.
+
+When Not to Use:
+
+- POS signage presence or <sign type 2> / <sign type 3> compliance: the POS Gap Scorecard.
+- Ranking or prioritizing stores to visit: Top Opportunity Stores.
+- Editing, charting or reformatting an existing workbook: the spreadsheet skill.
+- A store whose only photo is not the <main fixture scene> or the <display scene> (coolers,
+  exterior): it is scored "Unclear - wrong scene" with a re-shoot next step, never guessed.
+- Anything about ordering, <ordering system> shipments, electronic payment terms, the
+  <digital trade program> or scan participation: out of scope; never inferred from a photo.
+
+Ground Rules That Changed Real Answers:
+
+Each rule was learned by getting a store wrong; all of them apply on every run. Full level
+definitions and worked calls are in the reference, Part A.
+
+1. Contract levels come from Power BI, never from a slide or a guess. Look book <tier codes> are
+   not in descending order of level, so a code is never read as a rank. The assigned level for
+   every <store id> is pulled from the <business unit 4> and <business unit 3> contract level
+   columns of the <store profile table> (or of the <recognized items fact table>) before any
+   photo is opened.
+2. Linear feet is cumulative shelf run: section width in feet times the shelves carrying
+   <our brand 4A> product. A 2 ft bay with 5 shelves is 10 ft; a 1 ft column with 10 shelves is 10 ft.
+   Width is read from cans across: four <our brand 4A> cans is about 1 ft, eight is 2 ft. Ten
+   feet of horizontal <our brand 4A> space does not exist in a convenience store.
+3. The backbar is the number one spot, freestanding tower or in-fixture alike. <our brand 4A> is
+   eligible for <tier 1> when it sits at the top of its <category 4> section AND its total
+   section width is at least <competitor brand 4A>'s AND a header is directly above it AND
+   footage is at least <tier 1 threshold> (a linear-feet minimum from the <business unit 4>
+   program). Product sections are compared, never headers or silhouettes: <competitor brand 4A>
+   cans are counted across a product row (a tower with three 1 ft trays is 12 cans = 3 ft even if
+   its header looks like 2 ft), and a <competitor brand 4A> panel hanging over another brand's
+   product adds no width. Narrower than <competitor brand 4A> caps the store at <tier 2>; no
+   <our brand 4A> header caps it at <tier 3>. "Top" means top of the <category 4> section: a
+   competitor <category 4> brand stacked above <our brand 4A> means it is not the top; <category 2>
+   above it changes nothing (rule 6), so <our brand 4A> under a <category 2> row with its own
+   header directly above its block is the top of its section.
+4. Countertop displays are automatically <tier 4>; <tier 1>, <tier 2> and <tier 3> require a
+   section on the backbar fixture, and the verdict says so and stops the ladder. The
+   <photo platform> keeps a separate <display scene>; when a store has one, the backbar photo (the
+   <main fixture scene>) decides the level and the display photo only confirms a <tier 4> or adds
+   context. A store with a display photo and no backbar photo is <tier 4> at best.
+5. <tier 1 starter> needs the whole store <category 4> set at or under the
+   <tier 1 starter category cap> (a whole-store category width cap in feet). A store with a separate
+   <competitor brand 4A> section of that width cannot hold <tier 1 starter> but may meet full <tier 1>: a
+   contract-type upgrade.
+6. <category 2> is not <category 4>. <category 2> brands, ours (<our brand 2A>, <our brand 2B>,
+   <our brand 2C>, <our brand 2D>) and competitors (<competitor brand 2A>, <competitor brand 2C>,
+   <competitor brand 2D>, <competitor brand 2G>) alike, never compete for position or width.
+   <category 4> is <our brand 4A>, <competitor brand 4A>, <competitor brand 4B>,
+   <competitor brand 4C>, <competitor brand 4G>, <competitor brand 4F>, <competitor brand 4H>,
+   <competitor brand 4E>, <competitor brand 4D> and similar <category 4> brands.
+7. A misplaced header does not count. An <our brand 4A> header over <competitor brand 5A>,
+   <category 3> or <category 2> is not a header for the <our brand 4A> space; the next step says
+   where to move it.
+8. <business unit 3> facings are counted individually, in both directions, at 2x to 3x native
+   size, and a number is reported only when both reads agree within 1. A contiguous run of
+   <required facings> for <base level> (a facing count from the <business unit 3> program) earns
+   <base level>; a contiguous run of <required facings> for <enhanced level> earns
+   <enhanced level>. A foreign item or an empty pusher breaks the run; the contiguous count is what the
+   contract measures. Top-shelf coverage (up to <top shelf coverage limit>, a width in feet from
+   the program), an <our brand 3A> sign of at least <minimum sign size> (an area in square inches
+   from the program) and back-counter placement are also checked.
+9. Unclear beats wrong. No <our brand 4A> in frame, edge-on, wrong scene, obstructed, or a seam
+   through the only countable run: "Unclear - <reason>" with both candidate outcomes in the next
+   step. A <category 3> set that is not in frame is "Unclear - <category 3> not in frame" even
+   for a Not Contracted store (never "Correct, no opportunity visible"). Every downgrade names
+   the measurement that drives it.
+10. Downgrades are reclaim opportunities, not paperwork: the label is "Downgrade Risk - Reclaim
+    Space", the text states exactly what to win back (which shelf, column, header, how many
+    facings), and it is never suppressed.
+11. Linear feet is width times shelves where product can be merchandised, each shelf counted
+    once (a lead ruling of <date>). A shelf counts whether it holds product, a flip sign covering
+    the product, or a flip sign with nothing behind it: anywhere product could sit is the brand's
+    space, and a brand does not get to hang signage and call it not its space. Nothing else adds
+    a shelf: a channel or price strip on a shelf edge, a sign hanging in front of product (a flip
+    or clip-on sign over cans is the same shelf), a header mounted above the shelf run, or a
+    panel over another brand's product. A shelf is never counted twice for carrying both product
+    and a sign, and strips between rows are never counted as rows. Header or flip-sign shelf? A
+    panel sitting in the shelf run, at the same pitch as the shelves above and below it and
+    directly under another brand's shelf strip, is a shelf position covered by a flip sign and
+    counts; a panel mounted above the top shelf, in a header channel or on the fixture top, is a
+    header and does not; the same panel can serve as the <our brand 4A> header for the position
+    test either way. Price strips often carry printed pictures of cans or tins (one store's tin
+    artwork was read as a sixth row); at 3x, artwork is flat, shadowless and ends where the strip
+    ends. A lit two-tier <our brand 4A> tray is two shelves. Sanity check before writing more than
+    10 ft for a 2 ft section: a standard 2 ft bay is 5 shelves = 10 ft, so the physical sixth
+    shelf, with product on it, is named or the extra footage is not claimed. The same rule sizes
+    <competitor brand 4A> and every competitor (its flip sign on its own shelf is its space; its
+    panel over <competitor brand 4B> cans is <competitor brand 4B> space).
+12. The sign for <enhanced level> goes above the <category 3>; a shelf price strip under or
+    between the rows is not the sign. When facings, top shelf and back counter meet
+    <enhanced level> and only the sign is missing or misplaced, the store is "Correct as Assigned (place
+    sign above <category 3>)" if assigned <enhanced level>, or "Upgrade Opportunity -
+    <business unit 3> <enhanced level> (add sign above <category 3>)" if assigned <base level>; the next
+    step names the sign and the spot. Never a reclaim: nothing was lost.
+13. Always name the path up (a lead ruling of <date>). Every store gets the shortest realistic
+    move to the next level, and when the space already exists the verdict says so: a run that
+    totals the <base level> count but is split in two by a lighter display is "Upgrade
+    Opportunity - <business unit 3> <base level> (move the lighter display; the facings become
+    contiguous)", not "no opportunity". Empty pushers to fill, one shelf to flip, a display to
+    slide, a sign to hang: the next step says it. "No path" is reserved for stores where the
+    fixture physically cannot hold the level, and even then the next step says what would have to
+    change.
+14. A stitched panorama can duplicate a tray across a seam. Cans are counted on one segment
+    only, and before a third column is called the same cards and strips must continue across the
+    seam (one store's "3 ft" of <competitor brand 4A> was one 2 ft section shown twice).
+
+Architecture (Why It Scales and Why It Survives):
+
+The pipeline: the user's input (a <store id> list, a chain name or a territory; a look book deck
+only as a fallback) becomes two Power BI pulls from the <shelf recognition model>, a photos CSV
+(one row per store per cycle: name, address, assigned levels, flavor-restriction flags,
+<photo platform> photo links) and a profile CSV (the <store profile table> row per requested store).
+The helper's store-list command turns them into the run directory under the session's working
+folder (roster, contracts, expected photos, the bridge request file, a stores folder and a review
+folder), recording photo-less stores Unclear at once. The request file goes to the shared
+requests folder, the photo bridge flow wakes, OneDrive copies every photo from its link into the
+shared photos folder under the run id and the flow writes a bridge manifest when done (29 photos
+in 40 seconds, 6 copies in parallel). Each photo is downloaded and ingested into the session's
+photo folder as "<store id>_merch_<date>.jpg" with an inventory entry (missing photos go into a
+second request file). Then the loop: the next-batch command hands out N batches of M stores, one
+scoring agent per batch records each store as an atomic file, the stale command (20 minutes)
+releases silent batches so only unscored stores are re-dispatched, every 10 scored stores the
+export command appends rows to the live workbook, and the lead adjudicates disagree flags, every
+Downgrade and every <tier 1> or <enhanced level> upgrade. The status command's next action tells
+a resumed session exactly what to do.
+
+The whole skill is three files: the instructions, the reference (Parts A to E) and one helper
+script with subcommands for query extraction, store-list building, photo ingest, grid overlay,
+cropping, store recording, run management and the fallback deck extraction. Install is dropping
+the skill folder into Documents/Cowork/skills.
+
+Durable state is files only: each store's JSON is written via temp-file-and-rename, so a crash
+mid-write never leaves a half store that a resume would count as done; the dispatch log is
+append-only; the live workbook is refreshed from the store files, never the other way round.
+There is no in-memory progress anywhere. A run of 3,000 stores is 3,000 small files and one log.
+
+Why the bridge exists: <photo platform> photos are served from <photo platform> API endpoint
+links that open without a login, and the model stores one link per store per scene per cycle.
+Cowork's own file tools reach only SharePoint and OneDrive, and the workspace has no internet, so
+the photo bridge flow has OneDrive's own upload-from-URL operation do the fetching server-side.
+It is a Power Automate cloud flow owned by <author> (standard connectors only, live since
+<date>) that watches a requests folder shared with everyone at <company> and fetches into a
+shared photos folder; nobody is granted anything and nobody clicks anything. An earlier Managed
+App form is retired because that platform is disabled for <company> (reference, Part E).
+
+Throughput: one agent takes 5.4 minutes a store with 7 crops and no stalls, matching the lead's
+verdicts 3 of 3 (and correcting one of the lead's width reads); four agents in parallel give
+about 1.7 minutes of elapsed time per store including lead review (one run: 82 photographed
+stores of a 103-store territory in 2 hours 17 minutes). Plan 1 hour per 35 stores.
+
+Source horizon: the <photo platform> is being retired after <date> and replaced by a
+<successor photo platform> that reads fixture type, POS items and sizes, section widths, pricing and
+<sign type 1> requirements as the photo is taken (no user guide yet as of <date>). The reading rules
+and verdict vocabulary do not depend on the source; Step 1's link pull, Part D's signals and the
+bridge's request file are the parts to re-point when the successor's model appears in Power BI.
+
+Workflow:
+
+Step 0 - Stage the Tool, Then Resume Check (Always First):
+
+Once per session the installed skill is copied into the audit subfolder of the session's working
+folder so agents and scripts share one stable path regardless of whose machine this is. Every
+helper command below runs from that copy, and agents read the staged reference file.
+
+With no installed skill (the user pointed at the shared skills folder by <shared folder link>,
+attached it, or attached the package zip), the skill is staged from there instead: a zip is
+already local once unzipped, so its files are copied straight in; for the OneDrive folder, the
+link is resolved to the folder, the folder is listed, and SKILL.md, the reference and the script
+are downloaded and copied into the same layout. Everything after this line is identical. The
+folder is readable by anyone at <company>.
+
+Then the helper's status command is run for any run directory under the session's runs folder.
+If one exists for this scope, its next action is followed (pull the store list / upload the
+request file and wait for the bridge / ingest photos / dispatch next batches / wait for in-flight
+/ adjudicate pending reviews / build the workbook). A run is never restarted from scratch when a
+run directory exists for this scope (other scopes' runs are ignored), and photos already in the
+inventory are never re-pulled. The user is told in one line where the run stands (scored /
+awaiting photo / remaining / in flight) before anything else happens. A run id is
+"<chain or territory or list>-<year-month>"; the user may name it.
+
+Step 1 - Store List, Contract Levels and Photo Links (Power BI; No Deck Needed):
+
+Any of these scopes is accepted and resolved before any query. Legend: what the user says: the
+filter on the <store profile table>; note.
+
+- "my independents" (or nothing at all, for a <territory role>): <territory column> = their
+  territory AND <chain store flag> = independent AND <business development flag> = N; the
+  <territory role> default, the regular independents they call on.
+- "my business development stores": the same with <business development flag> = Y; prospecting
+  accounts, never mixed into "my independents".
+- "my territory" / "territory <territory id>": <territory column> = the number; chains and
+  regular independents (business development stores only if asked).
+- "my chains": <territory column> = their territory AND <chain store flag> = chain.
+- "my market" / "<market>": <market column> = the code; regular independents unless chains or
+  business development stores are asked for; the <market support role> and <market role>
+  default; a cut is proposed first.
+- "my section" / "my region": <section column> or <region column> = the code; <section role>
+  and <region role>; a cut is always proposed first.
+- "my accounts" / "my chains" (account organization): the store id list from the person's
+  account rows in the <hierarchy table>; <account role> and their directors.
+- A chain name: <chain name column> contains the name, across every territory that row-level
+  security shows; account teams.
+- A pasted or attached <store id> list (text, CSV or Excel; the fixed-width numeric <store id>
+  column is taken): exactly those <store ids>, written one per line to a requested-ids file in
+  the session's query folder.
+
+Who is asking, and what they own. The assistant resolves the person's class and default scope
+from the login exactly as the Hub section describes (signed-in profile, user directory table,
+employee geography table, hierarchy table, explicit scope beats default, row-level security clips
+every store query, the opening "Scope: <scope>, <reason>" line). Differences for this skill:
+
+- The <territory role> default narrows to the regular independents in the territory (the other
+  skills take the whole territory). Business development stores are a separate universe ("my
+  independents" means the N set only): one territory checked on <date> had 90 open independents,
+  30 regular (29 of them contracted) and 60 business development (none contracted), and mixing
+  the 60 in would bury the audit in stores with no contract to perform.
+- Wider spans filter the <store profile table> by the matching geography column with
+  <chain store flag> = independent and <business development flag> = N unless chains or business
+  development stores are asked for; "my chains" or "my accounts" for an account person is the
+  store id list from the <hierarchy table>. Every scope is filtered to open accounts
+  (<close date column> later than today). No person filter is ever added to the DAX.
+- Sizing before starting: a territory is a few hundred stores; a market is thousands, a large
+  share of them contracted. At about 1.7 minutes a store with four agents (about 5 with one),
+  already above one territory the skill states the count for the default scope (the contracted
+  stores in it: regular independents for a geography, chain stores for an account person; never
+  the market total), the hours, and proposes a cut: one territory at a time for a market; one
+  market at a time for a section or region; one chain for an account person. It runs the whole
+  span only when the user says so, in blocks with checkpoints.
+- A default scope with zero contracted stores (some chains carry no store-level contract in the
+  model) is stated as such in one line with an offer to run a chain, a <store id> list or a
+  geography instead; nothing is scored.
+- When an attached <planning workbook> is offered as the visit-list input, its market must match
+  the chosen scope before it is used.
+
+Which stores get scored: every store in scope is a row. A store with no photo in the cycles
+pulled is "Unclear - No <photo platform> photo on file" with a re-shoot next step (that is how
+contracted stores the look book missed get surfaced). The store-list command also writes a
+not-scored CSV for any store it dropped; with the business development flag applied at the query
+that file should be empty for "my independents", and a non-empty file is worth a look.
+
+Source: the <shelf recognition model> (the semantic model behind <sales org>'s analytics app in
+Power BI). The artifact discovery tool does not find it; the assistant searches Microsoft 365
+with the Power BI source for the model's report, takes the <report id> from the app report URL
+and passes it directly to the Power BI query tool (the URL resolver fails on app URLs, but the id
+works). Row-level security already scopes results; no person filter is added. Two queries, exact
+DAX in the reference, Part E:
+
+1. The photos CSV from the <recognized items fact table> (one row per store per cycle):
+   <store id>, store, address, city, state, zip, cycle, latest date (yyyy-mm-dd), both contract levels,
+   both flavor-restriction flags, chain, the <main fixture scene> image link and the
+   <display scene> image link. Filtered by <store id> in chunks of 500, or by territory (plus
+   <chain store flag> = independent or chain; the business development flag lives only on the
+   <store profile table>, so for "my independents" the <store id> list comes from the profile CSV first), or by
+   chain name, and always by the last three <sales cycle column> values (year-month codes) so
+   the latest photo per store is inside the pull. Row cap 5,000 per query; for a chain, one
+   query per cycle.
+2. The profile CSV from the <store profile table>, pulled FIRST for a territory scope
+   (territory, chain flag, business development flag, open accounts) or for a <store id> list
+   (500 per query): <store id>, store name, city, zip, territory, chain flag, business
+   development flag, <key account column>, both contract levels and both flavor-restriction
+   flags. This is the account universe and the contract of record; it names contracted stores
+   that have no photo row at all. The photos CSV is then pulled for exactly those <store ids>.
+
+Large results spill to a results file in the session; the helper's query-extract command turns
+that file (or an inline result saved to a file) into the CSV, and chunks from several queries are
+appended without repeating the header. The store-list command then takes the run id, the photos
+CSV, the profile CSV and, optionally, the requested-ids file: it keeps the latest photo-bearing
+visit per store, writes the roster, contracts and expected CSVs and the request file
+"<run id>.json" (run id, destination folder, one entry per photo: <store id>, store, city, scene, photo
+date, link, filename, destination path), records every store without a photo as "Unclear - No
+<photo platform> photo on file" (or "<store id> not found in the <shelf recognition model>") with
+a re-shoot next step, and prints how many photos to expect. Blanks in either contract level
+become "Not Contracted". The counts go to the user: stores, with photo, with display photo, no
+photo, unknown <store ids>. A store name that differs between the two CSVs is flagged in the
+roster (chains reuse names).
+
+The <photo platform>'s own counts ride along (reference, Part D): its <our brand 4A> and
+<our brand 3A> facing counts for the last two cycles are joined onto the photos CSV as two extra
+columns before the store-list command; they land in the contracts CSV and drive the review
+routing in Step 4 (a store whose read disagrees with the platform goes to the lead). Photo
+quality flags from the <photo scene visibility table> pre-populate the re-shoot list. Platform
+counts are never a substitute for the photo read and never decide a verdict.
+
+Step 2 - Photo Bridge: Upload the Request, Let the Bridge Fetch, Ingest:
+
+The bridge folders live in <author>'s OneDrive and are shared with everyone at <company> with
+edit rights, so every user's session uses the same two folders (a <shared folder link> for
+requests and a <shared folder link> for photos) and nobody is granted anything.
+
+1. Both links are resolved to their drive and folder ids. The subfolder "<run id>" is created
+   inside the photos folder if it is not there. The run's request file is uploaded into the
+   requests folder with replace-on-conflict. The upload time is recorded in the run manifest.
+   The user's own OneDrive is never used for the bridge.
+2. The photo bridge flow (a Power Automate flow owned by <author>, live since <date>; setup guide
+   in the package) wakes on the new request file within seconds and has OneDrive fetch every
+   photo into the run subfolder in parallel (3 photos in 2 seconds on the first live run; a
+   territory in about a minute), then writes a bridge manifest there (run id and the source
+   "flow"). Expect 3 to 6 minutes from upload to marker: the OneDrive trigger polls on a
+   schedule; the copies themselves take seconds. The user is told in one line that photos are
+   being fetched. If no photo and no manifest has appeared after 15 minutes, the flow is off or
+   broken: the assistant says so, names <author> as the owner of the bridge, and stops the run at
+   this step (it resumes with Step 0 once photos exist). Nobody is sent to the old bridge app; it
+   runs on the managed-apps platform, which is disabled for <company> (Part E keeps its details
+   only for the record).
+3. The run subfolder is polled every 30 to 60 seconds (a 45-second sleep in a shell call is
+   fine). Done when the bridge manifest exists (an underscore-prefixed variant is accepted too),
+   or when the folder holds every expected photo, or when the count has not changed for 3
+   minutes after the first photo landed (then the run continues with what landed and says so).
+   A <photo platform> link is never fetched from this environment and the user is never asked to
+   download photos by hand.
+4. What is there is downloaded, one read per photo (each 0.6 to 2 MB; many calls can go in one
+   batch), into the session's download folder. The helper's photo-ingest command then moves them
+   into the session's photo folder, verifies each opens, updates the inventory and prints what
+   is still missing. If anything is missing it also writes "<run id>-missing.json"; that is
+   uploaded to the requests folder (the flow runs again on the new file) and the ingest command
+   is run again. After the second pass, stores still without a photo are recorded "Unclear -
+   Photo link failed" by the lead (the record command with the no-photo flag) so they reach the
+   workbook with a re-shoot next step. Scoring (Step 3) can start as soon as the first photos
+   are in; the next-batch command only hands out stores whose photo is on disk and reports the
+   rest as awaiting photo.
+
+Fallback intake when Power BI is unavailable or the user only has a look book deck: the
+image-only look book export is required, every deck stays under 200 MB (the attach cap and the
+OneDrive stream limit are both about 200 MB; 20 to 25 store decks per folder), the helper's
+extract command pulls the images out of the decks, the header strips are transcribed into the
+roster, contracts are pulled as in Step 1, and the run is initialized from the decks with the
+run-init, roster and contracts commands. Everything from Step 3 on is identical.
+
+Step 3 - Parallel Scoring with Checkpoints:
+
+1. The next-batch command with a batch size of 5 and 4 batches returns up to 4 batches of 5
+   unscored, undispatched stores. Each batch is marked dispatched with its store ids, and the
+   brief command prints the store block for the prompt.
+2. One background scoring agent is dispatched per batch using the prompt in the reference, Part
+   C, verbatim, with the store block pasted in (it names each store's photo file by <store id>
+   and any display photo). The brief makes the agent read the reference file, follow the grid ->
+   crop -> two-read -> verdict protocol, cap at 8 crops per store, write "<store id>.json"
+   (verdict text plus the structured reads: <our brand 4A> width, shelves, feet, header,
+   position, category width, <our brand 3A> contiguous and total facings) and run the record
+   command after EACH store, and log start and end times. Agents never see other agents' stores
+   and never write anything but their own store files. The structured reads are what make the
+   <photo platform> cross-check and the review routing automatic; an agent that leaves them
+   blank sends its stores to the lead by default.
+3. While agents run, the lead does not idle and never ends the turn with agents in flight: it
+   adjudicates finished stores (Step 4), exports and appends to the workbook every 10 scored
+   stores (Step 5), and runs the stale command with a 20-minute limit every cycle. A batch
+   silent for 20 minutes with unscored stores is released; only its unscored stores are
+   re-dispatched. A store file that exists is never re-scored by an agent (the record command
+   refuses without an explicit override).
+4. When the next-batch command returns no batches and nothing is in flight, scoring is complete.
+   A status line goes to the user after every 10 stores: scored / remaining / disagreements
+   pending. The user can stop at any block boundary; the run resumes with Step 0.
+5. Optional planogram mode for chains: if the account team supplies the contracted set (for
+   example "2 ft of <our brand 4A> at the top with header; <required facings> of <our brand 3A>
+   on the top <category 3> shelf with sign"), it is added to the brief as the expected
+   configuration. Agents then report pass/fail per element plus the measurement, which is faster
+   and more consistent than measuring from scratch. Verdict rules do not change.
+
+Step 4 - Lead Adjudication (the Accuracy Gate):
+
+The lead reads the agent's own crops (in the session's crop folder), not the raw photo, unless
+they are inconclusive. The status command routes every scored store into one of three tiers and
+lists the mandatory set as review pending with the reason for each:
+
+- Review (mandatory): a <business unit 4> Downgrade Risk driven by footage within one shelf of
+  the line (a read within 2 ft below the tier minimum); every <business unit 3> Downgrade Risk;
+  every "Upgrade Opportunity - <tier 1>" and every <enhanced level> upgrade; a <base level>
+  verdict within one facing of its required count; every store whose flags begin with the
+  disagree flag (the agent's two reads split) or the hinge flag (the agent says the verdict
+  turns on a judgment the rules do not settle); every platform-disagree flag (<photo platform>
+  <our brand 4A> facings per read foot outside 1.2 to 6, or the platform counting more than six
+  <our brand 3A> facings above the read) and platform-hint flag (the read says <category 3> out
+  of frame, the platform counted ten or more); an Unclear the agent says a second read could
+  land.
+- Sample (10 percent, every 10th in roster order): everything confirmatory: "Correct as
+  Assigned" including at the line, Downgrades more than 2 ft short (no one-shelf read error
+  flips them), Downgrades with the footage met that rest on a rule (<tier 1 starter> category
+  cap, position, header), <base level> upgrades with cushion.
+- Skip: no photo; nothing countable in frame for either program.
+
+Calibration: on a 103-store run, 64 stores were reviewed and 3 verdicts changed. Under these
+tiers the mandatory set is 42 plus a sample of 4, and all three changed verdicts sit in it (two
+directly, one through its disagree flag). Expect roughly 40 to 45 percent of scored stores on a
+territory with many <tier 1> contracts, less where levels are lower.
+
+If the lead firmly agrees with one read, it writes a review file for the store with the decision
+and reason; to change a verdict, it re-records the store with the override set and a reasoning
+line that starts "Lead correction:". If the lead cannot firmly land, the store becomes "Unclear -
+<reason>" with both candidates. A recurring judgment (the same call made three times in a run)
+is written into the reference, Part A, as a ruling once the user ratifies it, so the next run's
+agents apply it instead of escalating; that is how the review set shrinks over time.
+
+Step 5 - Workbook (Live Excel, Artifact Tools Only, Refreshed as the Run Grows):
+
+The workbook is created once per run on the live artifact surface as "<business unit 4>
+<business unit 3> Contract Audit - <scope> - <year-month>.xlsx"; the returned file handle is
+recorded in the run manifest so a resumed session edits the same workbook. Three sheets, all
+columns planned before the first write (inserting rows or columns later is refused on the live
+surface):
+
+1. Overview: title; a scope paragraph naming the input (<store id> list, chain or territory),
+   the photo source (<photo platform> via the photo bridge flow, with photo dates), the Power BI
+   pull date, and the position / width / display rules; a Scorecard of count formulas over the
+   Store List verdict columns (Stores scored, Correct, Upgrade, Downgrade, Unclear, and a Check
+   row that must equal 0), with ranges sized to the full roster so they never need editing; a
+   Money at Risk block that counts <tier 1> / <tier 2> / <enhanced level> contracts in
+   Downgrade; and a formula-driven action list: a hidden Sort Key column on the Store List
+   (Downgrade on <tier 1> or <enhanced level> = 1, other Downgrade = 2, <tier 1> or
+   <enhanced level> upgrade = 3, other upgrade = 4, Unclear = 5, at-the-line Correct = 6, else 9) with the
+   Overview filtered and sorted by it. For runs over about 150 stores the Overview lists the top
+   100 by Sort Key and the Store List carries the rest.
+2. Store List: the export command writes a CSV, inserted as tabular data on the first write or
+   written cell by cell at the next empty row for later blocks. Columns: Slide, <store id>,
+   Store Name, Address, City, State, Zip, Photo Date, <business unit 4> Assigned,
+   <business unit 4> Observed, <business unit 4> Verdict, <business unit 4> Reasoning, <business unit 4> Next
+   Step, <business unit 3> Assigned, <business unit 3> Verdict, <business unit 3> Reasoning
+   (prefixed with the observed count), <business unit 3> Next Step, Lead Reviewed, Scored (UTC),
+   Sort Key. An Excel table with filters, wrapped text, Next Step columns tinted, panes frozen
+   at the store name, and contains-text conditional formats on the verdict columns, added once
+   over the full planned range.
+3. Method: scope, sources, level definitions, how feet and facings are measured, verdict
+   vocabulary, two-read and adjudication rules, run status (scored / remaining / unclear with
+   reasons) and the re-shoot list.
+
+Live-surface rules: fill colors must be six-digit hex values (white is written out, never
+"none"); removing a conditional format is unsupported; verification reads the artifact model
+back, parses the saved JSON in Python, and confirms zero error tokens and Check = 0. The workbook
+is rebuilt from store files at any time, so it is a view of the run, never the only copy of a
+result.
+
+Step 6 - Report:
+
+Chat summary per block and at the end: file name; scorecard table (<business unit 4> and
+<business unit 3> columns); money at risk; the reclaim list ranked (<tier 1> and
+<enhanced level> first) with the measurement behind each call; clean upgrades; Unclear stores with the
+re-shoot reason; any rule judgment the user should confirm; the count of stores with no photo on
+file and the photo-date range covered. Stores are named "<store id> <store name>".
+
+Verdict Vocabulary (Exact Strings; They Drive the Formulas):
+
+Legend: verdict string: meaning.
+
+- Correct as Assigned: meets the assigned level; "(at the line)" is appended when footage or
+  facings sit exactly on the minimum.
+- Upgrade Opportunity - <level>: already meets a higher level than assigned (Not Contracted
+  stores that meet <tier 4> or <base level> included).
+- Downgrade Risk - Reclaim Space: below the assigned level; a reclaim task with a named fix.
+- Unclear - <reason>: the photo cannot support a defensible read.
+
+Overview-only labels: "Watch - <reason>" (exactly at the line or one element from an upgrade)
+and "Hold - <reason>" (nothing to do). A flags value beginning with the disagree flag routes a
+store to the lead.
+
+Output:
+
+- One .xlsx per run in the task output pane (syncing to the user's Cowork tasks folder in
+  OneDrive), three tabs, verdicts colored red (Downgrade), green (Upgrade), amber (Unclear /
+  Watch), grey (Hold). Every requested <store id> is a row, including stores with no photo
+  (Unclear, with the re-shoot step).
+- The requests subfolder and the photos/<run id> subfolder of the shared bridge folders hold the
+  request file and the fetched photos; they are the audit trail for what was looked at.
+- The run directory in the session's working folder as the source of truth: it survives the
+  session and rebuilds the workbook on demand.
+- The chat summary of Step 6, one screen per block.
+
+Guardrails:
+
+- Never score a store without its assigned level from Power BI; a slide code or a guess is not
+  a source.
+- Never fabricate a count: say what is visible and what is hidden, and go Unclear.
+- Never let scoring run without the durable run directory: no store is "done" until its file
+  exists; no batch is trusted until the stale command has had a chance to release it.
+- Never end the turn while agents are in flight; never leave an in-flight batch unlogged.
+- Never re-score a store that has a file, except by lead override with a stated reason.
+- Never present a downgrade as a recommendation to change the agreement; it is a reclaim task
+  with a named fix.
+- Never treat a countertop display as eligible above <tier 4>.
+- Never measure width across a stitch seam; count shelves across it, cans on one segment only.
+- Never add a person filter to the DAX; row-level security scopes the model.
+- Never try to open a <photo platform> link from this environment or ask the user to download
+  photos by hand; the photo bridge flow (or the retired app as a last fallback) is the only photo
+  path. If neither delivers photos, report it and name the bridge owner; never fall back to a
+  deck.
+- Never drop a request file that carries stores outside the current run, and never let a
+  missing photo silently drop a store: no photo = an Unclear row with a re-shoot next step.
+- If the <business unit 4> merchandising levels guide or the <business unit 3> retail program
+  presentation on SharePoint is newer than the reference, Part A, read it first and update the
+  reference.
+- Reports and workbooks carry no internal paths, tool names or session identifiers.
+
+References
+----------
+
+Reference: Contract Levels, Photo Reading, Agent Brief, Platform Signals and Bridge Contract:
+
+One file in five parts; the skill body points here by part letter. Part A is contract levels
+(<business unit 4> and <business unit 3> requirements, field rules, contract strings, worked
+calls), Part B is reading photos (export requirements, read checklists, when to write Unclear),
+Part C is the scoring agent brief (the exact prompt, pasted verbatim), Part D is <photo platform>
+signals (what the <shelf recognition model> can and cannot do, with queries) and Part E is the
+photo bridge contract and the DAX.
+
+Part A - Contract Levels:
+
+Verified against the <business unit 4> merchandising levels guide (final, dated <date>), the
+<business unit 4> retail trade program amendment one-pager (<date>), the <business unit 3> retail
+program customer presentation (effective <date>, national excluding a few <jurisdictions>) and
+the <sign type 1> state guide for one <jurisdiction> (<date>). The live documents on SharePoint
+are re-read when a new program year starts; these tables are a snapshot.
+
+<business unit 4> (<our brand 4A>), five levels under the current retail trade program as
+amended. Legend: level: pays; position; minimum linear feet; header; other terms.
+
+- <tier 1>: <allowance amount> (a dollars-per-can amount from the program); number 1 dedicated
+  or number 1 split; <tier 1 threshold> (linear feet); header required. Split with ONE
+  <category 4> manufacturer: <our brand 4A> needs at least <split header width> (a header width in feet)
+  and more than <split width share> (a share of the category's linear width). Split with TWO:
+  <split header width> of header width, competitive match with the widest manufacturer, and
+  competitive match with the smallest.
+- <tier 1 starter>: <allowance amount>; number 1 dedicated or number 1 split;
+  <tier 1 starter threshold> (linear feet); header required. The store's total <category 4> set is no more than
+  the <tier 1 starter category cap> (feet). Split with one manufacturer: <split header width> of
+  width and equal or greater footage than the manufacturer in the split number 1.
+- <tier 2>: <allowance amount>; number 2 dedicated or number 2 split; <tier 2 threshold> (linear
+  feet); header not required. Splitting the number 1 position with one manufacturer:
+  <split header width> of width and a header or flip sign directly above the <our brand 4A> space.
+  Splitting number 2: competitive match with the other manufacturer.
+- <tier 3>: <allowance amount>; number 2; <tier 3 threshold> (linear feet); header not required.
+  Dedicated number 2: no more than two other <category 4> manufacturers in a split number 1.
+  Split number 2: only one other manufacturer in the split, and no more than one manufacturer in
+  number 1.
+- <tier 4>: <allowance amount> (may be zero); any position on fixture or display;
+  <tier 4 threshold> (linear feet); header not required. Countertop displays are always <tier 4>.
+
+Field rules applied on top of the guide (confirmed by the <territory role>, <date>):
+
+- The backbar is the number 1 spot; freestanding tower versus in-fixture does not matter.
+- The <tier 1> test is <our brand 4A> at the top of its <category 4> section AND <our brand 4A>
+  total section width at least <competitor brand 4A> total section width. Product sections are
+  compared; a <competitor brand 4A> panel over another brand's product adds no width.
+- Narrower than <competitor brand 4A> caps the store at <tier 2>; no <our brand 4A> header caps
+  it at <tier 3>; a countertop display is <tier 4> regardless.
+- Linear feet is section width in feet times shelves carrying <our brand 4A> product. About
+  four <our brand 4A> cans per foot.
+- Flavor-restricted geographies have different requirements; the <store profile table>'s
+  <business unit 4> flavor-restriction flag and its <volume index> flavor-restriction flag mark
+  them. The <business unit 4> retail trade program agreement is read for those stores.
+
+<business unit 3> (<our brand 3A>), two levels. Legend: level: pays; visible contiguous SKUs;
+unique SKUs ordered (not scored here); other merchandising elements.
+
+- <base level>: <allowance amount> (a cents-per-stick amount from the program);
+  <required facings> for <base level> or more (a contiguous facing count); <required SKU count> unique
+  SKUs ordered (a lower count in flavor-restricted stores); number 1 <category 3> visibility
+  location in direct line of sight from the selling counter; non-self-service for all large
+  <category 3>.
+- <enhanced level>: <allowance amount>; <required facings> for <enhanced level> or more (the
+  <base level> count plus a fixed increment); a higher <required SKU count>; back-counter
+  merchandising with no <category 3> or <category 3> signage on or above the selling counter;
+  <our brand 3A> across the entire top shelf of the large <category 3> space up to
+  <top shelf coverage limit> (linear feet); a <business unit 3> <category 3> sign of at least
+  <minimum sign size> (square inches) in the number 1 interior or exterior sign location.
+
+Scored from the photo: contiguous facing count (both directions), top-shelf coverage, sign
+presence and rough size, counter versus back-counter, whether the run is in the number 1
+<category 3> visibility location. Not scored: unique SKUs ordered, non-self-service policy, the
+<digital trade program>, scan data.
+
+Contract strings as stored in the <shelf recognition model>: the <business unit 4> contract
+level column holds "<business unit 4> <tier 1> Contract", "<business unit 4> <tier 1 starter>
+Contract", "<business unit 4> <tier 2> Contract", "<business unit 4> <tier 3> Contract" and
+"<business unit 4> <tier 4> Contract"; blank is not contracted. The <business unit 3> contract
+level column holds "<business unit 3> <base level>" and "<business unit 3> <enhanced level>";
+blank is not contracted.
+
+Look book codes (only if a deck with the data table is all there is): the <business unit 4>
+<tier codes> are NOT in descending order. A cross-reference to the model on 28 stores fixed the
+mapping of each code to its level (the first code is <tier 1>, the second <tier 2>, the fourth
+<tier 4>, the fifth <tier 1 starter>; the third code has not been seen and is only presumed
+<tier 3>). For <business unit 3> a two-letter code means <enhanced level>; blank or "No Contract"
+is not contracted. Codes are never scored from when the model is reachable.
+
+Worked calls from the pilot run (for calibration), compressed to the lessons they taught:
+
+- <tier 1> correct, exactly at the line, is typically a standard 2 ft bay of 5 shelves = 10 ft
+  (one shelf may be covered by a 2 ft flip sign) with a header and <our brand 4A> width equal to
+  <competitor brand 4A>'s; two 1 ft premium-line columns x 5 shelves is the same 10 ft. Earlier
+  reads of 12 to 14 ft at these stores counted shelf-edge strips as shelves.
+- A lit two-tier tray plus three regular shelves is 5 shelves; printed tin artwork on a price
+  strip is not a sixth row. A store whose <category 4> set is 4 ft wide cannot hold
+  <tier 1 starter> but met full <tier 1>: a contract-type upgrade.
+- <tier 1> blocked by width only (<tier 2> correct): <our brand 4A> 2 ft against a
+  <competitor brand 4A> tower whose three 1 ft trays read 12 cans = 3 ft; cans across a product row decide,
+  never the header outline.
+- Reclaims name the measurement: 8 ft with two rows mostly price sign; 3 x 2 ft = 6 ft; a 1 ft
+  column x 8 with no header; the competitor on top of the column with the <our brand 4A> header
+  hanging over the <category 3> bay; a 1 ft column x 4 with no header; 3 cans on a <category 2>
+  shelf; one 2 ft row with the header over <competitor brand 5A>.
+- Both brands on countertop displays is <tier 4> correct despite 7 ft of product.
+- <business unit 3>: <enhanced level> is correct from exactly the threshold upward; reclaims
+  came from short runs, runs split by a foreign item, empty pushers and missing signs;
+  <base level> upgrades include a run at the line split only by a lighter display.
+
+Rulings from the first full-territory run (ratified by <author> on <date>). These came up
+repeatedly and were each decided the same way by the lead; they are now rules, not judgment
+calls, and agents apply them without escalating:
+
+1. A lit <our brand 4A> price or message panel in the shelf run counts as a shelf only when it
+   sits on its own shelf rail or lip, in the run, at shelf pitch (a position where product could
+   sit). A panel band butted directly under the header lightbox with no rail of its own is part
+   of the header and adds nothing. Twelve stores went one way and seven the other on this test.
+2. A freestanding <our brand 4A> tower or unit standing on the back counter behind the register
+   is the backbar, position number 1. What matters is which side of the counter it stands on;
+   only a unit on the customer's selling counter is a countertop display (<tier 4> ceiling).
+3. An empty, dedicated <our brand 4A>-tagged pusher shelf counts as merchandisable footage; an
+   out-of-stock shelf is a supply problem for the next step, not lost footage.
+4. <tier 1 starter> category cap: a <category 4> competitor beside <our brand 4A> with its own
+   section of the cap width or more puts the store's <category 4> set over the gate whatever
+   <our brand 4A>'s own width is: Downgrade Risk with the <tier 1> path named (top of the section,
+   width at least <competitor brand 4A>'s, a header and <tier 1 threshold>). Sixteen stores, all
+   confirmed.
+5. Width ties: four <our brand 4A> premium line slots are 1 ft and govern over five narrow cans
+   in the same footprint; where <our brand 4A> sits in a tray module, the module's width governs.
+6. Seams and frame edges: a stitch seam that splits the <our brand 4A> section across the
+   <tier 1> line, or a competitor whose width is cut by the frame when the width comparison decides the
+   level, is Unclear with both candidates, never a call.
+
+Still open (not ratified): whether <business unit 3> <promotional price program> singles trays
+count as <our brand 3A> facings toward the two thresholds. Until <author> rules, they are counted
+separately and both numbers are reported in the <business unit 3> reasoning; the verdict uses
+the count without them.
+
+Pilot re-score from <photo platform> originals (26 stores, four agents, 34 minutes, blind to the
+look book verdicts): verdict class agreed on 20 of 26 for <business unit 4> and 19 of 26 for
+<business unit 3>; every difference was a rules judgment or a better photo, not a misread. The
+differences became ground rules 9, 11, 12, 13 and 14: artwork on a price strip is not a row (the
+2 ft bay sanity check catches it); a "third <competitor brand 4A> column" was a stitch-seam
+duplicate (the same promotional card and strip continued across the seam); a <display scene>
+photo turned an "Unclear - not in frame" into <tier 4> correct plus a <business unit 3>
+Downgrade, so two scenes beat one slide; a run split only by a lighter display is the upgrade
+with the fix named; a <category 3> set out of frame is Unclear, never "Correct, no opportunity
+visible"; a flip-sign shelf counts and strips between rows do not, so two stores read as 12 to 14
+ft and as 8 ft both hold 10 ft; a missing sign is a fix, not a reclaim. Timing: 3.7 minutes per
+store and 125 crops for 26 stores (versus 5.4 minutes a store on look book slides).
+<photo platform> originals are 2048 px tall, about 20 percent more detail than the image-only slide, and
+carry no header strip.
+
+Blind retest of the shelf rule (six stores, each a 2 ft x 5 bay): fresh agents re-scored them
+with every worked example and prior verdict removed from their copy of this file, and all six
+came back 2 ft x 5 shelves = 10 ft. The retest caught two wording gaps, fixed and re-verified
+blind: a leftover phrase that treated <category 2> above <our brand 4A> as losing the top
+position (removed; only competitor <category 4> brands count), and the header-versus-flip-sign-shelf
+question (a panel sitting in the shelf run at shelf pitch is a flip-sign shelf and counts; a
+panel mounted above the top shelf is a header alone).
+
+Part B - Reading Photos:
+
+The export matters more than any technique. Legend: source: photo pixels on the fixture;
+<our brand 3A> facing width; countable?
+
+- <photo platform> original via the photo bridge flow ("<store id>_merch_<date>.jpg"): the scene
+  as the platform stitched it, measured with the grid command, which prints the size; facing
+  width at least the look book figure below; countable, the normal path.
+- Image-only look book (<store id>, name and address in a header strip): about 3700 x 1900; 30
+  to 40 px per facing; countable at 2x to 3x native; the fallback path.
+- Standard look book (photo plus data table on one slide): about 1219 x 1210; about 12 px per
+  facing; not countable (agents upscaled 6x and still could not resolve box edges).
+
+A PDF export does not add pixels. The bridge photo is the same scene the look book shows (the
+look book is a Power BI page that renders these very links), without the slide chrome.
+
+Anatomy of a photo:
+
+- Bridge photo: no header strip; the frame is the photo, and the grid and crop commands use the
+  full image. A store may have a second file "<store id>_display_<date>.jpg" (the
+  <display scene>): a countertop unit, <tier 4> at best, never a source for backbar width or position.
+- Look book slide (fallback): about 3713 x 1951 PNG with a header strip in the top 75 px or so
+  (<store id>, store name, address, city/state/zip, territory); the photo starts at about y =
+  120, letterboxed to the right when the panorama is narrower than the slide. The grid command
+  detects the strip and crops to the photo automatically.
+- Most photos are stitched panoramas of 2 to 3 phone shots; seams show as vertical breaks where
+  shelf lines jump. Width across a seam is unreliable; shelf counts (vertical) are fine.
+- Grid cells are labeled by column letter and row number (A1 to H6) for orientation and are
+  converted to native pixel coordinates for the crop command.
+
+<business unit 4> read checklist:
+
+1. Find every <category 4> brand in frame (<our brand 4A> and the other <category 4> brands);
+   <category 2> brands are not <category 4> and do not compete for position.
+2. Where does <our brand 4A> stand? On the backbar fixture or on a freestanding unit on the back
+   counter behind the register: both are the backbar, position number 1. On the customer's
+   selling counter: a countertop display, <tier 4>, and the ladder stops.
+3. What sits directly above the <our brand 4A> block? A competitor <category 4> brand means
+   <our brand 4A> is not the top; <category 2> above it is irrelevant (ground rule 3).
+4. Width: count <our brand 4A> cans across one shelf on one seam-free segment; 4 cans = 1 ft,
+   8 = 2 ft.
+5. Shelves: count the shelves in the <our brand 4A> section where product can be merchandised,
+   each once, under ground rule 11 and rulings 1 and 3 (a shelf with product or covered by a
+   flip sign counts; strips, signs in front of cans and headers do not; a lit two-tier tray is
+   two; a lit panel counts only on its own rail at shelf pitch; an empty tagged pusher shelf
+   counts; a 2 ft bay is 5 shelves = 10 ft unless a physical sixth is named). Feet = width x
+   shelves; the arithmetic is written out and the numbers go into the structured fields.
+6. Header: is there an <our brand 4A> header directly above the block, and how wide? Price and
+   shelf strips are not headers; a header over <competitor brand 5A>, <category 3> or
+   <category 2> does not count.
+7. <competitor brand 4A> total width: cans across at its widest product row (a tower with three
+   1 ft trays reads 12 cans = 3 ft even when its header looks narrower), plus any additional
+   product column under a separate panel; panels over other brands add nothing.
+8. Store category width: total <category 4> width across all brands, for the
+   <tier 1 starter category cap> gate.
+9. Decide the level as merchandised, compare with the assigned level, and write the next step in
+   shelves, feet, columns and headers.
+
+<business unit 3> read checklist:
+
+1. Locate every <category 3> location (backbar bay, wire rack, pegboard, <category 1> fixture
+   shelf, countertop display) and identify the number 1 <category 3> visibility location (the
+   largest set at eye level in line with the register).
+2. On each row with <our brand 3A>, count boxes left to right, then right to left; note
+   lighters, tube boxes, papers or other brands that break the run, and empty pushers.
+3. The contiguous count is the largest unbroken <our brand 3A> run; the total count is separate;
+   both are reported when they differ, with what breaks the run.
+4. Top shelf: does <our brand 3A> cover the entire top shelf of the <category 3> space (up to
+   <top shelf coverage limit>)?
+5. Sign: an <our brand 3A> sign of at least <minimum sign size> (roughly a 12 x 9 inch card or
+   larger); shelf strips, price strips and <promotional price program> trays are not that sign.
+6. Counter: are any <category 3> on or above the selling counter? <enhanced level> requires
+   back-counter placement.
+
+When to stop and write Unclear: no <our brand 4A> (or no <category 3> set) anywhere in frame
+after a full grid pass; the set shot edge-on so rows cannot be separated; a countertop object, a
+person or a price card hiding part of the only countable run; a stitch seam through the only
+countable row with the two segments disagreeing; the image tagged as the <main fixture scene>
+showing a different part of the store; six crops without agreement between two reads. The agent
+writes the reason, what was visible (for example "14 facings visible, 3 to 4 slots hidden") and
+both candidate outcomes in the next step, so the rep knows what to check in store.
+
+Process discipline: as in Step 3 (fixed 5-store batches, Part C verbatim, a file after every
+store, the stale command every cycle, the lead's mandatory adjudications, a status line every 10
+stores, resume from the status command). Early attempts with loosely briefed agents on
+low-resolution photos stalled for an hour with nothing written; the fix was the image-only
+export, the grid and crop tool, an 8-crop cap per store and a file written after every store.
+Magnification is capped at 3x (a tight native crop beats a large blurry one);
+<competitor brand 4A> width is cans across a product row, never the header or tower outline; the workbook is built
+on the live surface with the full column layout planned before the first write.
+
+Part C - Scoring Agent Brief:
+
+One background scoring agent is dispatched per batch with the prompt below the rule; the run
+directory token is replaced with the run's directory and the store block token with the brief
+command's output for that batch. The optional planogram paragraph is added when the account team
+has supplied the contracted set. The protocol is not shortened; the pilot that matched the lead 3
+of 3 used exactly this text. The prompt says, in order:
+
+1. Role and discipline: the agent scores <industry> fixture photos for <business unit 4>
+   (<our brand 4A> <category 4>) and <business unit 3> (<our brand 3A> <category 3>) contract
+   compliance, works in the session workspace, scores exactly the stores listed, one at a time,
+   in order, writes each result to disk before starting the next, uses no subagents, and prints
+   no tool names or paths in its final message.
+2. It FIRST reads the reference file completely (Parts A, B and D are the rules).
+3. The store block: photo file, <store id>, name, address, photo date and assigned levels from
+   the system for each store; some stores also list a display photo.
+4. The photos: bridge photos ("<store id>_merch_<date>.jpg") are the <photo platform> scene with
+   no header strip; look book slides (fallback) have a header strip on top and the photo below;
+   most are stitched panoramas with visible seams. A display photo ("<store id>_display_
+   <date>.jpg"), when listed, shows a countertop unit: the agent views it once with the grid,
+   notes what is on it, and remembers that a display alone is <tier 4>; the fixture photo decides
+   position, width and footage. If a store's only photo is a display photo, <tier 4> is the
+   ceiling.
+5. The tools: the grid command (a labeled overview written to the session's crop folder and
+   viewed with the image viewer); the crop command (native-pixel coordinates as printed by the
+   grid, a scale from 1.0 to 3.0 and a tag); the cells command (a grid cell range, a scale and a
+   tag). Scale is capped at 3x; more is blur, not detail. The full grid is viewed first, then
+   crops. Maximum 8 crops per store; if two reads still disagree after that, the field is
+   Unclear.
+6. The per-store protocol:
+   a. Append a START line with the <store id> and the UTC time to the run's timing log.
+   b. Grid view; locate the <category 4> section, the <category 3> set and any stitch seams
+      (<category 2> brands are not <category 4>).
+   c. The <business unit 4> read from crops, in the order of the Part B checklist: backbar or
+      countertop display (display = <tier 4>, stop); what sits directly above the <our brand 4A>
+      block; section width from cans across; shelves where product can be merchandised, each
+      counted once, under the full text of ground rule 11 (strips, signs in front, headers and
+      printed artwork add nothing; a two-tier tray is two; the 2 ft bay sanity check; the
+      header-or-flip-sign-shelf test); linear feet = width x shelves with the arithmetic
+      written; the <our brand 4A> header and its width; <competitor brand 4A> total width as cans
+      across a product row; other <category 4> brands; the store's total <category 4> width.
+   d. The <business unit 3> read from crops at 2x to 3x, per the Part B checklist: both-direction
+      counts reported only when they agree within 1; what breaks the run and the largest
+      contiguous run; top-shelf coverage; a sign of at least <minimum sign size> ABOVE the set
+      (strips between the rows do not count); back-counter placement. A missing sign with
+      everything else met is "Correct as Assigned (place sign above <category 3>)" for an
+      <enhanced level> store, never a reclaim; a foreign item splitting a run that would
+      otherwise reach a threshold gives the upgrade with the fix named.
+   e. Second read: re-count shelves, cans across and facings once more, independently, then
+      decide. If the two reads land in different verdict classes or different footage or facings
+      buckets (the tier thresholds in feet; the two <business unit 3> facing thresholds), keep
+      the more conservative verdict and start the flags field with the disagree flag, what split
+      and by how much.
+   f. Decide verdicts in the exact vocabulary, adding "(at the line)" when footage or facings
+      sit exactly on the minimum.
+   g. Write a temporary store JSON in the run directory with exactly the agreed keys: slide
+      number, <store id> as a string, store, address, city, state, zip as a string; for each
+      business unit the assigned level, observed level, verdict, reasoning and next step; flags;
+      and the structured reads: <our brand 4A> width in feet, shelf count, feet (width x shelves;
+      null when <our brand 4A> is not in frame), header width in feet (0 for none), position (one
+      of backbar number 1, backbar number 2, countertop display, not in frame), the store's total
+      <category 4> width in feet, the contiguous <our brand 3A> count the agent stands behind (-1
+      when the <category 3> set is not in frame) and the total <our brand 3A> boxes seen.
+      Reasoning still carries the actual measurements (cans across, shelves, feet arithmetic,
+      header width, <competitor brand 4A> width, facings per row, seams, both reads). Next step
+      is what the store needs to upgrade, or to get back to standard, or "Hold" with the cushion.
+      Flags start with the hinge flag and a description when the verdict turns on a judgment the
+      rules do not settle.
+   h. Record it with the record command. If it refuses because the store is already scored, the
+      agent skips the store and moves on; it never overwrites.
+   i. Append an END line with the <store id>, the UTC time and the crop count to the timing log,
+      then the next store.
+7. A "rules that decide verdicts" block: Part A's ladder with its thresholds and ground rules 3
+   to 14 restated in one paragraph (position, width, header and footage tests for each tier; the
+   countertop ceiling; the starter category cap; the once-per-shelf footage rule; the two
+   <business unit 3> facing lines with top shelf, sign above and back-counter for
+   <enhanced level>; never guessing a count; naming the measurement behind a downgrade and the shortest
+   path up).
+8. The optional planogram paragraph: "EXPECTED SET FOR THIS CHAIN:" followed by the contracted
+   configuration in words; for each element the agent reports PASS or FAIL with the measurement
+   it saw; verdict rules do not change.
+9. The final message: one line per store (<store id> | <business unit 4> verdict | <our brand 4A>
+   feet arithmetic | <competitor brand 4A> width | <business unit 3> verdict | <our brand 3A>
+   facings, both reads), then total crops used and elapsed minutes. Nothing else.
+
+Part D - <photo platform> Signals:
+
+The <shelf recognition model> carries the <photo platform>'s own reading of every look book
+photo. It was tested against the lead's photo counts (6 stores) and against the agents' reads on
+the first full-territory run (59 stores with both numbers). It is used for triage, trend and for
+routing lead review, never for the verdict. Horizon: as in the Architecture section, the
+<successor photo platform> will require Step 1's photo-link pull and this Part to be re-pointed;
+the reading rules in Parts A and B do not change.
+
+Tables and columns. Legend: table: useful columns; grain.
+
+- <photo product visibility table>: <store id column>, <sales cycle column>, manufacturer, a
+  standard brand family (our brands and competitors by short name), the SKU title, facings, an
+  identified flag, photo date, visit id, scene type, scene image link; one row per SKU per visit.
+- <recognized items fact table>: <store id column>, <sales cycle column>, several POS presence
+  flags for <business unit 4> and <business unit 3> signage, latest visit date, the
+  <main fixture scene> and <display scene> photo links; one row per store per cycle.
+- <photo scene visibility table>: <store id column>, scene type, number of images, an
+  any-quality-issue flag with its components (bad angle, blurry, too close, too far, limited
+  resolution, obstacle, reflection, nothing to tag), scene image link, cycle; one row per scene
+  per visit.
+
+The cycle-rank column does not filter on the product visibility table (it never holds the value
+1); the latest <sales cycle column> value is used instead. The image links open without a login
+in a browser and through the Power Automate bridge (Part E); Cowork's own tools cannot fetch
+them, so that is never tried.
+
+What the tests showed: on six pilot stores the platform's <our brand 3A> counts ran far below
+the photo counts (for example 5 against 19 to 20, 8 against 18) and its <our brand 4A> counts
+were in the right range but not shelf-structured (36 against about 48 read as shelves x cans).
+On 59 stores with both a platform <our brand 4A> count and an agent footage read, platform
+facings divided by read linear feet had a median of 2.8, a tenth percentile of 1.5 and a
+ninetieth of 3.9; 53 of 59 fell between 1.5 and 6, and the six outside that band were exactly
+the stores worth a second look (the empty-pusher-shelf store whose verdict the lead changed, a
+Downgrade at the line, a <tier 2> store read at 2 ft against 17 facings). Platform <our brand 3A>
+counts stayed erratic in both directions (26 against a read of 18; 2 against 15), so they route
+review but never settle a count. In detail: <our brand 3A> is undercounted 2x to 4x in half the
+stores because the platform counts only SKUs on its measured list, so a platform count can never
+clear or fail the <base level> or <enhanced level> line; <our brand 4A> facings are directionally
+right but say nothing about shelves x width, which is what the contract measures;
+<competitor brand 4A>, <competitor brand 4B>, <competitor brand 4C>, <competitor brand 4G> and
+<competitor brand 4F> are absent from the model entirely, so the width and position tests are impossible from
+the platform; the <business unit 4> POS presence flag (and the premium-line flag) was 1 at every
+store including two with no <our brand 4A> header, so it is not a header flag.
+
+What to use it for:
+
+0. Routing lead review (Step 4): the <our brand 4A> and <our brand 3A> facings for each store's
+   photographed cycle are pulled into the photos CSV as two platform-count columns (query below)
+   and carried into the contracts CSV by the store-list command; the status command then raises
+   the platform-disagree flag when <our brand 4A> facings per read foot fall outside 1.2 to 6 or
+   the platform counts more than six <our brand 3A> facings above the read, and the
+   platform-hint flag when the read says the <category 3> set is out of frame but the platform
+   counted ten or more. Flagged stores go to the lead; nothing else changes.
+1. Re-shoot triage before scoring: any store whose latest <main fixture scene> has the
+   any-quality-issue flag (blurry, bad angle, too far, obstacle, limited resolution) or the
+   nothing-to-tag flag set goes straight onto the re-shoot list and is scored last, with the flag
+   in its row; on a chain of thousands this removes unscoreable photos from the agent queue
+   before any time is spent on them.
+2. Coverage gaps: a store with no <our brand 3A> rows in the <photo product visibility table>
+   for the latest cycle very likely has no <category 3> set in the photographed scene; "Unclear -
+   <category 3> not in frame" is expected and the brief says so.
+3. Trend column: <our brand 4A> and <our brand 3A> facings over the last 4 to 6 cycles as a
+   supporting Store List column; a store whose <our brand 4A> facings fell from 38 to 18 between
+   cycles is a reclaim candidate even when the current photo is unclear.
+4. Sanity check on the roster: store name and city from the <store profile table> against the
+   <recognized items fact table> (or a slide header on the fallback path) catch mismatched
+   <store ids> on chains that reuse store names.
+
+Sample DAX, described: the first query summarizes the <photo scene visibility table> by
+<store id> and scene type for the requested <store ids>, returning the latest photo date and the
+maximum of the quality-issue, blurry, bad-angle and obstacle flags. The second summarizes the
+<photo product visibility table> by <store id>, <sales cycle column> and brand family, restricted
+to the requested <store ids> and to the <our brand 4A> and <our brand 3A> families, summing
+facings, ordered by store and cycle descending. <store ids> are batched 500 at a time under a
+1,000-row cap; the facings query returns up to 12 rows per store (6 cycles x 2 brands), so 80
+stores per call is its practical ceiling. For the review-routing columns it is filtered to the
+last two cycles and the row whose cycle matches the store's photo is kept; the result is pivoted
+to one row per <store id> and joined onto the photos CSV by <store id> and cycle before the
+store-list command. Blank facings with a non-zero row count mean the platform saw the brand but
+counted nothing; the column stays blank.
+
+Part E - The Photo Bridge: the App, Its File Contract, DAX and Run Mechanics:
+
+E0. Who is asking (run before any scope query): the identity, fallback, scope-count and
+store-list queries are the Hub section's role-resolution queries against the
+<user directory table>, the <sales employee geography table> and the <hierarchy table>; this skill does not
+re-derive them. Specific to this skill: the hierarchy table is clipped by row-level security, so
+a senior leader's store count seen from a <territory role>'s login is the clip, not their span; a
+headquarters executive who appears high in an account chain is still headquarters; for field
+roles the geography columns of the <store profile table> are preferred over the <store id> list,
+which (500 per query) serves account people. The sizing rule and the zero-contract chain rule
+are as in Step 1 (one market's regular independents were <n> open and <n> contracted, roughly
+11 hours at 1.7 minutes a store).
+
+Why: every <photo platform> store photo is served from a tokenized <photo platform> API endpoint
+link that opens without a login (verified on a current and a months-old link, so they do not
+expire quickly), one link per store, per scene, per cycle in the <shelf recognition model>; the
+Architecture section explains why OneDrive's upload-from-URL service does the copying. Attempts
+that do NOT work and must not be retried: reading a <photo platform> link with the OneDrive file
+reader (a fake "gone" error), the web fetch tool (text only), a Graph source-URL upload (personal
+OneDrive only), a 740 MB look book deck (over the roughly 200 MB attach and stream limits), and
+building a flow from Cowork (no tool can; a person builds it once).
+
+The bridge flow (default, org-wide, zero-touch): a Power Automate cloud flow owned by <author>,
+standard connectors only (OneDrive for Business file-created trigger, parse JSON, apply to each,
+upload file from URL, create file); the setup guide is the flow setup document in the skills
+package. Its requests and photos folders sit under a <photo platform> photos folder in <author>'s
+OneDrive, shared with everyone at <company> with edit rights, each reached by a
+<shared folder link> resolved to drive and item ids. Contract: a new "<run id>.json" in requests starts a run;
+photos land in photos/<run id>; a bridge manifest there (run id, completion time, total, source
+"flow") means done. The flow does not list failures, so the photo-ingest command compares the
+folder to the request and writes "<run id>-missing.json" for a second pass. Six photos in
+parallel; a territory of about 100 photos takes one to two minutes.
+
+The app (fallback): the retired Managed App form of the bridge, opened by its app link with a
+query string that preselects a run and starts the fetch. Built on <date> from <author>'s
+account, it runs on Microsoft's managed-apps platform, for which <company> has not enabled
+billing; since <date> it shows "Access to managed apps is unavailable" to everyone, and even when
+it runs, play access is per person. It is used only when the flow is not running and the user can
+open it. It works in the user's own OneDrive (the same requests and photos/<run id> subfolders),
+so the request is uploaded there too when falling back; the first open asks for a one-time
+sign-in. Screen: request files on the left (newest first); on the right the selected run with a
+fetch button, a tile wall, a per-photo table (copied / failed and why) and a retry-failed button.
+Copies run six at a time with four attempts each (29 photos in 40 seconds; 82 in 62 seconds).
+
+File contract (written by the store-list command, read by the flow and the app): the request
+file holds the run id, a creation timestamp, the destination folder and one entry per photo
+(<store id>, store name, city, scene name, photo date, cycle, the <photo platform> link, the
+filename and the destination path). Filenames are "<store id>_merch_<yyyy-mm-dd>.jpg" for the
+<main fixture scene> and "<store id>_display_<yyyy-mm-dd>.jpg" for the <display scene>; the
+missing-photos file has the same layout. The completion marker is a bridge manifest in the run's
+photo subfolder (run id, completion time, total, an ok list of filenames and a failed list of
+filename, <store id> and error; the flow's manifest carries no ok or failed lists); its presence
+means the bridge is done with that run, and a re-fetch overwrites it.
+
+DAX for the store list (the <shelf recognition model>'s <report id>, row cap 5,000): the photos
+query and the profile query are exactly as described in Step 1 (filters, 500-id chunks, last
+three cycles, open accounts, the business development flag applied on the profile side). The
+flavor-restriction columns on the photos side are the <business unit 4> <volume index> flag and
+the <business unit 3> <category 3> flag; the profile side returns the <key account column> as the
+chain. A territory can also be resolved without a question from the
+<photo scene visibility table> by the user's domain alias (keep the row whose title is the <territory role> title and
+whose geography code is a full territory code), though the Hub section's directory lookup is the
+primary method. The query-extract command turns each saved result into its CSV for the
+store-list command.
+
+Run mechanics and timings (pilot territory): 137 stores with a photo in the last three cycles
+made 146 photos (12 also had a display scene); every visit row carried a <main fixture scene>
+link, and stores never photographed have no row and are recorded "Unclear - No <photo platform>
+photo on file" from the profile CSV. App-era mechanics: upload the request, send the user to the
+app link with the run preselected, poll the run's photo subfolder every 60 to 90 seconds for the
+manifest; a count flat for 5 minutes with no manifest means the user has not opened the app or
+the fetch stalled (ask once, then continue with what landed); failed manifest entries: run the
+ingest, upload the missing-photos file, ask for one more fetch, then record the rest "Unclear -
+Photo link failed". Each landed photo is downloaded by its drive and item ids (1 to 8 MB each;
+batches of calls are fine) and ingested; the next-batch command only hands out stores whose photo
+is on disk, so scoring can start while the rest lands.
+
+Scripts
+-------
+
+Script: Contract audit helper  (source role: the one command-line helper behind every step of the
+audit; subcommands for query extraction, store-list building, photo ingest, grid and crop views,
+store recording, run state and the fallback deck extraction)
+Purpose: Turns Power BI results into a durable, resumable run directory, feeds photos and batches
+to the scoring agents, records each store atomically, routes stores to lead review and exports
+the Store List, so that no progress ever lives only in memory.
+Inputs: a saved Power BI query result (spilled envelope, inline result or bare columns-and-rows
+object); the photos CSV and profile CSV; an optional requested-ids file; the download folder of
+bridged photos; a photo reference (a <store id>, a slide number or a file name); a store JSON
+written by an agent; a run id; look book decks on the fallback path. Two environment variables
+override the photo folder and the runs root.
+Outputs: per-query CSVs; a run directory holding the roster, contracts and expected-photos CSVs,
+the bridge request file and any missing-photos request file, a manifest, a not-scored CSV, a
+photos-status JSON, a status JSON, an append-only dispatch log, one JSON per store under a
+stores folder and lead decisions under a review folder; a photo inventory CSV and the ingested
+photos in the session's photo folder; grid and crop images in a sibling view folder; the Store
+List CSV; the store block for the agent brief; JSON summaries on standard output.
+Logic:
+  1. Query extract: read the saved result; take the CSV resource text or nested JSON from a tool
+     envelope, else the first table, a bare columns-and-rows object or a "Query Results:" text
+     block. Drop bracketed junk rows, strip the table-name prefix from each header, write the CSV
+     and print the row count and columns. No table found: exit asking for the full saved result.
+  2. Store list: create the stores and review folders; load the photos CSV, the profile CSV
+     keyed by <store id> and the requested ids (the first run of four or more digits per line).
+     Per <store id> keep the latest row by (latest date, cycle) and, separately, the latest row
+     carrying either scene link. The universe is the requested list, else every <store id> in
+     either CSV minus business development accounts (flag = Y) unless an environment override
+     includes them; excluded stores go to the not-scored CSV with the reason. Per store: a roster
+     row (sequence number as the slide, <store id>, name from the photo row, the profile or an
+     unknown-id label, address, city, state, zip, run id as the deck, photo and display photo
+     filenames, photo date, cycle); assigned levels from the profile first and the photo row
+     second, blank becoming "Not Contracted" and a store in neither source "Unknown"; the
+     flavor-restriction flags that are set; a contracts row (<store id>, both levels, the
+     flavor-restriction list or "None", the model's store name and city, the two platform facing
+     counts when present). Per scene with a link: the filename "<store id>_merch_<date>.jpg" or
+     "<store id>_display_<date>.jpg" ("undated" when no date), an expected row (filename,
+     <store id>, scene, link) and a request entry (<store id>, store, city, cycle, photo date, scene,
+     both levels, link, filename, destination path under the photos folder and run id). A
+     display-only store uses its display photo as the photo. A store with no photo gets an
+     automatic Unclear store file for both programs ("No photo" observed, the no-photo flag),
+     reason "<store id> not found in the <shelf recognition model>" (next step: confirm the id
+     with the account team) or "No <photo platform> photo on file" (next step: take a
+     <main fixture scene> photo on the next call and re-run); an existing store file is never
+     overwritten. Write the roster, contracts and expected CSVs and the request file atomically,
+     update the manifest (source, store count, photos expected, request path, bridge folder,
+     not-scored count), and print a JSON summary (stores, with photo, with display photo, no-photo
+     stores recorded Unclear, unknown ids, not-scored count, photos expected, request file,
+     where to upload it, where photos land, the manifest path that signals completion).
+  3. Photo ingest: for each expected file not yet in the photo folder, look in the download
+     folder; absent files go to a missing list, files that do not open as images to an unreadable
+     list with the error, good files are copied atomically; record each present file's size in
+     the inventory with its slide number. If anything is missing, write "<run id>-missing.json"
+     in the request layout. Write and print a photos-status JSON (expected, present, missing,
+     unreadable, the first 50 missing filenames, the missing-request path, time).
+  4. Deck extract (fallback): per deck, read the slides in order, pull each slide's first image
+     through its relationships, write it as "<deck stem>_s<slide number>.png" (atomic; skipped
+     when present) and add it to the inventory with its size; build header-strip contact sheets
+     (the top 75 px of the right 65 percent of each slide, labeled, 14 per sheet) so the lead can
+     transcribe <store ids>, names and addresses into the roster.
+  5. Photo resolution and photo area: a photo reference is a path, a file in the photo folder, a
+     <store id> (the latest "<store id>_merch_*" file by name order) or a slide number. The photo
+     area is found by downsampling to grayscale: near-white top rows mean a look book slide, and
+     the bounding box of non-white pixels below the header strip is used (with a fixed fallback
+     offset); otherwise the full frame is the photo.
+  6. Grid: resize the photo area to 1600 px wide, draw an 8 x 6 red grid with yellow cell
+     labels (A1 to H6), save "<stem>_grid.jpg", print the photo size and native pixels per cell.
+  7. Crop and cells: crop the photo area at native coordinates, scale by at most 3.0 with a
+     high-quality resampler, save "<stem>_<tag>.jpg" and print the size; the cells form converts
+     a cell or cell range to a native box with the range as the default tag.
+  8. Record: validate the store JSON (all required keys; both verdicts start with one of the four
+     verdict words; both reasoning fields are at least 80 characters), coerce <store id> and zip
+     to strings, stamp the scored time. A JSONL target is appended unless the <store id> is
+     already there; a run directory target gets stores/<store id>.json, refused when the file
+     exists unless the override key is true (lead only), written via temp file, flush, fsync and
+     rename; print the store and both verdicts.
+  9. Run state: the scored set is every parseable store JSON (a half-written file is unscored);
+     the dispatch log holds one line per event (dispatch, complete, stale) with batch id,
+     <store ids> and UTC time; an open batch is dispatched and neither completed nor released. Init
+     creates the folders and the manifest or, on resume, appends decks, increments the resume
+     counter and stamps the time; roster and contracts copy a CSV into the run (refusing an
+     empty one). Pending stores are roster rows not scored, not in an open batch and with a
+     photo filename; a photo not yet on disk is "awaiting photo"; a store with no contracts row
+     is flagged as missing a contract but stays in the queue.
+  10. Next: up to N batches of M pending stores with sequential zero-padded batch ids; print
+      remaining, awaiting photo, in flight, scored, missing contract and the batches. Dispatched
+      and complete append their events. Stale: an open batch older than the limit (default 20
+      minutes) with unscored stores is released with only those stores; a batch whose stores are
+      all scored is marked complete; print what was released and its age.
+  11. Review routing, as specified in Step 4: feet come from the structured field, else the
+      largest "= N ft" in the observed text; facings from the structured field, else the largest
+      facing count in the <business unit 3> text (ranges averaged); a table maps each
+      <business unit 4> contract string to its tier threshold; the platform band is 1.2 to 6.0 facings per
+      foot. Any Step 4 mandatory reason gives "review" with the reasons joined; otherwise a
+      no-photo store or a store Unclear on both programs is "skip" and everything else "sample".
+  12. Status: count verdict classes per business unit (text before any " (" or " - "); walk the
+      roster in order so the 10 percent sample is stable across resumes, adding every 10th
+      sample-pool store to the review list; compute the counters (roster, contracts, scored, in
+      flight, remaining, awaiting photo, missing contract, review required, review done, tier
+      counts, review pending with reasons); choose the next action in priority order: pull
+      contracts if there are none; dispatch next batches if any are pending; check the bridge
+      folder and ingest if stores are awaiting photos; wait for in-flight batches; adjudicate
+      pending reviews; build or refresh the workbook and report. Write and print the status JSON.
+  13. Export: the Store List CSV in roster order with the Step 5 columns, scored stores only; the
+      photo date from the roster, the <business unit 3> reasoning prefixed with "Observed:" and
+      the observed count, Lead Reviewed "Yes" when a review file exists.
+  14. Brief: for each <store id> of an open batch (refusing one that is not open), one numbered
+      line: photo file, <store id>, name, address, city, state, zip, photo date, both assigned
+      levels and the flavor-restriction note, plus a display-photo note (a display alone is
+      <tier 4>) or, when the display photo is the only photo, that the store has no backbar photo and
+      <tier 4> is the ceiling unless a backbar section is visible.
+Checks and failure handling: every file that matters is written via temp file and rename, so an
+interrupted write never produces a half record; record refuses missing keys, bad verdict
+prefixes, short reasoning and duplicate stores (override is the lead's alone); the store list
+never overwrites an existing store file and sends excluded business development accounts to a
+visible not-scored CSV; photo ingest verifies every image and lists unreadable and missing files
+instead of failing; stale releases only unscored stores so a finished store is never
+re-dispatched; the sample is taken in roster order so resumes do not change it; unparseable store
+files count as unscored; bad or missing arguments print the usage text and exit.

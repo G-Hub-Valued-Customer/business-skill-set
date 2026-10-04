@@ -1,0 +1,278 @@
+----------------------------------------------------------------------------------------------------
+Part 11 of 11: Test Plan
+----------------------------------------------------------------------------------------------------
+
+Test Plan
+=========
+
+Purpose: Ten tests, numbered 0 to 9, that a tester runs against the bundle to verify identity
+resolution, routing, scope and each skill's output, with a checklist to send back to <author>.
+
+Triggers: A tester holding the skills bundle zip wants to validate the bundle; the test prompts
+themselves ("before you run anything, tell me who you think I am...", "which skill would you use
+for each of these...", "what are my contract opportunities", and the others below).
+
+Inputs:
+- The skills bundle zip, attached first in a new Cowork session for every test.
+- The tester's own login (never stated) and their knowledge of stores in their own geography;
+  there is no answer key.
+- For Test 2, the market's <planning workbook> if Copilot asks for it; for Test 6, the
+  <SKU volume report> export, label stock, a color printer and a store scanner.
+
+Outputs:
+- A pass or fail judgment per test against its Pass line, plus the checklist at the end, sent to
+  <author email>; workbooks attached only if the tester is comfortable sharing them.
+
+Parameters to Fill In:
+- <author>, <author email> - who receives the checklist.
+- <sales org>, <company> - the organization whose roles the prompts cover and the tenant whose
+  Power BI workspace holds the <SKU volume report>.
+- <territory role>, <market support role>, <market role>, <section role>, <region role>,
+  <account role> - the role titles in the role-specific expectations.
+- <store id>, <store ids> - the store identifier label used in prompts and the brief preview.
+- <business unit>, <business unit 3>, <business unit 4> - the units named in the label and
+  contract tests.
+- <our brand 4A>, <our brand 3A> - the brands the contract audit describes per store;
+  <our brand 1A> <variant> - the product in the one-off margin question.
+- <photo platform>, <shelf recognition model>, <CRM>, "<CRM> visit report widget",
+  <SKU volume report> - the systems named in the expected behavior.
+- <sign type 1> - the state signage guide the POS scorecard reads before querying.
+- <chain D>, <jurisdiction>, <wholesaler A> - the chain, state and wholesaler in the pricing audit
+  test.
+- <price ceiling>, <price support program> - the pass price and program in the pricing audit
+  expectations.
+- <retail price>, <wholesale cost>, <allowance amount> - the sample pack price, carton cost and
+  per-pack allowance the tester supplies for the one-off margin question.
+
+Test Cases
+----------
+
+Each test is one new Cowork session with the skills bundle zip attached. The tester types the
+prompt exactly as written, judges the result against the Pass line, fills in the checklist at the
+bottom and sends it to <author>. The prompts work for any <sales org> role; where the role changes
+what to expect, the test says so. There is no answer key in the package on purpose: it carries no
+store lists or results for any territory, so it can be forwarded to anyone; the tester judges each
+result against stores they know.
+
+Rules for a fair test:
+
+- A new session for every test; routing and identity are the things under test.
+- Attach the zip first, then type the prompt; nothing else in the message.
+- Never tell Copilot who you are or which skill to use. If it asks either question, that is a
+  failure of the thing being tested: note it, answer so the run continues, and note whether the
+  rest worked.
+- If Copilot describes the folder instead of starting, note it, then use the explicit form from
+  the Read Me and finish the test.
+
+Test 0: Who Am I (3 Minutes):
+
+Prompt: "before you run anything, tell me who you think I am, what my span of control is, and what
+scope each of the eight skills would use for me by default".
+
+Pass: the tester's correct role and geography (or chains, or "headquarters") without asking
+anything, taken from the login; default scopes matching the "Who You Are Is Read from Your Login"
+table in the Read Me; for a headquarters role, a statement that it would ask the tester to name a
+scope. Nothing is run.
+
+Fail: it asks who the tester is; it guesses a territory or market the tester does not hold; it
+treats a <market support role> or a <market role> as a single territory; it gives an <account role>
+a field region instead of their chains; it gives a headquarters person a default scope instead of
+asking.
+
+Test 1: Routing Only (5 Minutes):
+
+Prompt: "which skill would you use for each of these, and why: 'give me my top stores', 'help me
+with my 2H objectives', 'what are my contract opportunities', 'which of my stores are missing
+signs', 'rebuild my <business unit 3> label sheet', 'I'd like to enable daily briefings'. Do not
+run anything."
+
+Pass: Top Opportunity Stores, Performance Write-Up Concierge, Contract Compliance Audit, POS Gap
+Scorecard, Business Unit Label Sheets, Daily Store Brief, in that order, each with a reason drawn
+from the router table. Anything else is a routing miss; the tester copies the answer into the
+notes.
+
+Test 2: Visit List (10 Minutes):
+
+Field roles (<territory role>, <market support role>, <market role>, <section role>,
+<region role>) type: "give me my top stores to visit for <this month>". Account and headquarters
+roles type, naming a geography they know well: "give me the top stores to visit in
+<territory or market number> for <this month>". If Copilot asks for the cycle's <planning workbook>, the tester
+attaches the market's copy (it will not build a list without one) and notes whether it found the
+file on its own.
+
+Pass: one Excel workbook with the shape for the scope (Top 10 + Next 25 for one territory; Top 20 +
+Next 50 for a market or wider), a Priorities tab and a Method tab; every store carries volume
+numbers and sits inside the scope. Judged against what the tester knows: the three or four biggest
+opportunity stores they can name sit in the top group, and a store they know is closed or tiny
+does not. The Priorities tab may weight the supervisor's recent emails; for a tester outside a
+field chain of command it must say plainly that no manager directives were available rather than
+invent any.
+
+Fail: no volume numbers; stores outside the scope; invented manager directives; the wrong shape for
+the scope.
+
+Test 3: Contract Audit (About 2 Minutes a Store; You Can Leave):
+
+Prompt, for everyone: "what are my contract opportunities".
+
+What should happen, in order:
+
+1. Copilot states the scope. A <territory role> gets the regular independents of the territory. Any
+  wider role gets the store count and the hours and is offered a cut before anything starts; the
+  tester accepts one territory, or answers with a short list: "just these <store ids>:
+  <six to ten store numbers you know>". A headquarters role is asked once to name a scope and does the same.
+2. It pulls the stores, their assigned contract levels and their latest <photo platform> photo
+  links from the <shelf recognition model> and says how many have a current photo.
+3. It uploads a request file to the shared bridge folder and says the photos are being fetched.
+  Nothing to click; the bridge flow wakes within about five minutes and Copilot notices on its own.
+  If it reports that the bridge is not running, the tester stops the test, records that, and tells
+  <author>.
+4. It scores the photos, about 1.7 minutes a store with four agents in parallel, reporting progress
+  every few stores. If the session disconnects, the tester returns to the same conversation and
+  says "continue"; it must resume, not restart.
+5. One Excel workbook: an Overview tab with a scorecard and a priority list, a Store List tab with
+  one row per store, and a Method tab.
+
+How to judge it without an answer key: for three stores the tester has stood in this cycle,
+compare Copilot's description of the <our brand 4A> section (width, number of shelves, position,
+header) and of the <our brand 3A> facings with what the tester saw. The verdict must follow from
+that read and the assigned level; the next step must be something the tester could actually do in
+the store.
+
+Rules that must hold for every store: linear feet = section width x shelves where product can be
+merchandised, each shelf once (a standard 2 ft bay of 5 shelves is 10 ft; strips, hanging signs,
+headers and panels over another brand add nothing); every store gets a verdict and a next step; a
+store below its contract is a reclaim-space finding with the fix named, never suppressed; a store
+that could reach a higher level has the path named; a store whose set is not in the photo is
+Unclear, not guessed.
+
+Fail: any 12 ft or 14 ft reading on a 2 ft bay; "no path" where a simple fix exists; a photo that
+was not fetched being scored anyway; the run starting on a market or wider without stating the
+count and proposing a cut.
+
+Test 4: POS Gaps (10 to 15 Minutes):
+
+Field roles type: "what POS is missing in my stores". Account and headquarters roles type: "what
+POS is missing in <territory or market number>".
+
+Pass: the scope line first; one Excel workbook, one row per store, green check where POS is
+present, red X for a real gap, yellow where the store could not be assessed, with a failure code in
+the margin for every yellow or red. Before querying, Copilot says which POS measures are scored
+this cycle (it reads the <sign type 1> state guide). A <market role> or <market support role> gets
+the whole market; a <territory role> gets their territory.
+
+Fail: red X on a store with no photo this cycle (that should be yellow); no failure codes; measures
+nobody scores; a <market support role> scoped to a single territory.
+
+Test 5: Objectives (10 Minutes):
+
+Prompt: "help me with my 2H objectives".
+
+Pass: Copilot looks the tester up, states their role and manager, asks them to confirm scope and
+whether they are setting or tracking 2H objectives, then produces draft objectives and key results
+that ladder to headquarters priorities for their level. It must not invent results or numbers the
+tester did not give it; where it has no data it says so and leaves a marked placeholder.
+
+Fail: objectives written for a different role than the tester's; invented metrics.
+
+Test 6: Label Sheets (10 Minutes):
+
+Prompt: "rebuild my <business unit 3> label sheet".
+
+Pass: Copilot asks for the <SKU volume report> export from <company>'s Power BI workspace rather
+than silently using national data, then delivers a PDF. Every label carries a product name and a
+barcode. It states the <business unit>, sheet and label counts, the ranking source and its date,
+which SKUs it pinned and why, any new item defaulted to one label, and that the die registration
+check passed. It says to print at 100 percent, not Fit to Page. The tester then prints one sheet on
+the label stock and scans several barcodes with a store's scanner.
+
+Fail: it builds from national data without saying so; a label is missing its barcode; it invents a
+UPC for a SKU it could not find; content prints outside the die cuts; a barcode will not scan.
+
+The tester reports separately whether the printed sheet aligned and whether every barcode scanned;
+that is the part never yet verified.
+
+Test 7: Pricing Agent (Routing and Explanation, 5 Minutes; Build Only If Asked):
+
+Prompt: "what is the pricing agent and what does it need from me to run for my market".
+
+Pass: Copilot routes to the Pricing Opportunity Agent builder and answers from its SKILL.md without
+starting a build: the one rule (the lowest competitive retailer margin per store and category is
+the benchmark; <company>'s items above it by the trigger or penny floor are findings; the parity
+price is the benchmark penny profit plus <company>'s net cost), the four inputs and who supplies
+each, that only wholesale invoice cost and competitive buy-downs are ever typed in by a person, and
+that seeding a new market first needs SKU-level scan access proven and the data team told the query
+cost. It names the Managed App as the thing account teams actually open.
+
+Second prompt, which should NOT trigger the skill: "a store sells <our brand 1A> <variant> at
+<retail price> a pack, wholesale is <wholesale cost> a carton, <allowance amount> pack allowance.
+margin?"
+
+Pass: Copilot answers the arithmetic inline (unit cost = carton cost divided by ten packs; net cost
+= unit cost minus the per-pack allowance; penny profit = retail price minus net cost; margin =
+penny profit divided by retail price) with no workbook, no data pull and no question about which
+market.
+
+Fail: it starts pulling data or building workbooks for the first prompt; it asks who the tester
+is; it invents a buy-down or a store; it fires the full skill for the second prompt.
+
+Test 8: Pricing Audit (Run, 3 to 5 Minutes):
+
+Prompt: "audit my <chain D> stores in <jurisdiction> for pricing".
+
+Pass: Copilot routes to the Pricing Audit, resolves the chain to its account hierarchy name without
+asking, pulls the tables, runs <jurisdiction>, and replies in this order: scope and coverage
+(stores, scanning stores, <price support program> election mix); the gates when they limit the
+answer (at the time of writing: no wholesale costs on file for <wholesaler A>, so no margin
+findings yet, and the first five families to price); the count above the <price ceiling> with the
+verify-in-store caveat when the pass price changed inside the 13-week window; what would widen the
+answer; the workbook name. The workbook has six sheets (Summary, Findings, Above <price ceiling>,
+Gates, Benchmarks, Data Notes). No number is estimated.
+
+Second prompt, "add <jurisdiction> to the pricing agent" (naming a second state), should route to
+the Pricing Opportunity Agent builder, not the Pricing Audit.
+
+Test 9: Daily Store Brief (Two Prompts, 10 Minutes; Nothing Is Emailed):
+
+Written for a <territory role> with planned <CRM> visits; other roles run it for the routing and
+the stop only.
+
+Prompt one: "I'd like to enable daily briefings".
+
+Pass: Copilot routes to the Daily Store Brief and walks the tester through the <CRM> home page (the
+<CRM> visit report widget fields and filters, a daily Monday to Friday subscription named "Daily
+Schedule" at a time the tester chooses) plus the OneDrive Desktop and Documents backup check, then
+says to come back and report what time the email is set for. It installs, builds and schedules
+nothing yet. It asks nothing of the tester's supervisor.
+
+Prompt two (after the subscription is saved; the test can run the same day): "okay, the email is
+all set up for 5:00 AM".
+
+Pass: Copilot finds the planner and cycle files in OneDrive or the inbox without asking for
+uploads, builds the ranking and per-store content, schedules the runs around the tester's time
+(Monday to Saturday, nothing on Sunday), shows a preview brief for the next selling day that lists
+only that day's stops in start-time order with store header and <store id>, and says the first
+real brief arrives the next selling morning about 30 minutes after the <CRM> email. Nothing is
+emailed during the test.
+
+Fail: it asks who the tester is or which territory they cover; it puts any step on the supervisor;
+it asks for a planner upload it could have found; it schedules a Sunday run or a Saturday brief;
+the preview shows stops from more than one day or out of start-time order; it emails anyone but the
+tester.
+
+What to Send <author>:
+
+For each test, the checklist:
+
+- Test number
+- Your role
+- Knew who I was without asking (yes / no / asked me)
+- Routed to the right skill without being told (yes / no / asked me)
+- Scope it stated
+- Finished (yes / no / where it stopped)
+- Matched the Pass line (yes / partly / no)
+- Time from prompt to result
+- Anything it said that was wrong or odd (pasted)
+
+Workbooks are attached only if the tester is comfortable sharing them; the checklist alone is
+enough. Send to <author>, <author email>.
