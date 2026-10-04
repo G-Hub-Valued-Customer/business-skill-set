@@ -1,0 +1,62 @@
+REPO DESCRIPTION (GitHub "About" field)
+---------------------------------------
+Four production agent skills over one shared doctrine layer: performance reviews, period
+plans by business impact, conformance scorecards, and a recurring briefing nobody asks
+for. 481 rules cited by stable ID, hard gates, and a standing rule against defaulting an
+unknown to the value that maximizes its score.
+
+(311 characters. The field's limit is 350.)
+
+
+TOPICS (GitHub "Topics" field)
+------------------------------
+ai-agents
+agent-skills
+llm
+claude
+business-operations
+sales-operations
+performance-review
+prioritization
+compliance
+specification
+mit-license
+
+
+WHY THE CHANGES
+---------------
+1. The old first screen led with a feature table and "plain text, no install".
+   The strongest fact in the whole repo, that built output files are sitting in
+   sample-output/ and can be judged in thirty seconds, was below the fold in the
+   Try It section. It is now the second thing a reader sees.
+
+2. The seventeen-round defect burn-down was buried under Verification, two thirds
+   of the way down. For a technical reader that table is the single most credible
+   thing in the project, so it is now above the fold. The duplicate copy in the
+   Verification section was replaced with a pointer so nothing reads twice.
+
+3. The two sharpest trap examples (the +2.72 percent premium growth graded a MISS,
+   and the lines-of-business objective that refused to grade itself) were moved up
+   with the table. They are what make the testing claim checkable rather than
+   assertable, and they are the best thirty seconds of reading in the repo.
+
+4. Everything from "Try it" onward is unchanged. The ideas section, the portability
+   section, the honest limits and the license note were already right.
+
+
+NOTE, ADDED WITH THE FOURTH WORKFLOW
+------------------------------------
+THE DESCRIPTION ABOVE IS LIVE ON GITHUB AS OF 4 OCTOBER 2026. It was set in the About
+field directly, and this file was then rewritten to match it exactly, because the two had
+already drifted: the live field carried a longer sentence about the doctrine layer and the
+stable IDs that this file had never been updated with, and this file carried a shorter one
+that was never on the repository. Both said three workflows.
+
+That drift is the reason to keep the text here at all. A value kept in one place can be
+reviewed; a value kept only in a web form cannot, and a value kept in both without one
+being the copy goes stale in whichever place nobody is looking. **This file is the copy.
+If the two ever disagree again, the live field is what the public sees and this file is
+what is wrong.**
+
+Two topics worth adding if the list is ever reordered: scheduled-reports and
+agent-workflows. The existing eleven are still accurate.

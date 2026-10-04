@@ -1,8 +1,9 @@
 # Business Skill Set
 
-Three workflows that run a business operating rhythm end to end and produce the real
+Four workflows that run a business operating rhythm end to end and produce the real
 deliverable: the prioritized work plan for the coming period, the completed performance
-review, and a conformance scorecard against any published standard.
+review, a conformance scorecard against any published standard, and a recurring briefing
+that arrives on its own before the day starts.
 
 Plain text. No install, no dependency, no vendor. Any agent that can read files, run code
 and write a spreadsheet or a document can run it. Binds to a new organization in about ten
@@ -14,11 +15,13 @@ Author: Daniel J. Coon. MIT licensed.
 
 ## Judge it in thirty seconds, without running anything
 
-Open `sample-output/`. Those four files were produced by these workflows against the data
-in `sample-data/`, unedited. Two of them are the same workflow run at two altitudes from
-the same files: once as the Principal who owns the whole agency, once as a producer who
-owns one book of 48 accounts. Structurally different, both correct, nothing configured
-between the runs.
+Open `sample-output/`. Those six files were produced by these workflows against the data
+in `sample-data/`, unedited. **Two pairs of them are one workflow run at two altitudes from
+the same files**, which is the claim worth checking: the work plans once as the Principal
+who owns the whole agency and once as a producer who owns one book of 48 accounts, and the
+briefings once as a technician who owns eight stops and once as the regional manager over
+three technicians and twenty-three. Structurally different, all correct, nothing configured
+between the runs of a pair.
 
 ## It was tested until it stopped failing
 
@@ -44,21 +47,25 @@ One trap was not planted and caught itself. An objective written in lines of bus
 against a data column holding a policy count. A three-policy account can be one line. The
 run refused to grade the objective rather than report a false number.
 
-## The three workflows
+## The workflows
 
 | Workflow | What it does | What it produces |
 |---|---|---|
 | **Period planning** | Builds the prioritized work list for the coming period. Reads every direction published by headquarters and by the supervisor chain, scores the whole population, and returns a ranked plan with a plain-language reason on every row. | Spreadsheet |
 | **Objectives and review** | Sets objectives at period start, tracks mid-period, and writes the completed performance review. Wraps the character-limited fields of a submission form so each is separately copyable, with its limit and its live character count. | Document |
 | **Standard gap scorecard** | Scores any population against any published standard, with a reason code on every miss and a rate that separates what a person can fix from what they cannot. | Spreadsheet |
+| **Recurring briefing** | Delivers a short briefing on a schedule, before the day starts, to the person who set it up. Every line says how current it is, because the one thing a scheduled artifact never has is a reader present to ask. | Scheduled message |
 
-See field-deployment-reference/ for a company-neutral specification of the eight-skill production bundle this method came out of. Specification only, nothing there runs.
+See `field-deployment-reference/` for a company-neutral specification of the eight-skill
+production bundle this method came out of. Specification only, nothing there runs.
+
 ---
 
 ## Try it
 
-**If you only want to judge the output, run nothing.** Open `sample-output/`. Those four
-files were produced by these workflows against the data in `sample-data/`, unedited.
+**If you only want to judge the output, run nothing.** Open `sample-output/`. Those six
+files were produced by these workflows against the data in `sample-data/`, unedited. The
+two briefings open in a browser; the other four open in a spreadsheet or word processor.
 
 **To run a demo**, paste this to your agent:
 
@@ -67,23 +74,30 @@ files were produced by these workflows against the data in `sample-data/`, unedi
 It should offer you a choice and then run end to end with no further setup:
 
 ```
-Which would you like to run against?
-
-  1  Insurance agency - a fully worked dataset with measured answers
-  2  Bring your own data
-
 Which workflow?
 
   a  Period planning        - what to work on next period, as a spreadsheet
   b  Objectives and review  - a performance review, as a document
   c  Standard gap scorecard - conformance to a published standard, as a spreadsheet
+  d  Recurring briefing     - tomorrow's briefing, as a scheduled message
+
+Which would you like to run against?
+
+  1  The worked dataset for that workflow, with measured answers
+  2  Bring your own data
 ```
 
-Choosing 1 runs against `sample-data/insurance-agency/`. Read that folder's `DATASET.md`
-first if you want to know what the run should find: five things are planted in the data
-and a correct run catches all five. Two altitudes are worth trying both ways. Run as the
-Principal, who owns the whole agency, or as producer D. Whitlock, who owns one book of 48
-accounts. Same files, same workflow, structurally different and correct outputs.
+**Choosing 1 picks the dataset the workflow was driven against**, because the two
+datasets are not interchangeable: a, b and c run against `sample-data/insurance-agency/`,
+and d runs against `sample-data/facilities-services/`. Read that folder's `DATASET.md`
+first if you want to know what the run should find. Traps are planted in both and a
+correct run catches all of them.
+
+**Two altitudes are worth trying either way, and that is the thing to look at.** For a, b
+or c, run as the Principal who owns the whole agency, or as producer D. Whitlock who owns
+one book of 48 accounts. For d, run as technician T. Boone who owns eight stops, or as
+regional manager J. Ferreira who owns three technicians and twenty-three. Same files, same
+workflow, structurally different and correct outputs, nothing configured between the runs.
 
 Choosing 2 starts the first-run interview: ten questions about the organization, in eight
 conversational turns. Have your own files to hand.
@@ -103,7 +117,7 @@ will ask for a reference file when it needs one.
 
 ## How it is put together
 
-One short router, three workflows, and a reference tree that is read on demand.
+One short router, four workflows, and a reference tree that is read on demand.
 
 ```
 skill/
@@ -112,6 +126,7 @@ skill/
     period-planning.md
     objectives-and-review.md
     standard-gap-scorecard.md
+    recurring-briefing.md
   reference/
     capability-probe.md       what tooling exists, and the ladder down when it does not
     output-contract.md        the formatting elements and the gates that block publication
@@ -288,17 +303,18 @@ far smaller share of what they own.
 
 ## Honest limits
 
-- The end-to-end testing covered one industry's shape of data. The paper testing covered
-  five. Run yours once with somebody watching before anyone acts on the output.
+- The end-to-end testing covered two industries' shape of data, one of them for three of
+  the four workflows and the other for the fourth. The paper testing covered five more.
+  Run yours once with somebody watching before anyone acts on the output.
 - It is long. That is deliberate: nothing that worked was removed to make it shorter. The
   length is judgment written out, not padding, and the tree means a run reads a fraction
   of it.
 - It does not integrate with anything. It reads files and published documents and writes a
   file. If your priorities live only in a system with an API, somebody has to export them
   first.
-- One dataset ships, not five. The other four industries were paper tests and no files
-  were ever built for them. `sample-data/README.md` says so plainly rather than shipping
-  datasets for runs that never happened.
+- Two datasets ship, not seven. The other five industries were paper tests and no files
+  were ever built for them. `sample-data/README.md` states the standard a dataset has to
+  meet to be in that folder, rather than shipping datasets for runs that never happened.
 
 ---
 
