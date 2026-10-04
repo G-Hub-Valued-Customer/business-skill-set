@@ -52,6 +52,7 @@ run refused to grade the objective rather than report a false number.
 | **Objectives and review** | Sets objectives at period start, tracks mid-period, and writes the completed performance review. Wraps the character-limited fields of a submission form so each is separately copyable, with its limit and its live character count. | Document |
 | **Standard gap scorecard** | Scores any population against any published standard, with a reason code on every miss and a rate that separates what a person can fix from what they cannot. | Spreadsheet |
 
+See field-deployment-reference/ for a company-neutral specification of the eight-skill production bundle this method came out of. Specification only, nothing there runs.
 ---
 
 ## Try it
