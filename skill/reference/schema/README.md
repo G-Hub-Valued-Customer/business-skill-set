@@ -2,12 +2,25 @@
 
 # BINDING SCHEMA
 
-The complete variable dictionary for the three-skill bundle: PLANNING (periodic
-account or population planning), REVIEW (objective setting and performance
-write-up), SCORECARD (compliance and execution gap scoring).
+The complete variable dictionary for the bundle: PLANNING (periodic account or
+population planning), REVIEW (objective setting and performance write-up),
+SCORECARD (compliance and execution gap scoring), BRIEFING (a recurring briefing
+delivered as a scheduled message).
 
-One config, three skills. Nothing in this file is skill-specific. Every skill
-reads the same bound config and fails honestly on anything unbound.
+**One config. No variable is defined in two groups. A group MAY be specific to one
+skill, and where it is, it says so in its own opening line. Every skill reads the
+same bound value for every group it reads, and fails honestly on anything
+unbound.**
+
+That replaces an earlier claim that nothing here was skill-specific, which was
+already untrue when it was written and in a way no reader could see: Group 19
+binds one section of the planning spreadsheet and Group 20 binds a review form's
+sections, scale and prompts, and neither is read by anything but its own skill
+while neither says so. Group 26 is the third of its kind and the first to declare
+it. The claim also predates the split of this file into one file per group, so
+"nothing in this file" no longer named the thing the claim was about. The form
+above is stronger than the one it replaces and it survives a skill being added
+without an edit.
 
 ## How to read this file
 
@@ -312,6 +325,40 @@ holding a definition can never be holding it without the default it needs when
 the value turns out to be unbound. That separation was the one real hazard in
 splitting this file and it is closed by construction rather than by discipline.
 
+**A NAME IN UPPER CASE THAT IS NOT IN THE INDEX BELOW IS NOT AUTOMATICALLY
+UNBOUND.** Two classes of upper-case name in this bundle are fixed vocabulary
+rather than configuration: the six rung names of `COUNTERFACTUAL_LADDER` and the
+capability names the probe reports on. Neither is bindable, neither has a default
+or a degradation notice, and neither may be reported as a variable that is defined
+nowhere. **Before treating an unindexed upper-case name as unbound, check it
+against `reference/schema/intentional-non-variables.md`, which lists both classes
+in full and is the one place that distinction is written down.** A fixed vocabulary
+word reported as an unbound value is a notice telling a reader to go and bind
+something that cannot be bound.
+
+**TWO FILES HERE ARE READ BY NOBODY DURING A RUN, AND THAT IS STATED RATHER THAN
+LEFT TO BE INFERRED.** Both are kept for provenance after the single-file build
+was split, and both are reachable from this paragraph and from nothing else, on
+purpose. Every other file in this folder is either the index you are reading or a
+group file the index names.
+
+`reference/schema/defaults-and-notices.md` holds the framing text that stood above
+the two appendices of the single-file build, kept verbatim after their contents
+moved into the group files.
+
+`reference/schema/unbound-variable-limits.md` holds APPENDIX B, what an unbound
+variable may never do, and the change log of what this schema's remediation
+changed after two hostile acceptance tests. **Its name and its old manifest line
+both describe a group file and it is not one**: it defines no variable and carries
+no defaults table. **Every governing rule in its Appendix B is also stated in a
+file a run can reach**: the standing rules above, `reference/capability-probe.md`
+for a section that ships with its explanatory row, and the per-workflow rules
+about a notice that is never quietly downgraded. A run that never opens it loses
+no rule. What it holds that nothing else does is the change log, which is a
+record of how the schema got here and not an instruction to anybody. **A reader
+comparing it against the standing rules above should expect the standing rules to
+govern**, because this file predates the split and nothing has updated it since.
+
 ## THE GROUPS
 
 | Group | File | Subject |
@@ -341,6 +388,7 @@ splitting this file and it is closed by construction rather than by discipline.
 | 23 | `reference/schema/systems-of-record-and-capability-bindings.md` | Systems Of Record And Capability Bindings |
 | 24 | `reference/schema/language-labels-and-messages.md` | Language, Labels And Messages |
 | 25 | `reference/schema/person-tier.md` | Person Tier |
+| 26 | `reference/schema/recurring-delivery.md` | Recurring Delivery |
 
 ## EVERY VARIABLE, AND THE ONE FILE IT LIVES IN
 
@@ -382,9 +430,16 @@ splitting this file and it is closed by construction rather than by discipline.
 | `BREADTH_FLOOR_FRACTION` | `reference/schema/breadth-section.md` |
 | `BREADTH_SATISFACTION_CONCEPT` | `reference/schema/breadth-section.md` |
 | `BREADTH_SORT_KEYS` | `reference/schema/breadth-section.md` |
+| `BRIEFING_ACTION_CAP` | `reference/schema/recurring-delivery.md` |
+| `BRIEFING_ITEM_SECTIONS` | `reference/schema/recurring-delivery.md` |
+| `BRIEFING_RECIPIENT` | `reference/schema/recurring-delivery.md` |
+| `BRIEFING_SCOPE` | `reference/schema/recurring-delivery.md` |
+| `BRIEFING_SOURCES` | `reference/schema/recurring-delivery.md` |
+| `BRIEFING_SUBJECT_SHAPE` | `reference/schema/recurring-delivery.md` |
 | `BUNDLE_VERSION` | `reference/schema/bundle-identity-and-attribution.md` |
 | `BUNDLE_VERSION_DATE` | `reference/schema/bundle-identity-and-attribution.md` |
 | `CARET_ALLOWANCE_CHARS` | `reference/schema/formatting.md` |
+| `CARRIED_SOURCE_TRIPWIRE` | `reference/schema/recurring-delivery.md` |
 | `CARRYOVER_LABEL` | `reference/schema/periods-and-the-operating-calendar.md` |
 | `CENTRAL_BRIEF_NAME` | `reference/schema/priority-sources-and-authority.md` |
 | `CENTRAL_BRIEF_REQUIRED` | `reference/schema/priority-sources-and-authority.md` |
@@ -440,16 +495,24 @@ splitting this file and it is closed by construction rather than by discipline.
 | `COUNTERFACTUAL_BY_METRIC` | `reference/schema/counterfactual-denominator.md` |
 | `COUNTERFACTUAL_DEFAULT_RUNG` | `reference/schema/counterfactual-denominator.md` |
 | `COUNTERFACTUAL_RUNG_SCOPES` | `reference/schema/counterfactual-denominator.md` |
+| `COUNT_NOUN_FORMS` | `reference/schema/recurring-delivery.md` |
 | `COVERAGE_DUPLICATION_APPLIES_TO` | `reference/schema/scoring-constants.md` |
 | `COVERAGE_DUPLICATION_FACTOR` | `reference/schema/scoring-constants.md` |
 | `CREDITABLE_ENTITIES` | `reference/schema/creditable-entities.md` |
 | `CREDITABLE_ENTITY_CLASS_NAME` | `reference/schema/creditable-entities.md` |
 | `CYCLE_POSITIONS` | `reference/schema/periods-and-the-operating-calendar.md` |
 | `CYCLE_POSITION_NAMES` | `reference/schema/periods-and-the-operating-calendar.md` |
+| `DATE_FORMAT_DAY` | `reference/schema/recurring-delivery.md` |
+| `DATE_FORMAT_MONTH` | `reference/schema/recurring-delivery.md` |
+| `DATE_FORMAT_WEEKDAY` | `reference/schema/recurring-delivery.md` |
 | `DEADBAND` | `reference/schema/counterfactual-denominator.md` |
 | `DELIVERABLE_CONTAINER_REQUIRED` | `reference/schema/deliverable-contract.md` |
 | `DELIVERABLE_LINES` | `reference/schema/deliverable-contract.md` |
 | `DELIVERABLE_NAME` | `reference/schema/deliverable-contract.md` |
+| `DELIVERY_FEED_WAIT_MINUTES` | `reference/schema/recurring-delivery.md` |
+| `DELIVERY_PERIOD` | `reference/schema/recurring-delivery.md` |
+| `DELIVERY_PERIOD_DAYS` | `reference/schema/recurring-delivery.md` |
+| `DELIVERY_TIME` | `reference/schema/recurring-delivery.md` |
 | `DESTINATION_SYSTEM_NAME` | `reference/schema/review-form-and-field-limits.md` |
 | `DIRECTIVE_RELEASE_PHRASES` | `reference/schema/priority-sources-and-authority.md` |
 | `DIRECTORY_MANAGER_LOOKUP` | `reference/schema/systems-of-record-and-capability-bindings.md` |
@@ -459,6 +522,7 @@ splitting this file and it is closed by construction rather than by discipline.
 | `DOC_STORE_PATH_DISCOVERY_REQUIRED` | `reference/schema/systems-of-record-and-capability-bindings.md` |
 | `DOC_STORE_SITE_VARIABLE` | `reference/schema/systems-of-record-and-capability-bindings.md` |
 | `DOWNLOAD_DIR` | `reference/schema/systems-of-record-and-capability-bindings.md` |
+| `DRIFT_ANNOUNCE_SCOPE` | `reference/schema/recurring-delivery.md` |
 | `ENTERPRISE_FINANCIAL_TARGETS` | `reference/schema/organization-identity.md` |
 | `ENTERPRISE_LONG_TERM_GOALS` | `reference/schema/organization-identity.md` |
 | `ENTERPRISE_STRATEGY_PILLARS` | `reference/schema/organization-identity.md` |
@@ -581,6 +645,7 @@ splitting this file and it is closed by construction rather than by discipline.
 | `INITIATIVE_STEER_TERM` | `reference/schema/scoring-constants.md` |
 | `INLINE_FETCH_CEILING` | `reference/schema/systems-of-record-and-capability-bindings.md` |
 | `INTENSITY_PER_ITEM_CONCEPT` | `reference/schema/breadth-section.md` |
+| `ITEM_IDENTIFIER` | `reference/schema/recurring-delivery.md` |
 | `JOIN_OVERLAP_FLOOR` | `reference/schema/measures-and-units.md` |
 | `JOIN_UNIQUENESS_FLOOR` | `reference/schema/measures-and-units.md` |
 | `JURISDICTION_CONCEPT` | `reference/schema/compliance-and-jurisdiction.md` |
@@ -606,6 +671,9 @@ splitting this file and it is closed by construction rather than by discipline.
 | `MEASURE_TERM` | `reference/schema/review-form-and-field-limits.md` |
 | `MEASURE_TIERS` | `reference/schema/measures-and-units.md` |
 | `MEASURE_UNIT_TOKENS` | `reference/schema/measures-and-units.md` |
+| `MESSAGE_BODY_SIZE` | `reference/schema/recurring-delivery.md` |
+| `MESSAGE_MAX_REPEATED_SHARE` | `reference/schema/recurring-delivery.md` |
+| `MESSAGE_MAX_WIDTH` | `reference/schema/recurring-delivery.md` |
 | `METHOD_OWNER_STATEMENT` | `reference/schema/bundle-identity-and-attribution.md` |
 | `METRIC_MULTIPLIERS` | `reference/schema/review-form-and-field-limits.md` |
 | `METRIC_SET` | `reference/schema/review-form-and-field-limits.md` |
@@ -629,7 +697,7 @@ splitting this file and it is closed by construction rather than by discipline.
 | `MSG_SHOWING_N_OF_N` | `reference/schema/language-labels-and-messages.md` |
 | `MSG_UNBOUND_VALUE` | `reference/schema/language-labels-and-messages.md` |
 | `MSG_UNMATCHED_MANDATORY` | `reference/schema/language-labels-and-messages.md` |
-| `NAME` | `reference/schema/bundle-identity-and-attribution.md` |
+| `NAMED_ABSENCE_STRINGS` | `reference/schema/recurring-delivery.md` |
 | `NAMED_THIRD_PARTIES_ALLOWED` | `reference/schema/lineage-and-claims.md` |
 | `NARRATIVE_COLUMN_WIDTH_RANGE` | `reference/schema/formatting.md` |
 | `NARRATIVE_WIDTH_MAX_UNITS` | `reference/schema/formatting.md` |
@@ -672,7 +740,6 @@ splitting this file and it is closed by construction rather than by discipline.
 | `PEOPLE_LEADER_OBJECTIVE_SOURCE` | `reference/schema/role-ladder.md` |
 | `PERCENTILE_DEFINITION` | `reference/schema/measures-and-units.md` |
 | `PERIOD_TOKEN_MAP` | `reference/schema/periods-and-the-operating-calendar.md` |
-| `PERSON` | `reference/schema/person-tier.md` |
 | `PERSON_BINDING_VERSION` | `reference/schema/person-tier.md` |
 | `PERSON_CONFIRMED_FIELD_LIMITS` | `reference/schema/person-tier.md` |
 | `PERSON_CONTACT` | `reference/schema/person-tier.md` |
@@ -697,6 +764,7 @@ splitting this file and it is closed by construction rather than by discipline.
 | `PLAY_RULES` | `reference/schema/breadth-section.md` |
 | `POPULATION_CENSUS_INTERVAL` | `reference/schema/population-shape.md` |
 | `POPULATION_SHAPE` | `reference/schema/population-shape.md` |
+| `PREVIOUS_RESOLUTION_RECORD` | `reference/schema/recurring-delivery.md` |
 | `PRIORITY_BAND_LABELS` | `reference/schema/exception-flags-and-thresholds.md` |
 | `PRIORITY_BAND_THRESHOLDS` | `reference/schema/exception-flags-and-thresholds.md` |
 | `PRIORITY_SOURCES` | `reference/schema/priority-sources-and-authority.md` |
@@ -711,6 +779,7 @@ splitting this file and it is closed by construction rather than by discipline.
 | `RATING_AXES` | `reference/schema/review-form-and-field-limits.md` |
 | `RATING_SCALE` | `reference/schema/review-form-and-field-limits.md` |
 | `REASON_CODE_SET` | `reference/schema/exception-flags-and-thresholds.md` |
+| `REBUILD_PERIOD` | `reference/schema/recurring-delivery.md` |
 | `RECENCY_FLOOR_DAYS` | `reference/schema/exception-flags-and-thresholds.md` |
 | `RECENCY_LAG_DISCLAIMER` | `reference/schema/exception-flags-and-thresholds.md` |
 | `RECENCY_MEDIAN_FACTOR` | `reference/schema/exception-flags-and-thresholds.md` |
@@ -738,6 +807,7 @@ splitting this file and it is closed by construction rather than by discipline.
 | `RUN_ESTIMATE_BANDS` | `reference/schema/questions-and-interaction.md` |
 | `SAMPLING_DENSITY` | `reference/schema/formatting.md` |
 | `SCALE_TIER_BOUNDARIES` | `reference/schema/run-control-and-reliability.md` |
+| `SCHEDULE_FEED_SHAPE` | `reference/schema/recurring-delivery.md` |
 | `SCOPED_RETRY_LIMIT` | `reference/schema/run-control-and-reliability.md` |
 | `SCOPE_ATTRIBUTION_IS_TREE` | `reference/schema/scope-hierarchy.md` |
 | `SCOPE_CODE_AMBIGUITY_THRESHOLD` | `reference/schema/scope-hierarchy.md` |
@@ -769,15 +839,18 @@ splitting this file and it is closed by construction rather than by discipline.
 | `SOURCE_BOOST_BOTH` | `reference/schema/priority-sources-and-authority.md` |
 | `SOURCE_BOOST_NONE` | `reference/schema/priority-sources-and-authority.md` |
 | `SOURCE_BOOST_ONE` | `reference/schema/priority-sources-and-authority.md` |
+| `SOURCE_FRESHNESS_STATES` | `reference/schema/recurring-delivery.md` |
 | `SOURCE_WORKBOOK_LOCATIONS` | `reference/schema/systems-of-record-and-capability-bindings.md` |
 | `SOURCE_WORKBOOK_NAME` | `reference/schema/systems-of-record-and-capability-bindings.md` |
 | `SPAN_BLOCK_MAX_COLUMNS` | `reference/schema/scope-hierarchy.md` |
 | `SPAN_BLOCK_POSITION` | `reference/schema/deliverable-contract.md` |
 | `SPECIFIC_INITIATIVE_NAMES` | `reference/schema/creditable-entities.md` |
 | `SPOT_CHECK_SAMPLE_SIZE` | `reference/schema/run-control-and-reliability.md` |
+| `STANDING_EXPLANATIONS` | `reference/schema/recurring-delivery.md` |
 | `STATUS_VALUES` | `reference/schema/review-form-and-field-limits.md` |
 | `STEER_TILT_OTHERS_FACTOR` | `reference/schema/scoring-constants.md` |
 | `STEER_TILT_TARGET_WEIGHT` | `reference/schema/scoring-constants.md` |
+| `STEM_PROPOSAL_SINK` | `reference/schema/recurring-delivery.md` |
 | `SUBMISSION_BOUNDARY_BANNER` | `reference/schema/deliverable-contract.md` |
 | `SUBREGION_SUFFIXES` | `reference/schema/compliance-and-jurisdiction.md` |
 | `SUPERLATIVE_REQUIRES_TIE_COUNT` | `reference/schema/lineage-and-claims.md` |
