@@ -5,7 +5,7 @@ a one-time setup flow and a test plan, built for and run by the field sales orga
 a national consumer goods manufacturer.
 
 **This is a specification, not a runnable skill.** Nothing here executes. The runnable part
-of this repository is `skill/`, which is a separate and smaller thing: three workflows that
+of this repository is `skill/`, which is a separate and smaller thing: four workflows that
 run end to end and produce the files in `sample-output/`. Read that first if you want to
 judge whether the method works. Read this if you want to see what the method looks like
 deployed at scale against a real enterprise data estate.
