@@ -484,9 +484,24 @@
   invisible because it is read one column at a time through a dropdown; and the three
   wrong ways out of it, a dropped column, a hidden header and a truncated meaning, each
   of which pays for width with correctness.
+- **General form, so the rule survives a medium with no columns:** bound the artifact's
+  total reader-facing size in whatever unit that medium is set in, declare the bound
+  before the artifact is built, and let what gives be a standing qualifier from a closed
+  declared set and nothing else. The DECLARED STANDING PLACE is the medium's own: a grid
+  has a legend and a trailing narrative column, and a message has neither, so its standing
+  place is one block positioned where the reader certainly passes through it. **A medium
+  that lacks a rung of the ladder declares that rung absent and runs the rest**; it does
+  not skip the ladder, and it does not invent a rung that pays for size with correctness.
+  The three things that never give are the same in every medium, read against that medium's
+  unit of work: no unit of work is dropped, no unit falls below its own legibility floor,
+  and no value carrying meaning is shortened. The last rung is the same too: ship over and
+  say so.
 - Source: the demonstration run, scorecard 14-D9, reported partially fixed and measured
-  worse; companion to SD-FMT-03, which bounds the span rather than the sheet
-- Applies: PLANNING, SCORECARD
+  worse; companion to SD-FMT-03, which bounds the span rather than the sheet; general form
+  added when the briefing workflow adopted the rule in a medium with no grid, where the
+  bound is the share of text spent on repeated explanation and the standing place is a key
+  block above the first item
+- Applies: PLANNING, SCORECARD, BRIEFING
 
 ### SD-FMT-29 Formatting must degrade safely, because the author verifies in one renderer and the reader opens another
 - Rule: **EVERY PIECE OF FORMATTING THAT CARRIES MEANING IS CHOSEN SO THAT IT STAYS
@@ -551,7 +566,7 @@
   to the person who opens it, with the run's own verification record standing behind it.
 - Source: the delivered-workbook readability report, three workbooks, every header cell;
   extended by the delivered-workbook reading report, the filter absent on every sheet
-- Applies: PLANNING, REVIEW, SCORECARD
+- Applies: PLANNING, REVIEW, SCORECARD, BRIEFING
 
 ### SD-FMT-30 A word is never broken by a cell line, and there are exactly two ways it happens
 - Rule: **NO WORD IN A DELIVERED ARTIFACT IS EVER CUT BY A CELL BOUNDARY.** A reader
@@ -778,7 +793,7 @@
   with the panels above them, which is the first thing a reader notices and which no
   element could see while one family of strings was exempt.
 - Source: P-D301; the exemption withdrawn on the delivered-workbook reading report
-- Applies: PLANNING, REVIEW, SCORECARD
+- Applies: PLANNING, REVIEW, SCORECARD, BRIEFING
 
 ### SD-FMT-14 The character gate tests BOTH bounds
 - Rule: assert that every character satisfies the lower and upper bounds of
@@ -790,7 +805,7 @@
   publication and must be repaired, not noted.
 - General form: a one-sided bound is not a range check.
 - Source: P-D157; R-D40
-- Applies: PLANNING, REVIEW, SCORECARD
+- Applies: PLANNING, REVIEW, SCORECARD, BRIEFING
 
 ### SD-FMT-15 Transliterate, never drop, and never truncate a name
 - Rule: any character outside the permitted range is transliterated to its
