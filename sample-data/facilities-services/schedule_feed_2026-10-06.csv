@@ -1,0 +1,24 @@
+visit_id,site_id,site_name,scheduled_date,planned_start,technician,visit_status,visit_type
+V-1003-1006,S-1003,Darnley Warehouse DA03,2026-10-06,07:30,T. Boone,Planned,Service
+V-1011-1006,S-1011,Darnley Warehouse DA11,2026-10-06,08:45,T. Boone,Planned,Service
+V-1019-1006,S-1019,Darnley Warehouse DA19,2026-10-06,10:00,T. Boone,Planned,Service
+V-1026-1006,S-1026,Cutler Ridge Restaurant CR26,2026-10-06,11:15,T. Boone,Planned,Service
+V-1032-1006,S-1032,Ivorydale Grocery IV32,2026-10-06,13:00,T. Boone,Planned,Service
+V-1047-1006,S-1047,Harlow Park Data Room HP47,2026-10-06,14:15,T. Boone,Planned,Service
+V-1038-1006,S-1038,Granton Clinic GR38,2026-10-06,15:30,T. Boone,Planned,Service
+V-1041-1006,S-1041,Bellhaven School BH41,2026-10-06,16:30,T. Boone,Planned,Service
+V-1001-1006,S-1001,Bellhaven School BH01,2026-10-06,07:30,R. Alvarez,Planned,Service
+V-1046-1006,S-1046,Granton Clinic GR46,2026-10-06,08:45,R. Alvarez,Planned,Service
+V-1020-1006,S-1020,Elmsworth Office EL20,2026-10-06,10:00,R. Alvarez,Planned,Service
+V-1010-1006,S-1010,Cutler Ridge Restaurant CR10,2026-10-06,11:15,R. Alvarez,Planned,Service
+V-1004-1006,S-1004,Elmsworth Office EL04,2026-10-06,13:00,R. Alvarez,Planned,Service
+V-1027-1006,S-1027,Darnley Warehouse DA27,2026-10-06,14:15,R. Alvarez,Planned,Service
+V-1034-1006,S-1034,Cutler Ridge Restaurant CR34,2026-10-06,15:30,R. Alvarez,Planned,Service
+V-1042-1006,S-1042,Cutler Ridge Restaurant CR42,2026-10-06,16:30,R. Alvarez,Planned,Service
+V-1005-1006,S-1005,Fenwick Hotel FE05,2026-10-06,07:30,M. Okafor,Planned,Service
+V-1045-1006,S-1045,Fenwick Hotel FE45,2026-10-06,08:45,M. Okafor,Planned,Service
+V-1048-1006,S-1048,Ivorydale Grocery IV48,2026-10-06,10:00,M. Okafor,Planned,Service
+V-1018-1006,S-1018,Cutler Ridge Restaurant CR18,2026-10-06,11:15,M. Okafor,Planned,Service
+V-1028-1006,S-1028,Elmsworth Office EL28,2026-10-06,13:00,M. Okafor,Planned,Service
+V-1037-1006,S-1037,Fenwick Hotel FE37,2026-10-06,14:15,M. Okafor,Planned,Service
+V-1014-1006,S-1014,Granton Clinic GR14,2026-10-06,15:30,M. Okafor,Planned,Service

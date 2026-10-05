@@ -1,0 +1,45 @@
+site_id,site_name,planned_visits_this_period,pm_due,priority_flag,period
+S-1001,Bellhaven School BH01,2,No,,2026-10
+S-1002,Cutler Ridge Restaurant CR02,1,No,,2026-10
+S-1003,Darnley Warehouse DA03,2,Yes,Yes,2026-10
+S-1004,Elmsworth Office EL04,1,No,,2026-10
+S-1005,Fenwick Hotel FE05,2,No,,2026-10
+S-1006,Granton Clinic GR06,1,Yes,,2026-10
+S-1007,Harlow Park Data Room HP07,2,No,,2026-10
+S-1008,Ivorydale Grocery IV08,1,No,,2026-10
+S-1009,Bellhaven School BH09,2,Yes,,2026-10
+S-1010,Cutler Ridge Restaurant CR10,1,No,,2026-10
+S-1011,Darnley Warehouse DA11,2,No,Yes,2026-10
+S-1012,Elmsworth Office EL12,1,Yes,,2026-10
+S-1013,Fenwick Hotel FE13,2,No,,2026-10
+S-1014,Granton Clinic GR14,1,No,,2026-10
+S-1015,Harlow Park Data Room HP15,2,Yes,,2026-10
+S-1016,Ivorydale Grocery IV16,1,No,,2026-10
+S-1017,Bellhaven School BH17,2,No,,2026-10
+S-1018,Cutler Ridge Restaurant CR18,1,Yes,,2026-10
+S-1019,Darnley Warehouse DA19,2,No,Yes,2026-10
+S-1020,Elmsworth Office EL20,1,No,,2026-10
+S-1021,Fenwick Hotel FE21,2,Yes,,2026-10
+S-1022,Granton Clinic GR22,1,No,,2026-10
+S-1023,Harlow Park Data Room HP23,2,No,,2026-10
+S-1024,Ivorydale Grocery IV24,1,Yes,,2026-10
+S-1025,Bellhaven School BH25,2,No,,2026-10
+S-1026,Cutler Ridge Restaurant CR26,1,No,,2026-10
+S-1027,Darnley Warehouse DA27,2,Yes,Yes,2026-10
+S-1028,Elmsworth Office EL28,1,No,,2026-10
+S-1029,Fenwick Hotel FE29,2,No,,2026-10
+S-1030,Granton Clinic GR30,1,Yes,,2026-10
+S-1031,Harlow Park Data Room HP31,2,No,,2026-10
+S-1032,Ivorydale Grocery IV32,1,No,,2026-10
+S-1033,Bellhaven School BH33,2,Yes,,2026-10
+S-1034,Cutler Ridge Restaurant CR34,1,No,,2026-10
+S-1035,Darnley Warehouse DA35,2,No,Yes,2026-10
+S-1036,Elmsworth Office EL36,1,Yes,,2026-10
+S-1037,Fenwick Hotel FE37,2,No,,2026-10
+S-1038,Granton Clinic GR38,1,No,,2026-10
+S-1039,Harlow Park Data Room HP39,2,Yes,,2026-10
+S-1040,Ivorydale Grocery IV40,1,No,,2026-10
+S-1041,Bellhaven School BH41,2,No,,2026-10
+S-1042,Cutler Ridge Restaurant CR42,1,Yes,,2026-10
+S-1043,Darnley Warehouse DA43,2,No,Yes,2026-10
+S-1044,Elmsworth Office EL44,1,No,,2026-10

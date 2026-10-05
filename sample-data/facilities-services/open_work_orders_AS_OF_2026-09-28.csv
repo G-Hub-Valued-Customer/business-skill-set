@@ -1,0 +1,71 @@
+site_id,work_order,opened,trade,summary,age_days
+S-1001,WO-10010,2026-09-08,HVAC,Thermostat drift,20
+S-1002,WO-10020,2026-09-08,HVAC,Condensate overflow,20
+S-1002,WO-10021,2026-09-11,Controls,Filter bank overdue,17
+S-1003,WO-10030,2026-09-08,HVAC,Filter bank overdue,20
+S-1003,WO-10031,2026-09-11,Controls,Belt wear,17
+S-1003,WO-10032,2026-09-14,HVAC,Compressor short cycling,14
+S-1005,WO-10050,2026-09-08,HVAC,Compressor short cycling,20
+S-1006,WO-10060,2026-09-08,HVAC,Thermostat drift,20
+S-1006,WO-10061,2026-09-11,Controls,Condensate overflow,17
+S-1007,WO-10070,2026-09-08,HVAC,Condensate overflow,20
+S-1007,WO-10071,2026-09-11,Controls,Filter bank overdue,17
+S-1007,WO-10072,2026-09-14,HVAC,Belt wear,14
+S-1009,WO-10090,2026-09-08,HVAC,Belt wear,20
+S-1010,WO-10100,2026-09-08,HVAC,Compressor short cycling,20
+S-1010,WO-10101,2026-09-11,Controls,Thermostat drift,17
+S-1011,WO-10110,2026-09-08,HVAC,Thermostat drift,20
+S-1011,WO-10111,2026-09-11,Controls,Condensate overflow,17
+S-1011,WO-10112,2026-09-14,HVAC,Filter bank overdue,14
+S-1013,WO-10130,2026-09-08,HVAC,Filter bank overdue,20
+S-1014,WO-10140,2026-09-08,HVAC,Belt wear,20
+S-1014,WO-10141,2026-09-11,Controls,Compressor short cycling,17
+S-1015,WO-10150,2026-09-08,HVAC,Compressor short cycling,20
+S-1015,WO-10151,2026-09-11,Controls,Thermostat drift,17
+S-1015,WO-10152,2026-09-14,HVAC,Condensate overflow,14
+S-1017,WO-10170,2026-09-08,HVAC,Condensate overflow,20
+S-1018,WO-10180,2026-09-08,HVAC,Filter bank overdue,20
+S-1018,WO-10181,2026-09-11,Controls,Belt wear,17
+S-1019,WO-10190,2026-09-08,HVAC,Belt wear,20
+S-1019,WO-10191,2026-09-11,Controls,Compressor short cycling,17
+S-1019,WO-10192,2026-09-14,HVAC,Thermostat drift,14
+S-1021,WO-10210,2026-09-08,HVAC,Thermostat drift,20
+S-1022,WO-10220,2026-09-08,HVAC,Condensate overflow,20
+S-1022,WO-10221,2026-09-11,Controls,Filter bank overdue,17
+S-1023,WO-10230,2026-09-08,HVAC,Filter bank overdue,20
+S-1023,WO-10231,2026-09-11,Controls,Belt wear,17
+S-1023,WO-10232,2026-09-14,HVAC,Compressor short cycling,14
+S-1025,WO-10250,2026-09-08,HVAC,Compressor short cycling,20
+S-1027,WO-10270,2026-09-08,HVAC,Condensate overflow,20
+S-1027,WO-10271,2026-09-11,Controls,Filter bank overdue,17
+S-1027,WO-10272,2026-09-14,HVAC,Belt wear,14
+S-1029,WO-10290,2026-09-08,HVAC,Belt wear,20
+S-1030,WO-10300,2026-09-08,HVAC,Compressor short cycling,20
+S-1030,WO-10301,2026-09-11,Controls,Thermostat drift,17
+S-1031,WO-10310,2026-09-08,HVAC,Thermostat drift,20
+S-1031,WO-10311,2026-09-11,Controls,Condensate overflow,17
+S-1031,WO-10312,2026-09-14,HVAC,Filter bank overdue,14
+S-1033,WO-10330,2026-09-08,HVAC,Filter bank overdue,20
+S-1034,WO-10340,2026-09-08,HVAC,Belt wear,20
+S-1034,WO-10341,2026-09-11,Controls,Compressor short cycling,17
+S-1035,WO-10350,2026-09-08,HVAC,Compressor short cycling,20
+S-1035,WO-10351,2026-09-11,Controls,Thermostat drift,17
+S-1035,WO-10352,2026-09-14,HVAC,Condensate overflow,14
+S-1037,WO-10370,2026-09-08,HVAC,Condensate overflow,20
+S-1038,WO-10380,2026-09-08,HVAC,Filter bank overdue,20
+S-1038,WO-10381,2026-09-11,Controls,Belt wear,17
+S-1039,WO-10390,2026-09-08,HVAC,Belt wear,20
+S-1039,WO-10391,2026-09-11,Controls,Compressor short cycling,17
+S-1039,WO-10392,2026-09-14,HVAC,Thermostat drift,14
+S-1041,WO-10410,2026-09-08,HVAC,Thermostat drift,20
+S-1042,WO-10420,2026-09-08,HVAC,Condensate overflow,20
+S-1042,WO-10421,2026-09-11,Controls,Filter bank overdue,17
+S-1043,WO-10430,2026-09-08,HVAC,Filter bank overdue,20
+S-1043,WO-10431,2026-09-11,Controls,Belt wear,17
+S-1043,WO-10432,2026-09-14,HVAC,Compressor short cycling,14
+S-1045,WO-10450,2026-09-08,HVAC,Compressor short cycling,20
+S-1046,WO-10460,2026-09-08,HVAC,Thermostat drift,20
+S-1046,WO-10461,2026-09-11,Controls,Condensate overflow,17
+S-1047,WO-10470,2026-09-08,HVAC,Condensate overflow,20
+S-1047,WO-10471,2026-09-11,Controls,Filter bank overdue,17
+S-1047,WO-10472,2026-09-14,HVAC,Belt wear,14

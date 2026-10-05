@@ -1,0 +1,49 @@
+site_id,site_name,town,technician,contract_tier,units_on_site,annual_contract_value
+S-1001,Bellhaven School BH01,Bellhaven,R. Alvarez,Gold,9,5111
+S-1002,Cutler Ridge Restaurant CR02,Cutler Ridge,M. Okafor,Silver,7,5422
+S-1003,Darnley Warehouse DA03,Darnley,T. Boone,None,5,5733
+S-1004,Elmsworth Office EL04,Elmsworth,R. Alvarez,Platinum,3,6044
+S-1005,Fenwick Hotel FE05,Fenwick,M. Okafor,Gold,10,6355
+S-1006,Granton Clinic GR06,Granton,R. Alvarez,Silver,8,6666
+S-1007,Harlow Park Data Room HP07,Harlow Park,M. Okafor,None,6,6977
+S-1008,Ivorydale Grocery IV08,Ivorydale,R. Alvarez,Platinum,4,7288
+S-1009,Bellhaven School BH09,Bellhaven,M. Okafor,Gold,2,7599
+S-1010,Cutler Ridge Restaurant CR10,Cutler Ridge,R. Alvarez,Silver,9,7910
+S-1011,Darnley Warehouse DA11,Darnley,T. Boone,None,7,8221
+S-1012,Elmsworth Office EL12,Elmsworth,M. Okafor,Platinum,5,8532
+S-1013,Fenwick Hotel FE13,Fenwick,R. Alvarez,Gold,3,8843
+S-1014,Granton Clinic GR14,Granton,M. Okafor,Silver,10,9154
+S-1015,Harlow Park Data Room HP15,Harlow Park,R. Alvarez,None,8,9465
+S-1016,Ivorydale Grocery IV16,Ivorydale,M. Okafor,Platinum,6,9776
+S-1017,Bellhaven School BH17,Bellhaven,R. Alvarez,Gold,4,10087
+S-1018,Cutler Ridge Restaurant CR18,Cutler Ridge,M. Okafor,Silver,2,10398
+S-1019,Darnley Warehouse DA19,Darnley,T. Boone,None,9,10709
+S-1020,Elmsworth Office EL20,Elmsworth,R. Alvarez,Platinum,7,11020
+S-1021,Fenwick Hotel FE21,Fenwick,M. Okafor,Gold,5,11331
+S-1022,Granton Clinic GR22,Granton,R. Alvarez,Silver,3,11642
+S-1023,Harlow Park Data Room HP23,Harlow Park,M. Okafor,None,10,11953
+S-1024,Ivorydale Grocery IV24,Ivorydale,R. Alvarez,Platinum,8,12264
+S-1025,Bellhaven School BH25,Bellhaven,M. Okafor,Gold,6,12575
+S-1026,Cutler Ridge Restaurant CR26,Cutler Ridge,T. Boone,Silver,4,12886
+S-1027,Darnley Warehouse DA27,Darnley,R. Alvarez,None,2,13197
+S-1028,Elmsworth Office EL28,Elmsworth,M. Okafor,Platinum,9,13508
+S-1029,Fenwick Hotel FE29,Fenwick,R. Alvarez,Gold,7,13819
+S-1030,Granton Clinic GR30,Granton,M. Okafor,Silver,5,14130
+S-1031,Harlow Park Data Room HP31,Harlow Park,R. Alvarez,None,3,14441
+S-1032,Ivorydale Grocery IV32,Ivorydale,T. Boone,Platinum,10,14752
+S-1033,Bellhaven School BH33,Bellhaven,M. Okafor,Gold,8,15063
+S-1034,Cutler Ridge Restaurant CR34,Cutler Ridge,R. Alvarez,Silver,6,15374
+S-1035,Darnley Warehouse DA35,Darnley,M. Okafor,None,4,15685
+S-1036,Elmsworth Office EL36,Elmsworth,R. Alvarez,Platinum,2,15996
+S-1037,Fenwick Hotel FE37,Fenwick,M. Okafor,Gold,9,16307
+S-1038,Granton Clinic GR38,Granton,T. Boone,Silver,7,16618
+S-1039,Harlow Park Data Room HP39,Harlow Park,R. Alvarez,None,5,16929
+S-1040,Ivorydale Grocery IV40,Ivorydale,M. Okafor,Platinum,3,17240
+S-1041,Bellhaven School BH41,Bellhaven,T. Boone,Gold,10,17551
+S-1042,Cutler Ridge Restaurant CR42,Cutler Ridge,R. Alvarez,Silver,8,17862
+S-1043,Darnley Warehouse DA43,Darnley,M. Okafor,None,6,18173
+S-1044,Elmsworth Office EL44,Elmsworth,R. Alvarez,Platinum,4,18484
+S-1045,Fenwick Hotel FE45,Fenwick,M. Okafor,Gold,2,18795
+S-1046,Granton Clinic GR46,Granton,R. Alvarez,Silver,9,19106
+S-1047,Harlow Park Data Room HP47,Harlow Park,T. Boone,None,7,19417
+S-1048,Ivorydale Grocery IV48,Ivorydale,M. Okafor,Platinum,5,19728
